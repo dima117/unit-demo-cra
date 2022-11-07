@@ -10,7 +10,6 @@ import { initStore } from './store';
 import { Application } from './Application';
 import events from '@testing-library/user-event';
 
-
 it('по адресу /about должна открываться страница "о проекте"', () => {
     const history = createMemoryHistory({
         initialEntries: ['/about'],
@@ -25,14 +24,14 @@ it('по адресу /about должна открываться страниц�
             </Provider>
         </Router>
     );
-    
+
     const { getByTestId } = render(application);
 
     expect(getByTestId('page-title').textContent).toEqual('About');
 });
 
 
-it('если добавить элемент, он появляется на экране', () => {
+it('если добавить элемент, он появляется в списке', () => {
     const store = initStore();
     const application = (
         <BrowserRouter>
@@ -41,14 +40,14 @@ it('если добавить элемент, он появляется на э�
             </Provider>
         </BrowserRouter>
     );
-    
+
     const { getByTestId } = render(application);
     events.type(getByTestId('input-add'), 'Сделать домашку');
     events.click(getByTestId('button-add'))
-    
+
     const list = getByTestId('list');
     const items = within(list).getAllByTestId('list-item');
-    
+
     expect(items.map(el => el.textContent)).toContain('Сделать домашку');
     // screen.logTestingPlaygroundURL();
 });
