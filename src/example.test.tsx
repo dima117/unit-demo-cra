@@ -1,53 +1,46 @@
-import { it, expect } from '@jest/globals';
-import { render, within } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { Router } from 'react-router';
-import { createMemoryHistory } from 'history';
+import { it, expect } from "@jest/globals";
+import { render } from "@testing-library/react";
+import events from "@testing-library/user-event";
 
-import { Provider } from 'react-redux';
+import { BrowserRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
+import { Provider } from "react-redux";
 
-import { initStore } from './store';
-import { Application } from './Application';
-import events from '@testing-library/user-event';
+import { initStore } from "./store";
+import { Application } from "./Application";
 
 it('по адресу /about должна открываться страница "о проекте"', () => {
-    const history = createMemoryHistory({
-        initialEntries: ['/about'],
-        initialIndex: 0
-    });
+  const store = initStore();
+  const application = (
+    <MemoryRouter initialEntries={["/about"]} initialIndex={0}>
+      <Provider store={store}>
+        <Application />
+      </Provider>
+    </MemoryRouter>
+  );
 
-    const store = initStore();
-    const application = (
-        <Router history={history} >
-            <Provider store={store} >
-                <Application />
-            </Provider>
-        </Router>
-    );
+  const { getByTestId } = render(application);
 
-    const { getByTestId } = render(application);
-
-    expect(getByTestId('page-title').textContent).toEqual('About');
+  expect(getByTestId("page-title").textContent).toEqual("About");
 });
 
+it("если добавить элемент, он появляется в списке", async () => {
+  const store = initStore();
+  const application = (
+    <BrowserRouter>
+      <Provider store={store}>
+        <Application />
+      </Provider>
+    </BrowserRouter>
+  );
 
-it('если добавить элемент, он появляется в списке', () => {
-    const store = initStore();
-    const application = (
-        <BrowserRouter>
-            <Provider store={store} >
-                <Application />
-            </Provider>
-        </BrowserRouter>
-    );
+  const { getByTestId, getAllByTestId } = render(application);
 
-    const { getByTestId } = render(application);
-    events.type(getByTestId('input-add'), 'Сделать домашку');
-    events.click(getByTestId('button-add'))
+  await events.type(getByTestId("input-add"), "Сделать домашку");
 
-    const list = getByTestId('list');
-    const items = within(list).getAllByTestId('list-item');
+  await events.click(getByTestId("button-add"));
 
-    expect(items.map(el => el.textContent)).toContain('Сделать домашку');
-    // screen.logTestingPlaygroundURL();
+  const items = getAllByTestId("list-item");
+
+  expect(items.map((el) => el.textContent)).toContain("Сделать домашку");
 });

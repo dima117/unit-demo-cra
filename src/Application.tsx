@@ -1,24 +1,25 @@
-import { FC } from 'react';
-import { Switch, Route, Link  } from 'react-router-dom';
+import { FC } from "react";
+import { Routes, Route, Link } from "react-router-dom";
 
-import { About } from './pages/About';
-import { Home } from './pages/Home';
+import { About } from "./pages/About";
+import { Home } from "./pages/Home";
 
 export const Application: FC = () => {
-    return (
-        <div>
-            <nav>
-                <Link data-testid="link-home" to="/">Home</Link>
-                <Link to="/about">About</Link>
-            </nav>
-            <Switch>
-                <Route path="/about">
-                    <About />
-                </Route>
-                <Route path="/">
-                    <Home />
-                </Route>
-            </Switch>
-        </div>
-    );
-} 
+  const home = <Home />;
+  const about = <About />;
+
+  return (
+    <div>
+      <nav>
+        <Link data-testid="link-home" to="/">
+          Home
+        </Link>
+        <Link to="/about">About</Link>
+      </nav>
+      <Routes>
+        <Route path="/about" element={about} />
+        <Route path="/" element={home} />
+      </Routes>
+    </div>
+  );
+};

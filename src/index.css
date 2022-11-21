@@ -2,7 +2,8 @@ body {
     padding: 20px;
 }
 
-input, a {
+input,
+a {
     margin-right: 8px;
 }
 
@@ -13,4 +14,3 @@ input, a {
 .list {
     margin-top: 12px;
 }
-
