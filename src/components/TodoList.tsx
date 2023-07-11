@@ -1,7 +1,7 @@
-import { ChangeEvent, FC, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { ApplicationState, addItem, setText } from "../store";
-import { TodoItem } from "./TodoItem";
+import { type ChangeEvent, type FC, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { type ApplicationState, addItem, setText } from '../store';
+import { TodoItem } from './TodoItem';
 
 export const TodoList: FC = () => {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ export const TodoList: FC = () => {
     ({ target }: ChangeEvent<HTMLInputElement>) => {
       dispatch(setText(target.value));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onClick = useCallback(() => {

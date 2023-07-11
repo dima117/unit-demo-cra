@@ -1,7 +1,7 @@
-import { FC } from "react";
-import { Helmet } from "react-helmet";
+import { type FC } from 'react';
+import { Helmet } from 'react-helmet';
 
-import { TodoList } from "../components/TodoList";
+import { TodoList } from '../components/TodoList';
 
 export const Home: FC = () => {
   return (
