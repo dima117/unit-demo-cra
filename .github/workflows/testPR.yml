@@ -20,4 +20,4 @@ jobs:
           
       - name: Test and lint every new commit
         run: |
-          $(git rev-list ${{ github.event.before}}..${{ github.sha}})
+          echo $(git rev-list ${{ github.base_ref }}..${{ github.head_ref }})
