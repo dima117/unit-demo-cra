@@ -22,7 +22,6 @@ jobs:
       - name: Test
         run: |
           echo "fix: test" | npx commitlint
-          echo "bla" | npx commitlint
           
       - name: Validate current commit
         if: github.event_name == 'push'
