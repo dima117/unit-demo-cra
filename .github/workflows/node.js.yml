@@ -35,7 +35,7 @@ jobs:
       - name: install browsers
         run: sudo apt-get install xvfb
 
-      - name: run integration
+      - name: run integration tests
         run: xvfb-run -a --server-args="-screen 0 1024x768x24" npm run e2e
       - uses: actions/upload-artifact@v3
         if: always()

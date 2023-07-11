@@ -3,6 +3,7 @@ name: conventioal commit check
 on:
   push:
   pull_request:
+    types: "opened"
 
 jobs:
   commitlint:
