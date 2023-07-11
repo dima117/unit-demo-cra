@@ -24,5 +24,6 @@ jobs:
                 repo: ${{ github.event.repository.name }}
                 token: ${{ secrets.GITHUB_TOKEN }}
                 ref: ${{ github.event.ref }}
+                actor: ${{ github.actor }}
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

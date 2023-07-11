@@ -13,6 +13,9 @@ inputs:
   ref:
     description: 'Ref to create release with a tag'
     required: true
+  actor:
+    description: 'The username of the user that triggered the initial workflow run.'
+    required: true
 runs:
   using: 'node16'
   main: 'dist/index.js'
