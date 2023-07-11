@@ -5,6 +5,7 @@ const main = async () => {
     try {
         const token = core.getInput("token", {required: true});
         const ref = core.getInput("ref", {required: true});
+        console.log(ref);
     } catch (error) {
         core.setFailed(error.message);
     }
