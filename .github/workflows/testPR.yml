@@ -20,6 +20,6 @@ jobs:
           
       - name: Test and lint every new commit
         run: |
-          for commit in $(git rev-list ${{ github.base_ref }}..${{ github.head_ref }}); do
+          for commit in { ${{ github.base_ref }}..${{ github.head_ref }} }; do
               echo $commit
           done          
