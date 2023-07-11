@@ -1,6 +1,6 @@
 name: Test and Lint all commits on Pull Request
 
-on: [pull_request, push]
+on: pull_request
 
 jobs:
   test-and-lint:
