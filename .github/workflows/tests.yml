@@ -1,0 +1,25 @@
+name: Run tests on PR
+on:
+  pull_request:
+jobs:
+  run-commitlint-on-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+      - name: Run unit tests
+        run: npm run test-ci
+      - name: Install browsers
+        run: npx playwright install --with-deps
+      - name: Run e2e tests
+        run: npm run e2e
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
