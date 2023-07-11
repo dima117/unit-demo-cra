@@ -11,6 +11,7 @@
         "@types/node": "^18.11.9",
         "@types/react": "^18.0.25",
         "@types/react-dom": "^18.0.9",
+        "jest-junit": "^16.0.0",
         "jest-teamcity": "^1.11.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
@@ -31,9 +32,8 @@
         "eject": "react-scripts eject",
         "test": "react-scripts test",
         "e2e": "playwright test --project=chromium && playwright show-report",
-        "ci:test": "react-scripts test",
-        "ci:e2e": "playwright test --project=headlesschrom",
-        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
+        "e2e-ci": "playwright test --project=headlesschrome",
+        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-junit\""
     },
     "eslintConfig": {
         "extends": [

@@ -69,7 +69,7 @@ const config: PlaywrightTestConfig = {
     },
 
     {
-      name: "headlesschrom",
+      name: "headlesschrome",
       use: {
         ...devices["Desktop Chrome"],
         headless: true
