@@ -39,4 +39,4 @@ jobs:
 
       - name: Validate commits in a push with commitlint
         if: github.event_name == 'push'
-        run: npx commitlint --from ${{ github.event.before }} --to ${{ github.sha }} --verbose
+        run: npx commitlint --from ${{ github.event.base_ref }} --to ${{ github.sha }} --verbose
