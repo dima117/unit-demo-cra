@@ -1,0 +1,4 @@
+commit-msg:
+  scripts:
+    "commitlint.sh":
+      runner: bash
