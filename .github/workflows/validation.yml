@@ -1,10 +1,10 @@
 name: PR Validation
 
-on: [pull_request]
+on: [pull_request, push]
 
 jobs: 
     validate:
-        name: "Validate code"
+        name: "Validate Code"
         runs-on: ubuntu-latest
         defaults:
             run:
@@ -25,8 +25,8 @@ jobs:
             - name: Lint
               run: npm run lint
 
-            - name: E2E tests setup
-              run: npx playwright install
+            - name: Install Playwright Browsers
+              run: npx playwright install --with-deps
 
             - name: Run tests
               run: |
