@@ -13,8 +13,12 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm install -g @commitlint/cli @commitlint/config-conventional
-          echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitlint.config.js
+          npm install --save-dev @commitlint/{cli,config-conventional}
+          echo "module.exports = { extends: ['@commitlint/config-conventional'] };" > commitlint.config.js
+          npm install husky --save-dev
+          npx husky install
+          npm pkg set scripts.commitlint="commitlint --edit"
+          npx husky add .husky/commit-msg 'npm run commitlint ${1}'
           
       - name: Check dependencies
         run: |
