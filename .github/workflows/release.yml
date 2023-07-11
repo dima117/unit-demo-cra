@@ -20,8 +20,9 @@ jobs:
             - name: "Create Release"
               uses: ./.github/actions/createRelease
               with: 
+                owner: ${{ github.repository_owner }}
+                repo: ${{ github.event.repository.name }}
                 token: ${{ secrets.GITHUB_TOKEN }}
                 ref: ${{ github.event.ref }}
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                REF: ${{ github.event.ref }}
