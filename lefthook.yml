@@ -2,3 +2,7 @@ commit-msg:
   scripts:
     "commitlint.sh":
       runner: bash
+pre-push:
+  commands:
+    test:
+      run: npm run test && npm run e2e
