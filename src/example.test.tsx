@@ -14,6 +14,7 @@ it('по адресу /about должна открываться страниц�
   const application = (
     <MemoryRouter initialEntries={["/about"]} initialIndex={0}>
       <Provider store={store}>
+        <Application />
       </Provider>
     </MemoryRouter>
   );
