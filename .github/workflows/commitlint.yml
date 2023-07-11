@@ -1,6 +1,6 @@
 name: Commitlint
 
-on: [push, pull_request]
+on: [ push ]
 
 jobs:
   commitlint:
@@ -17,6 +17,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Install dev dependencies
+        run: npm install --only=dev
 
       - name: Run commitlint
         run: npx commitlint --from=$GITHUB_BASE_REF --to=$GITHUB_HEAD_REF --verbose
