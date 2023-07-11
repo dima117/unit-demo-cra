@@ -30,8 +30,10 @@
         "build": "react-scripts build",
         "eject": "react-scripts eject",
         "test": "react-scripts test",
+        "lint": "eslint \"**/*.tsx\" --ignore-pattern node_modules/",
         "e2e": "playwright test --project=chromium && playwright show-report",
-        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
+        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\"",
+        "commitmsg": "commitlint --from=HEAD~1"
     },
     "eslintConfig": {
         "extends": [
@@ -57,8 +59,14 @@
         ]
     },
     "devDependencies": {
+        "@commitlint/cli": "^17.6.6",
+        "@commitlint/config-conventional": "^17.6.6",
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "eslint": "^8.44.0",
+        "eslint-plugin-react": "^7.32.2",
         "jest-html-reporter": "^3.7.0"
     }
 }
