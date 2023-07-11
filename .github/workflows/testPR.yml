@@ -24,6 +24,6 @@ jobs:
             git checkout $commit
             npx eslint ./src
             npm run test
-            npm run e2e
+            playwright test --project=headlesschrome
           done
           
