@@ -11,12 +11,19 @@ const main = async () => {
         const tag_name = ref.split("/")[2];
         
         const octokit = github.getOctokit(token);
-        const {data} = await octokit.rest.repos.createRelease({
+        await octokit.rest.repos.createRelease({
             owner, 
             repo,
             tag_name,
+            generate_release_notes: true,
+        });
+
+        await octokit.rest.issues.create({
+            owner,
+            repo,
+            title: `RELEASE - ${tag_name}`,
+            labels: ["RELEASE"],
         })
-        console.log(data);
     } catch (error) {
         core.setFailed(error.message);
     }
