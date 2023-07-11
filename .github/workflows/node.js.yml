@@ -29,8 +29,17 @@ jobs:
       - name: run unit
         run: npm run test
 
-      - name: install playwright browsers
+      - name: install playwright
         run: npx playwright install --with-deps
 
-      - name: run integration
-        run: npx playwright test
+      - name: install browsers
+        run: sudo apt-get install xvfb
+
+      - name: run integration tests
+        run: xvfb-run -a --server-args="-screen 0 1024x768x24" npm run e2e
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
