@@ -3,8 +3,8 @@ name: Quality
 on: push
 
 jobs:
-  build:
-    name: Tests
+  jest:
+    name: Jest tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -26,11 +26,53 @@ jobs:
       - name: Install npm dependencies
         run: npm ci --prefer-offline --cache=./.npm
 
-      - name: Run build
-        run: npm run build
-
-      - name: Run test
+      - name: Run Jest test
         run: npm run test
+  e2e:
+    name: e2e tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2.1.6
+        with:
+          path: ./.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Install npm dependencies
+        run: npm ci --prefer-offline --cache=./.npm
+
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "::set-output name=version::$(npm ls --json @playwright/test | grep -h 'workspace:.' | jq --raw-output '.children[].locator' | sed -e 's/@playwright\/test@.*://')"
+
+      - uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: '~/.cache/ms-playwright'
+          key: '${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}'
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install Playwright's dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Install Playwright's dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps
+
+      - name: Run e2e test
+        run: npx playwright test
   eslint:
     name: ESLint
     runs-on: ubuntu-latest
