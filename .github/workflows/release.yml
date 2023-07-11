@@ -1,0 +1,23 @@
+name: Release
+
+on:
+    push:
+      tags:
+        - 'v[0-9]+'
+
+jobs:
+    release:
+        name: "Validate Code"
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: .
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                fetch-depth: 0  
+
+            - name: "Create Release"
+              run: echo ${{ toJson(github.event) }}
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
