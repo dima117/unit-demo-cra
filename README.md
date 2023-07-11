@@ -32,5 +32,3 @@ npm test
 ```
 1. npm i
 2. npm i -g commitizen
-3. npx husky install
-4. ...
