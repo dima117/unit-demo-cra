@@ -30,6 +30,7 @@
         "build": "react-scripts build",
         "eject": "react-scripts eject",
         "test": "react-scripts test",
+        "ci:test": "react-scripts test --coverage",
         "e2e": "playwright test --project=chromium && playwright show-report",
         "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
     },

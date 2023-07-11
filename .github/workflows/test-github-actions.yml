@@ -1,0 +1,27 @@
+name: test-github-actions
+run-name: ${{ github.actor }} is running tests
+on: [push]
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install deps
+        run: npm ci
+      
+      - name: Run unit tests
+        run: npm test
+      
+      - name: Install playwright browsers
+        run: npx playwright install-deps --with-deps
+      
+      - name: Run e2e tests
+        run: npm run e2e
+      
+      - name: Build App
+        run: npm run build
