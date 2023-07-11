@@ -4,7 +4,7 @@ on: pull_request
 
 jobs:
   test-and-lint:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       
       - name: Get sourcecode
@@ -20,4 +20,4 @@ jobs:
           
       - name: Test and lint every new commit
         run: |
-          echo $(git rev-list ${{ github.base_ref }}..${{ github.head_ref }})
+          git rev-list ${{ github.base_ref }}..${{ github.head_ref }}
