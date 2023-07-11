@@ -7,7 +7,7 @@ export const About: FC = () => {
       <Helmet>
         <title>About page</title>
       </Helmet>
-      <h1 data-testid="page-title">About</h1>
+      <h1 data-testid="page-title" className="testClass">About</h1>
       <p>This is an example application.</p>
     </>
   );
