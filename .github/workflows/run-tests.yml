@@ -1,0 +1,17 @@
+name: Run tests
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2
+      - name: Install deps
+        run: npm ci && npx playwright install
+      - name: Run tests
+        run: npm run test-ci || npm run e2e
