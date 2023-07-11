@@ -20,5 +20,6 @@ jobs:
           
       - name: Test and lint every new commit
         run: |
-          git branch --list
+          git branch
+          echo ${{ github.event.pull_request.head.sha }}
           git rev-list ${{ github.base_ref }}..${{ github.head_ref }}
