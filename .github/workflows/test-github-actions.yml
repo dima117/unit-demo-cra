@@ -24,7 +24,7 @@ jobs:
           path: junit.xml
           retention-days: 30
 
-      - name: Install playwright browsers
+      - name: Install playwright
         run: npx playwright install --with-deps
 
       - name: Run e2e tests
