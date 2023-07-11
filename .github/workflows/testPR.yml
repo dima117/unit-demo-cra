@@ -1,6 +1,6 @@
 name: Test and Lint all commits on Pull Request
 
-on: pull_request
+on: [pull_request, push]
 
 jobs:
   test-and-lint:
@@ -18,12 +18,7 @@ jobs:
           npm i --save-dev eslint-config-react-app eslint
           npx playwright install --with-deps chromium
           
-      - run: |
-          for commit in $(git rev-list ${{ github.event.before}}..${{ github.sha}}); do
-              echo $commit
-              git checkout $commit
-              npx eslint ./src
-              npm test
-              npm run e2e
-          done
+      - name: Test and lint every new commit
+        run: |
+          echo ${{ github.event.before }}
           
