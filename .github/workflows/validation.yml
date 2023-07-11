@@ -1,0 +1,42 @@
+name: PR Validation
+
+on: [pull_request]
+
+jobs: 
+    validate:
+        name: "Validate Code"
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: .
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                fetch-depth: 0   
+
+            - name: Install Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18.x'
+
+            - name: Install packages
+              run: npm ci
+            
+            - name: Lint
+              run: npm run lint
+
+            - name: Install Playwright Browsers
+              run: npx playwright install --with-deps
+
+            - name: Run tests
+              run: |
+                npm run test
+                npx playwright test --project=chromium
+            
+            - uses: actions/upload-artifact@v3
+              if: always()
+              with:
+                name: playwright-report
+                path: playwright-report/
+                retention-days: 30
+
