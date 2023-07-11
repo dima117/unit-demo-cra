@@ -26,6 +26,11 @@ jobs:
         run: |
           npm install conventional-changelog-conventionalcommits
           npm install commitlint@latest
+          npm install @commitlint/config-conventional
+
+      - name: Setup commitlint config
+        run: |
+          echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitlint.config.js
 
       - name: Validate PR commits with commitlint
         if: github.event_name == 'pull_request'
