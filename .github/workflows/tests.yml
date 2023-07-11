@@ -31,7 +31,7 @@ jobs:
       - name: run unit tests for each commit
         run: |
           for commit in $(git rev-list ${{ github.event.before }}..${{ github.sha }}); do
-              echo "Running unit tests for " + $commit
+              echo "Running unit tests for " $commit
               git checkout $commit
               npm run test
           done
@@ -39,10 +39,19 @@ jobs:
       - name: install playwright browsers
         run: npx playwright install --with-deps
 
+      - name: install xvfb
+        run: sudo apt-get install xvfb
+
       - name: run integration
         run: |
           for commit in $(git rev-list ${{ github.event.before }}..${{ github.sha }}); do
               echo "Running integration tests for " + $commit
               git checkout $commit
-              npm run e2e
+              xvfb-run -a --server-args="-screen 0 1024x768x24" npm run e2e
           done
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
