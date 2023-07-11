@@ -21,7 +21,9 @@ jobs:
       - name: Test and lint every new commit
         run: |
           for commit in $(git rev-list ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }}..${{ github.event.pull_request.head.sha }}); do
-                git checkout $commit
-                echo "run test"
-            done
+            git checkout $commit
+            npx eslint ./src
+            npm run test
+            npm run e2e
+          done
           
