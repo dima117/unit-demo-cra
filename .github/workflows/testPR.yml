@@ -20,5 +20,6 @@ jobs:
           
       - name: Test and lint every new commit
         run: |
-          echo ${{ github.event.before }}..${{ github.sha }}
-          
+          for commit in $(git rev-list ${{ github.event.before }}..${{ github.sha }}); do
+              echo $commit
+          done          
