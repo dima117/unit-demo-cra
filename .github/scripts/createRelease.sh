@@ -1,0 +1,2 @@
+echo $REF
+gh --version
