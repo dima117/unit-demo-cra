@@ -13,7 +13,6 @@ export const Application: FC = () => {
       <nav>
         <Link data-testid="link-home" to="/">
           Home
-          
         </Link>
         <Link to="/about">About</Link>
       </nav>
