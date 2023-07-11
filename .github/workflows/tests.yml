@@ -1,0 +1,47 @@
+name: Node.js CI
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: install deps
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install node dependencies
+        run: npm ci
+
+      - name: run build
+        run: npm run build --if-present
+
+      - name: run unit tests for each commit
+        run: |
+          for commit in $(git rev-list ${{ github.base_ref }}..${{ github.head_ref }}); do
+              echo "Running unit tests for " + $commit
+              git checkout $commit
+              npm run test
+          done
+
+      - name: install playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: run integration
+        run: |
+          for commit in $(git rev-list ${{ github.base_ref }}..${{ github.head_ref }}); do
+              echo "Running integration tests for " + $commit
+              git checkout $commit
+              npm run e2e
+          done
