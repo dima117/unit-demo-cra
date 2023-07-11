@@ -20,4 +20,8 @@ jobs:
           
       - name: Test and lint every new commit
         run: |
-          git rev-list ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }}..${{ github.event.pull_request.head.sha }}
+          for commit in $(git rev-list ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }}..${{ github.event.pull_request.head.sha }}); do
+                git checkout $commit
+                echo "run test"
+            done
+          
