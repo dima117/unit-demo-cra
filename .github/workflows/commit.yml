@@ -4,11 +4,11 @@ on: [push, pull_request]
 
 jobs:
   commitlint:
-    runs-on: ubuntu-lastest
-    
+    runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [14.x, 16.x, 18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: "npm"
       - name: Print versions
         run: |
           git --version
