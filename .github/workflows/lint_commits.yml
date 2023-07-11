@@ -3,7 +3,7 @@ name: Lint commits
 on: [push, pull_request]
 
 jobs:
-  commitLint:
+  commitlint:
     runs-on: ubuntu-latest
     steps:
     
@@ -25,7 +25,7 @@ jobs:
           git --version
           node --version
           npm --version
-          npx commitLint --version
+          npx commitlint --version
           
       - name: Validate current commit
         if: github.event_name == 'push'
