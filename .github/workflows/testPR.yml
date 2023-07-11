@@ -20,5 +20,5 @@ jobs:
           
       - name: Test and lint every new commit
         run: |
-          echo ${{ github.event.before }}
+          echo ${{ github.event.before }}..${{ github.sha }}
           
