@@ -16,6 +16,13 @@ jobs:
           npm install -g @commitlint/cli @commitlint/config-conventional
           echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitlint.config.js
           
+      - name: Check dependencies
+        run: |
+          git --version
+          node --version
+          npm --version
+          npx commitLint --version
+          
       - name: Validate current commit
         if: github.event_name == 'push'
         run: npx commitlint --from HEAD~1 --to HEAD --verbose
