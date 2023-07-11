@@ -18,6 +18,11 @@ jobs:
           npx husky install
           npm pkg set scripts.commitlint="commitlint --edit"
           npx husky add .husky/commit-msg 'npm run commitlint ${1}'
+        
+      - name: Test
+        run: |
+          echo "fix: test" | npx commitlint
+          echo "bla" | npx commitlint
           
       - name: Validate current commit
         if: github.event_name == 'push'
