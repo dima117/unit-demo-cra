@@ -1,0 +1,35 @@
+name: PR Validation
+
+on: [pull_request]
+
+jobs: 
+    validate:
+        name: "Validate code"
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: .
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                fetch-depth: 0   
+
+            - name: Install Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18.x'
+
+            - name: Install packages
+              run: npm ci
+            
+            - name: Lint
+              run: npm run lint
+
+            - name: E2E tests setup
+              run: npx playwright install
+
+            - name: Run tests
+              run: |
+                npm run test
+                npm run e2e
+
