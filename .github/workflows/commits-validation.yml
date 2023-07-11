@@ -1,4 +1,4 @@
-name: Commmits Validation
+name: Commits Validation
 
 on: [pull_request]
 
@@ -24,7 +24,7 @@ jobs:
           node --version
           npm --version
           npx commitlint --version
-          
+
       - name: Install commitlint
         run: |
           npm install conventional-changelog-conventionalcommits
