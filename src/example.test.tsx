@@ -38,7 +38,7 @@ it("если добавить элемент, он появляется в сп�
 
   await events.type(getByTestId("input-add"), "Сделать домашку");
 
-  await events.click(getByTestId("button-add"));
+  await events.click(getByTestId("button-add1"));
 
   const items = getAllByTestId("list-item");
 
