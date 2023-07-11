@@ -33,7 +33,6 @@
         "e2e": "playwright test --project=chromium && playwright show-report",
         "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\"",
         "semantic-release": "semantic-release"
-
     },
     "eslintConfig": {
         "extends": [
@@ -62,6 +61,7 @@
         "@commitlint/cli": "^17.6.6",
         "@commitlint/config-conventional": "^17.6.6",
         "@playwright/test": "^1.28.0",
+        "@semantic-release/changelog": "^6.0.3",
         "@semantic-release/git": "^10.0.1",
         "@types/react-helmet": "^6.1.5",
         "husky": "^8.0.3",
