@@ -14,4 +14,4 @@ jobs:
       - name: Install deps
         run: npm ci; npx playwright install --with-deps
       - name: Run tests
-        run: npm run test-ci; xvbf-run npm run e2e
+        run: npm run test-ci; npm run e2e
