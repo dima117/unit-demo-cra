@@ -1,0 +1,115 @@
+{
+  "extends": [
+    "airbnb-typescript",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["tsconfig.json"]
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "import"
+  ],
+  "rules": {
+    "linebreak-style": "off",
+    "quotes": ["error", "single", {"avoidEscape": true}],
+    "object-curly-spacing": "off", // { foo: bar }
+    "object-curly-newline": "off",
+    "prefer-const": "off",
+    "arrow-parens":"off",
+    "no-use-before-define":"off",
+    "prefer-destructuring": "off",
+    "no-console":"off",
+    "semi":"off",
+    "padded-blocks":"off",
+    "max-len": "off",
+    "no-param-reassign": "off",
+    "global-require": "off",
+    "eqeqeq": "off",
+    "arrow-body-style": "off",
+    "no-return-assign": "off",
+    "no-unused-expressions": "off",
+    "no-plusplus": "off",
+    "consistent-return": "off",
+    "no-prototype-builtins": "off",
+    "class-methods-use-this": "off",
+    "no-confusing-arrow":"off",
+    "no-restricted-globals": "off",
+    "no-trailing-spaces": ["error", { "skipBlankLines": true }],
+    "curly": "off",
+    "react/prefer-stateless-function":"off",
+    "react/jsx-filename-extension":"off",
+    "react/jsx-tag-spacing":"off",
+    "react/no-unescaped-entities": "off",
+    "react/button-has-type": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "react/destructuring-assignment": "off",
+    "react/forbid-prop-types": "off",
+    "react/sort-comp": "off",
+    "react/prop-types": "off",
+    "react/static-property-placement": "off",
+    "react/require-default-props": "off",
+    "react/no-access-state-in-setstate": "off",
+    "import/prefer-default-export": "off",
+    "import/no-restricted-paths": ["error", {
+      "zones": [
+        {
+          "target": "./source/common",
+          "from": "source/{desktop,mobile}/**/*",
+          "message": "\nComment: \"Common modules cannot depend on particular ones\""
+        },
+        {
+          "target": "source/mobile",
+          "from": "source/desktop/**/*",
+          "message": "\nComment: \"Mobile modules cannot depend on desktop ones and vice versa\""
+        },
+        {
+          "target": "source/desktop",
+          "from": "source/mobile/**/*",
+          "message": "\nComment: \"Desktop modules cannot depend on mobile ones and vice versa\""
+        }
+      ]
+    }],
+    "jsx-a11y/anchor-is-valid": "off",
+    "no-multi-spaces": "off",
+    "no-shadow": "off",
+    "@typescript-eslint/no-use-before-define": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "project": "."
+      },
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
+  "overrides": [
+    {
+      "files": ["*.tsx", "*.ts"],
+      "rules": {
+          "@typescript-eslint/ban-types": [
+              "error",
+              {
+                  "extendDefaults": true,
+                  "types": {
+                      "{}": false
+                  }
+              }
+          ]
+      }
+    },
+    {
+      "files": [
+        "./src/store.ts"
+      ],
+      "rules": {
+        "default-param-last" : "off"
+      }
+    }
+
+  ]
+}
