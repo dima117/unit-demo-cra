@@ -1,4 +1,5 @@
 name: build-github-actions
+run-name: ${{ github.actor }} is running build
 
 on:
   push:
