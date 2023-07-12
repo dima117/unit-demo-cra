@@ -26,6 +26,7 @@
         "web-vitals": "^1.1.2"
     },
     "scripts": {
+        "postinstall": "npx husky install",
         "start": "react-scripts start",
         "build": "react-scripts build",
         "eject": "react-scripts eject",
