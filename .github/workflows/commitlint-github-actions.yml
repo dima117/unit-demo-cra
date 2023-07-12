@@ -18,7 +18,6 @@ jobs:
           key: nm
       - name: Install prerequesites    
         run: |
-          apt update
           apt install -y sudo
           sudo apt install -y git
           
