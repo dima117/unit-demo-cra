@@ -32,6 +32,8 @@ jobs:
         with:
           title: Release v${{ steps.extract_version.outputs.version }}
           content-filepath: changelog.txt
+          labels: |
+            RELEASE
 
       - name: Run tests
         run: npm run test
