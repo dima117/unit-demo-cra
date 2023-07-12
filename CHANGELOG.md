@@ -1,3 +1,21 @@
+# [1.3.0](https://github.com/Rubicones/hw-infra/compare/v1.2.0...v1.3.0) (2023-07-12)
+
+
+### Bug Fixes
+
+* trying to fix issue creating script ([5391e6f](https://github.com/Rubicones/hw-infra/commit/5391e6ffaaf6d2a9acdfaf58ed9f4ee3ee0ae231))
+
+
+### Features
+
+* added script for creating issues ([92db729](https://github.com/Rubicones/hw-infra/commit/92db72952baeb8f6ef889dd1f1e917993acacf1a))
+* added script for creating issues ([9d540d9](https://github.com/Rubicones/hw-infra/commit/9d540d99ed420d0452a82639f67fe287ddbf87eb))
+
+
+### Reverts
+
+* reverting config change ([12ca72d](https://github.com/Rubicones/hw-infra/commit/12ca72d9531b27c429b00803bbd7ee53b40e3c1c))
+
 # [1.2.0](https://github.com/Rubicones/hw-infra/compare/v1.1.2...v1.2.0) (2023-07-12)
 
 
