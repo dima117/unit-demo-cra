@@ -39,6 +39,7 @@ jobs:
         id: create_release_issue
         uses: peter-evans/create-issue-from-file@v4
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
           content-filepath: changelog.txt
           labels: |
