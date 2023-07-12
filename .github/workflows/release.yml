@@ -7,13 +7,14 @@ on:
       branches:
         - 'release/v[0-9]+'
 
+defaults:
+  run:
+      working-directory: .
+
 jobs:
     release:
         name: "Create Release"
         runs-on: ubuntu-latest
-        defaults:
-          run:
-              working-directory: .
         steps:
           - uses: actions/checkout@v3
             with:
@@ -29,17 +30,23 @@ jobs:
               actor: ${{ github.actor }}
             env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    test_release:
-        name: "Test a release"
+
+    lint:
+        name: "Test Release Lint"
         runs-on: ubuntu-latest
         needs: release
-        defaults:
-          run:
-              working-directory: .
         steps:
           - uses: actions/checkout@v3
+            if: ${{ contains(github.ref_name, 'release') }}
             with:
               fetch-depth: 0 
+              ref: ${{ github.ref_name }}
+
+          - uses: actions/checkout@v3
+            if: ${{ !contains(github.ref_name, 'release') }}
+            with:
+              fetch-depth: 0 
+              ref: release/${{ github.ref_name }}
               
           - name: Install Node
             uses: actions/setup-node@v3
@@ -49,5 +56,115 @@ jobs:
           - name: Install packages
             run: npm ci
 
-          - name: Test
-            run: echo "Test"
+          - name: Lint
+            run: npm run lint
+
+    unit_tests:
+      name: "Release Unit Tests"
+      runs-on: ubuntu-latest
+      needs: release
+      steps:
+        - uses: actions/checkout@v3
+          if: ${{ contains(github.ref_name, 'release') }}
+          with:
+            fetch-depth: 0 
+            ref: ${{ github.ref_name }}
+
+        - uses: actions/checkout@v3
+          if: ${{ !contains(github.ref_name, 'release') }}
+          with:
+            fetch-depth: 0 
+            ref: release/${{ github.ref_name }}
+            
+        - name: Install Node
+          uses: actions/setup-node@v3
+          with:
+              node-version: '18.x'
+
+        - name: Install packages
+          run: npm ci
+
+        - name: Run tests
+          run: npm run test
+
+    e2e_tests:
+      name: "Release E2E Tests"
+      runs-on: ubuntu-latest
+      needs: release
+      steps:
+        - uses: actions/checkout@v3
+          if: ${{ contains(github.ref_name, 'release') }}
+          with:
+            fetch-depth: 0 
+            ref: ${{ github.ref_name }}
+
+        - uses: actions/checkout@v3
+          if: ${{ !contains(github.ref_name, 'release') }}
+          with:
+            fetch-depth: 0 
+            ref: release/${{ github.ref_name }}
+            
+        - name: Install Node
+          uses: actions/setup-node@v3
+          with:
+              node-version: '18.x'
+
+        - name: Install packages
+          run: npm ci
+
+        - name: Install Playwright Browsers
+          run: npx playwright install --with-deps chromium
+
+        - name: Run tests
+          run: npx playwright test --project=chromium
+
+        - uses: actions/upload-artifact@v3
+          if: always()
+          with:
+            name: playwright-report
+            path: playwright-report/
+            retention-days: 30
+
+    release_testing_results:
+        name: "Release Testing Results"
+        runs-on: ubuntu-latest
+        if: ${{ always() }}
+        needs: [lint, unit_tests, e2e_tests]
+        steps:
+          - uses: actions/checkout@v3
+            if: ${{ contains(github.ref_name, 'release') }}
+            with:
+              fetch-depth: 0 
+              ref: ${{ github.ref_name }}
+
+          - uses: actions/checkout@v3
+            if: ${{ !contains(github.ref_name, 'release') }}
+            with:
+              fetch-depth: 0 
+              ref: release/${{ github.ref_name }}
+
+          - name: "Show results"
+            run: |
+              echo ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              echo ${{ toJson(needs) }}
+
+    deploy:
+        name: "Deploy & Close Issue"
+        runs-on: ubuntu-latest
+        needs: [lint, unit_tests, e2e_tests]
+        steps:
+          - uses: actions/checkout@v3
+            if: ${{ contains(github.ref_name, 'release') }}
+            with:
+              fetch-depth: 0 
+              ref: ${{ github.ref_name }}
+
+          - uses: actions/checkout@v3
+            if: ${{ !contains(github.ref_name, 'release') }}
+            with:
+              fetch-depth: 0 
+              ref: release/${{ github.ref_name }}
+
+          - name: "Deploy"
+            run: git branch --show-current
+          
