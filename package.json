@@ -1,7 +1,7 @@
 {
     "name": "unit-demo-cra",
     "version": "0.1.0",
-    "homepage": ".",
+    "homepage": "https://crackerjack15.github.io/unit-demo-cra/",
     "private": true,
     "dependencies": {
         "@testing-library/jest-dom": "^5.16.5",
@@ -26,6 +26,7 @@
         "web-vitals": "^1.1.2"
     },
     "scripts": {
+        "deploy": "gh-pages -d build",
         "start": "react-scripts start",
         "build": "react-scripts build",
         "eject": "react-scripts eject",
@@ -59,6 +60,7 @@
     "devDependencies": {
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
+        "gh-pages": "^5.0.0",
         "jest-html-reporter": "^3.7.0"
     }
 }
