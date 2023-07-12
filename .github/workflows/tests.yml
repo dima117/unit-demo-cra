@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  test_setup:
     runs-on: ubuntu-latest
 
     strategy:
@@ -28,14 +28,19 @@ jobs:
       - name: run build
         run: npm run build --if-present
 
-      - name: run unit tests for each commit
-        run: |
-          for commit in $(git rev-list ${{ github.event.before }}..${{ github.sha }}); do
-              echo "Running unit tests for " $commit
-              git checkout $commit
-              npm run test
-          done
+  unit_tests:
+    needs: test_setup
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: run unit tests
+        run: npm run test
+
+  integration_tests:
+    needs: test_setup
+    runs-on: ubuntu-latest
+
+    steps:
       - name: install playwright browsers
         run: npx playwright install --with-deps
 
@@ -43,12 +48,7 @@ jobs:
         run: sudo apt-get install xvfb
 
       - name: run integration
-        run: |
-          for commit in $(git rev-list ${{ github.event.before }}..${{ github.sha }}); do
-              echo "Running integration tests for " + $commit
-              git checkout $commit
-              xvfb-run -a --server-args="-screen 0 1024x768x24" npm run e2e
-          done
+        run: xvfb-run -a --server-args="-screen 0 1024x768x24" npm run e2e
       - uses: actions/upload-artifact@v3
         if: always()
         with:
