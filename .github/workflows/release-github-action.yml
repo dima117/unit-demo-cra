@@ -19,26 +19,27 @@ jobs:
           fetch-depth: 0
       
       - name: Generate change log
+        id: get_tags
         run: |
           CURRENT_TAG=${GITHUB_REF_NAME}
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${CURRENT_TAG}^)
-          echo ::set-output name=current::${CURRENT_TAG}
-          echo ::set-output name=previous::${PREVIOUS_TAG}
+          echo "current=${CURRENT_TAG}" >> "$GITHUB_OUTPUT"
+          echo "previous=${PREVIOUS_TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Generate changelog
         id: generate_log
         run: |
           CHANGELOG=$(git log --pretty=format:"- %s" "${{ steps.get_tags.outputs.previous }}...${{ steps.get_tags.outputs.current }}")
-          echo ::set-output name=log::"${CHANGELOG}"
+          echo "log=${CHANGELOG}" >> "$GITHUB_OUTPUT"
 
       - name: Create team sync issue
         uses: imjohnbo/issue-bot@3d96848fb5e9a4a473bb81ae62b4b4866a56e93a
         with:
           assignees: "sr480"
           labels: "RELEASE"
-          title: Release ${GITHUB_REF_NAME}
+          title: Release ${{GITHUB_REF_NAME}}
           body: |
-            ### Это релиз приложения версии ${GITHUB_REF_NAME}
+            ### Это релиз приложения версии ${{GITHUB_REF_NAME}}
 
             Авто релиза: ${{ github.actor }}
 
