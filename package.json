@@ -33,7 +33,7 @@
         "e2e": "playwright test --project=chromium && playwright show-report",
         "e2e:ci": "playwright test --project=chromium",
         "test:ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\"",
-        "test:all": "npm run test:ci; npm run e2e:ci",
+        "test:all:ci": "npm run test:ci; HEADLESS=true npm run e2e:ci",
         "commitlint": "commitlint --edit"
     },
     "eslintConfig": {

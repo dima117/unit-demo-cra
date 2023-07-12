@@ -51,7 +51,7 @@ jobs:
       run: npm run test:ci
 
     - name: "Run Playwright tests"
-      run: npx playwright test --project=chromium
+      run: npm run test:all:ci
 
     - uses: actions/upload-artifact@v3
       if: always()
