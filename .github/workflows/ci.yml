@@ -12,7 +12,7 @@ jobs:
         working-directory: .
     steps:
     - name: Install packages
-      run: npm ci
+      run: npm i
     - name: tests
       run: npm test
     - name: Lint
