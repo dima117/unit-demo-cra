@@ -16,6 +16,7 @@ if (container) {
   root.render(
     <BrowserRouter>
       <Provider store={store}>
+        <Application />
       </Provider>
     </BrowserRouter>
   );
