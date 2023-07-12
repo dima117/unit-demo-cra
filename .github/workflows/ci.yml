@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory:
+        working-directory: .
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -22,4 +22,4 @@ jobs:
     - name: Install packages
       run: npm ci
     - name: Lint
-        eslint ./src/Application.tsx
+      run: eslint ./src/Application.tsx
