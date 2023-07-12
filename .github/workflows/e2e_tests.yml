@@ -1,4 +1,4 @@
-name: Run tests on PR
+name: Run e2e tests on PR
 on:
   pull_request:
 jobs:
@@ -17,8 +17,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt-get install xvfb -y
-      - name: Run unit tests
-        run: npm run test-ci
       - name: Run e2e tests
         run: xvfb-run npx playwright test
       - uses: actions/upload-artifact@v3

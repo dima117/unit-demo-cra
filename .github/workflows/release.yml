@@ -1,0 +1,65 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*"
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      issue_number: ${{ steps.create_issue.outputs.result }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install auto-changelog
+        run: npm i -g auto-changelog
+      - name: Create changelog
+        run: auto-changelog --commit-limit false --template keepachangelog
+      - name: Create issue
+        id: create_issue
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const description = fs.readFileSync('CHANGELOG.md', 'utf8');
+            const version = '${{ github.ref }}'.replace('refs/tags/', '');
+            const [person, repository] = '${{ github.repository }}'.split('/');
+            const issue = { person, repository, title: `Release ${version} by ${{ github.actor }}`, body: description, labels: ['RELEASE'] };
+            const response = await github.rest.issues.create(issue);
+            return response.data.number;
+  check_issue:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: |
+          npm run test-ci
+          npm run e2e
+      - name: Build project
+        run: PUBLIC_URL="/shri-cicd-task" npm run build
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build
+      - name: Close issue
+        if: ${{ success() }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue_number = parseInt(${{ needs.release.outputs.issue_number }});
+            const [person, repository] = '${{ github.repository }}'.split('/');
+            github.rest.issues.update({
+              owner: person,
+              repo: repository,
+              issue_number: issue_number,
+              state: "closed"
+            });
