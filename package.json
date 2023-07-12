@@ -22,15 +22,14 @@
         "redux": "^4.2.0",
         "redux-observable": "^2.0.0",
         "rxjs": "^7.5.7",
-        "typescript": "^4.9.3",
         "web-vitals": "^1.1.2"
     },
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
         "eject": "react-scripts eject",
-        "test": "react-scripts test",
-        "e2e": "playwright test --project=chromium && playwright show-report",
+        "test": "react-scripts test --watchAll=false",
+        "e2e": "playwright test --project=chromium > testInfo.txt && playwright show-report",
         "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
     },
     "eslintConfig": {
@@ -59,6 +58,14 @@
     "devDependencies": {
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
-        "jest-html-reporter": "^3.7.0"
+        "@typescript-eslint/eslint-plugin": "^5.50.0",
+        "eslint": "^8.0.1",
+        "eslint-config-standard-with-typescript": "^36.0.0",
+        "eslint-plugin-import": "^2.25.2",
+        "eslint-plugin-n": "^15.0.0",
+        "eslint-plugin-promise": "^6.0.0",
+        "eslint-plugin-react": "^7.32.2",
+        "jest-html-reporter": "^3.7.0",
+        "typescript": "^4.9.5"
     }
 }

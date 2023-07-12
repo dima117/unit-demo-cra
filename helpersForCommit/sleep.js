@@ -7,4 +7,4 @@ function sleep(milliseconds) {
 }
 
 sleep(Number(process.env.ms))
-console.log('sleep end')
+module.exports.sleep = sleep
