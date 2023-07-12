@@ -23,3 +23,4 @@ curl \
   -H "Accept: application/vnd.github.v3+json" \
   https://api.github.com/repos/$GITHUB_REPOSITORY/issues \
   -d "$(create_issue_payload)"
+  
