@@ -17,7 +17,7 @@ jobs:
         id: get_previous_release
         run: |
           #echo "previous_tag=$(git describe --abbrev=0 --tags --match='v[0-9]*' $(git describe --abbrev=0 --tags --match='v[0-9]*' HEAD)^)" >> "$GITHUB_OUTPUT"
-          echo $(git describe --abbrev=0 --tags HEAD)
+          echo $(git describe --abbrev=0 HEAD)
           #git describe --abbrev=0 --tags --match='v\d+' HEAD
 
       - name: Extract release version
