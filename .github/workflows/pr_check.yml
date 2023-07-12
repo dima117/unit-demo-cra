@@ -1,0 +1,58 @@
+name: Check PR
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # - name: Set up Node.js
+    #   uses: actions/setup-node@v2
+    #   with:
+    #     node-version: '14'
+
+    - name: Install dependencies
+      run: npm i
+
+    - name: Run tests
+      run: npm run test
+
+    - name: Run linter (optional)
+      run: npm run lint
+
+    - name: Check PR status
+      run: |
+        if [[ ${{ job.status }} == "success" ]]; then
+          echo "All checks passed!"
+        else
+          echo "Checks failed! Please fix the issues."
+          exit 1
+        fi
+
+    - name: Set merge restriction
+      uses: actions/github-script@v4
+      with:
+        github-token: ${{ secrets.GH_TOKEN }}
+        script: |
+          const { data: pullRequest } = await github.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.issue.number
+          });
+          const { data: checks } = await github.checks.listForRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: pullRequest.head.sha
+          });
+          const failedChecks = checks.check_runs.filter(check => check.conclusion === 'failure');
+          if (failedChecks.length > 0) {
+            core.setFailed('Checks failed! Cannot merge changes.');
+          }
