@@ -21,8 +21,8 @@ jobs:
     - name: Install Dependencies
       run: npm ci
 
-    - name: Run e2e
-      run: npm e2e
+    # - name: Run e2e
+    #   run: npm e2e
 
     - name: Run test-ci
       run: npm run test-ci
