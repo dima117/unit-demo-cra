@@ -45,6 +45,7 @@ jobs:
 
   testing:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
 
     strategy:
       matrix:
@@ -61,4 +62,10 @@ jobs:
           npm ci
       - name: 🧪 Запуск e2e тестов
         run: |
-          npm run e2e
+          npm run e2e-ci
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: playwright-report
+          path: test-results
