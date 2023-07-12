@@ -24,7 +24,7 @@ jobs:
         run: echo "previous_tag=$(git describe --abbrev=0 --tags --match='v[0-9]*' $(git describe --abbrev=0 --tags --match='v[0-9]*' HEAD)^)" >> "$GITHUB_OUTPUT"
 
       - name: First generate changelog
-        id: generate_changelog
+        id: first_generate_changelog
         if: steps.get_previous_release.outputs.previous_tag == ''
         run: |
           git log --pretty=format:"- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)" --abbrev-commit ${steps.get_curent_version.outputs.current_tag} > changelog.txt
