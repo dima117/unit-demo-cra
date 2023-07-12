@@ -9,3 +9,4 @@ curl -X POST -H "Authorization: token $TOKEN" -d '{
   "body": "'"${NOTES//\"/\\\"}"'",
   "labels": ["RELEASE"]
 }' "https://api.github.com/repos/$REPO/issues"
+
