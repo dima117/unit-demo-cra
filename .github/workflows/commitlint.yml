@@ -18,17 +18,6 @@ jobs:
         with:
           path: commitlint
           key: ${{ runner.os }}-commitlint
-      # - name: Install required dependencies
-      #   run: |
-      #     sudo apt install -y git curl
-      #     curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-      #     sudo DEBIAN_FRONTEND=noninteractive apt install -y nodejs
-      # - name: Print versions
-      #   run: |
-      #     git --version
-      #     node --version
-      #     npm --version
-      #     npx commitlint --version
       - name: Install commitlint
         if: steps.cache-commitlint.outputs.cache-hit != 'true'
         run: |
