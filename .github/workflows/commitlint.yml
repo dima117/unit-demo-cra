@@ -1,6 +1,12 @@
 name: CI
 
-on: [push, pull_request]
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - master
 
 jobs:
   commitlint:
@@ -42,3 +48,28 @@ jobs:
       - name: Validate PR commits with commitlint
         if: github.event_name == 'pull_request'
         run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+jobs:
+  ci:
+    runs-on: ubuntu-22.04
+    steps:
+  
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+    - name: "Install necessary modules"
+      run: npm install
+
+    - name: "Build project"
+      run: npm run build
+
+    - name: "Install playwright"
+      run: npx playwright install --with-deps chromium
+
+    - name: "Tests"
+      run: npm run test:ci
