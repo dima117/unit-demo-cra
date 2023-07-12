@@ -7,8 +7,9 @@ on:
 jobs:
   call-test-workflow:
     uses: ./.github/workflows/test-github-actions.yml
-    
+
   build:
+    needs: call-test-workflow
     runs-on: ubuntu-latest
 
     steps:
@@ -22,3 +23,10 @@ jobs:
     
       - name: Build App
         run: npm run build
+      
+        if: success()
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build/
+          retention-days: 30  
