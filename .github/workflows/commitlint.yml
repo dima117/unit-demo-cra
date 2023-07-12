@@ -27,7 +27,7 @@ jobs:
 
       - name: Validate push commits with commitlint
         if: github.event_name == 'push'
-        run: npx commitlint --from HEAD~${{ github.event.push.commits.length }} --to HEAD --verbose
+        run: npx commitlint --from HEAD~${{ github.event.push.size }} --to HEAD --verbose
 
       - name: Validate PR commits with commitlint
         if: github.event_name == 'pull_request'
