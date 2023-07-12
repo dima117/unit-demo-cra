@@ -1,0 +1,31 @@
+name: release-github-actions
+run-name: ${{ github.actor }} is running release
+on:
+   push:
+     tags:
+       - 'v\d+'
+
+jobs:
+  call-build-workflow:
+    uses: ./.github/workflows/build-github-actions.yml
+  create_issue:
+    name: Create Release issue
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Create team sync issue
+        uses: imjohnbo/issue-bot@3d96848fb5e9a4a473bb81ae62b4b4866a56e93a
+        with:
+          assignees: "sr480"
+          labels: "RELEASE"
+          title: Release ${GITHUB_REF#refs/tags/}
+          body: |
+            ### This is RELEASE of App  version ${GITHUB_REF#refs/tags/}
+
+            Release author: ${{ github.actor }}
+            
+          pinned: false
+          close-previous: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
