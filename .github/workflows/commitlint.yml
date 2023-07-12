@@ -1,10 +1,11 @@
-name: conventional commits check
+name: CI
+
 on: [push, pull_request]
+
 jobs:
   commitlint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - name: checkout code
       - uses: actions/checkout@v3
-      - name: install node.js
-      - uses: actions/setup-node@v3
+        with:
+          fetch-depth: 0
