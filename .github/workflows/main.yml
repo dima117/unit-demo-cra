@@ -1,8 +1,8 @@
-name: Main workflow
+name: CI
 
 on:
   push:
-    branches: [master, release/*]
+    branches: [master, v*]
   pull_request:
     branches: [master]
 
@@ -18,24 +18,24 @@ jobs:
         env:
           JOB_CONTEXT: ${{ toJson(job) }}
         run: echo "$JOB_CONTEXT"
-      # - name: Dump steps context
-      #   env:
-      #     STEPS_CONTEXT: ${{ toJson(steps) }}
-      #   run: echo '$STEPS_CONTEXT'
-      # - name: Dump runner context
-      #   env:
-      #     RUNNER_CONTEXT: ${{ toJson(runner) }}
-      #   run: echo '$RUNNER_CONTEXT'
-      # - name: Dump strategy context
-      #   env:
-      #     STRATEGY_CONTEXT: ${{ toJson(strategy) }}
-      #   run: echo '$STRATEGY_CONTEXT'
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo '$STEPS_CONTEXT'
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo '$RUNNER_CONTEXT'
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+        run: echo '$STRATEGY_CONTEXT'
       - name: Dump matrix context
         env:
           MATRIX_CONTEXT: ${{ toJson(matrix) }}
         run: echo "$MATRIX_CONTEXT" 
   unit-test:
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'pull_request'
     name: Unit tests check on Node ${{ matrix.node }} and ${{ matrix.os }} system
     runs-on: ${{ matrix.os }}
     env:
