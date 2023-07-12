@@ -36,7 +36,7 @@ jobs:
         run: echo "$MATRIX_CONTEXT" 
   unit-test:
     # if: github.ref == 'refs/heads/master' && github.event_name == 'pull_request'
-    if: github.event_name == 'pull_request'
+    # if: github.event_name == 'pull_request'
     name: Unit tests check on Node ${{ matrix.node }} and ${{ matrix.os }} system
     runs-on: ${{ matrix.os }}
     env:
