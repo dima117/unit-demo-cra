@@ -1,21 +1,27 @@
 name: commitlint-github-actions
 run-name: ${{ github.actor }} is running commit lint
-on: [push]
+on: [push, pull_request]
 jobs:
   commitlint:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-
       - uses: actions/cache@v3
         with:
           path: node_modules
           key: nm
-
+      - name: Install prerequesites    
+        run: |
+          apt update
+          apt install -y sudo
+          sudo apt install -y git
+          
       - name: Install dependencies
         run: npm ci
 
