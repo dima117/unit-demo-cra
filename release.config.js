@@ -9,6 +9,12 @@ module.exports = {
                 changelogFile: "CHANGELOG.md",
             },
         ],
+        [
+            "@semantic-release/exec",
+            {
+                prepareCmd: "./create-release-issue.sh ${nextRelease.version} ${nextRelease.notes}"
+            }
+        ],
         "@semantic-release/npm",
         [
             "@semantic-release/github",
