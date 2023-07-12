@@ -25,4 +25,4 @@ jobs:
       - run: npm run build
       - run: npm run test-ci
       - run: npx playwright install
-      - run: playwright test --project=chromium
+      - run: npm run test-ci-e2e
