@@ -9,31 +9,25 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
       - uses: actions/setup-node@v3
         with:
           node-version: 18
 
-    - name: Restore commitlint package
-      id: restore-commitlint
-      uses: actions/cache/restore@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-commitlint
-      
-    - name: Cache commitlint package
-      id: cache-commitlint
-      uses: actions/cache/save@v3
-      # if: steps.restore-commitlint.outputs.cache-hit != 'true'
-      with:
-        path: ~/.npm
-        key: ${{ steps.restore-commitlint.outputs.cache-primary-key }}
+      - name: Restore commitlint package
+        id: restore-commitlint
+        uses: actions/cache/restore@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-commitlint
 
-      # - name: Cache commitlint
-      #   id: cache-commitlint
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ~/.npm
-      #     key: ${{ runner.os }}-commitlint
+      - name: Cache commitlint package
+        id: cache-commitlint
+        uses: actions/cache/save@v3
+        if: steps.restore-commitlint.outputs.cache-hit != 'true'
+        with:
+          path: ~/.npm
+          key: ${{ steps.restore-commitlint.outputs.cache-primary-key }}
 
       - name: Install commitlint
         if: steps.cache-commitlint.outputs.cache-hit != 'true'
