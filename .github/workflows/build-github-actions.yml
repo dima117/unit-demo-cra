@@ -2,7 +2,7 @@ name: build-github-actions
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
