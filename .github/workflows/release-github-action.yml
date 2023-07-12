@@ -21,7 +21,7 @@ jobs:
       - name: Generate change log
         id: get_tags
         run: |
-          CURRENT_TAG=${GITHUB_REF_NAME}
+          CURRENT_TAG=${{ github.ref_name }} 
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${CURRENT_TAG}^)
           echo "current=${CURRENT_TAG}" >> "$GITHUB_OUTPUT"
           echo "previous=${PREVIOUS_TAG}" >> "$GITHUB_OUTPUT"
@@ -37,9 +37,9 @@ jobs:
         with:
           assignees: "sr480"
           labels: "RELEASE"
-          title: Release ${{GITHUB_REF_NAME}}
+          title: Release ${{ github.ref_name }} 
           body: |
-            ### Это релиз приложения версии ${{GITHUB_REF_NAME}}
+            ### Это релиз приложения версии ${{ github.ref_name }}
 
             Авто релиза: ${{ github.actor }}
 
