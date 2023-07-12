@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} is running build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, workflow_call ]
 
 jobs:
   call-commitlint-workflow:
