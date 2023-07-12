@@ -18,7 +18,7 @@ jobs:
         id: restore-commitlint
         uses: actions/cache/restore@v3
         with:
-          path: ~/.npm
+          path: node_modules
           key: ${{ runner.os }}-commitlint
 
       - name: Install commitlint
@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache/save@v3
         if: steps.restore-commitlint.outputs.cache-hit != 'true'
         with:
-          path: ~/.npm
+          path: node_modules
           key: ${{ steps.restore-commitlint.outputs.cache-primary-key }}
 
       - name: Validate push commits with commitlint
