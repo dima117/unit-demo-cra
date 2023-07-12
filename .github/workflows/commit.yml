@@ -34,11 +34,11 @@ jobs:
       - name: Validate pushed commits with commitlint
         if: github.event_name == 'push'
         run: |
-          echo "🐧 Хэши первого и последнего коммитов в пуше  ${{ github.event.before }} и ${{ github.event.after }}"
+          echo "🐧 Хэши первого и последнего коммитов в пуше  ${{ github.event.before }} (не включается в проверку) и ${{ github.event.after }}"
           npx commitlint --from ${{ github.event.before }} --to HEAD --verbose
 
       - name: Validate PR commits with commitlint
         if: github.event_name == 'pull_request'
         run: |
-          echo "🐭 Хэши проверяемых коммитов в ПР  ${{ github.event.pull_request.base.sha }}  и ${{ github.event.pull_request.head.sha }} "
+          echo "🐭 Хэши проверяемых коммитов в ПР  ${{ github.event.pull_request.base.sha }} (не включительно) и ${{ github.event.pull_request.head.sha }} "
           npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
