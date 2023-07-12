@@ -21,6 +21,12 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-commitlint
 
+      - name: Install commitlint
+        if: steps.restore-commitlint.outputs.cache-hit != 'true'
+        run: |
+          npm install conventional-changelog-conventionalcommits
+          npm install commitlint@latest
+
       - name: Cache commitlint package
         id: cache-commitlint
         uses: actions/cache/save@v3
@@ -28,12 +34,6 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ steps.restore-commitlint.outputs.cache-primary-key }}
-
-      - name: Install commitlint
-        if: steps.cache-commitlint.outputs.cache-hit != 'true'
-        run: |
-          npm install conventional-changelog-conventionalcommits
-          npm install commitlint@latest
 
       - name: Validate push commits with commitlint
         if: github.event_name == 'push'
