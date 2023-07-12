@@ -40,5 +40,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_BODY: ${{ steps.changelog.outputs.changes }}
           ACTOR: ${{ github.actor }}
-          ACTION_REF: ${{ github.action_ref }}
+          ACTION_REF: ${{ github.ref_name }}
           DATE: ${{ github.event.repository.updated_at}}
+          ACTIONS_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  quality:
+    name: Check quality
+    uses: ./.github/workflows/quality.yml
