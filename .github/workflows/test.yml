@@ -45,7 +45,7 @@ jobs:
 
     - name: "Install playwright"
       if: steps.cache-playwright.outputs.cache-hit != 'true'
-      run: npx playwright install --with-deps chromium
+      run: npx playwright install --with-deps
 
     - name: "Tests"
       run: npm run test:ci
