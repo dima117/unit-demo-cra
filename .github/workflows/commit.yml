@@ -63,7 +63,7 @@ jobs:
       - name: 🧪 Запуск e2e тестов
         run: |
           npm run e2e-ci
-      - name: Upload test results
+      - name: 🧙‍♂️ Сохраняем артефакты
         if: always()
         uses: actions/upload-artifact@v2
         with:
