@@ -6,8 +6,8 @@ on:
        - 'v\d+'
 
 jobs:
-  call-build-workflow:
-    uses: ./.github/workflows/build-github-actions.yml
+  # call-build-workflow:
+  #   uses: ./.github/workflows/build-github-actions.yml
   create_issue:
     name: Create Release issue
     runs-on: ubuntu-latest
