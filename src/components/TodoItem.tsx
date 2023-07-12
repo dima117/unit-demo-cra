@@ -7,14 +7,9 @@ export const TodoItem: FC<{ index: number }> = (props) => {
 
   const dispatch = useDispatch();
   const text = useSelector((state: ApplicationState) => state.items[index]);
-  const done = useSelector((state: ApplicationState) =>
-    Boolean(state.done[index])
-  );
+  const done = useSelector((state: ApplicationState) => Boolean(state.done[index]));
 
-  const onChange = useCallback(
-    () => dispatch(setDone(index, !done)),
-    [index, done, dispatch]
-  );
+  const onChange = useCallback(() => dispatch(setDone(index, !done)), [index, done, dispatch]);
 
   return (
     <div data-testid="list-item" className={done ? "done" : ""}>

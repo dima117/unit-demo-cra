@@ -1,0 +1,10 @@
+# dependencies
+/node_modules
+
+# production
+/build
+
+test-report.html
+/test-results/
+/playwright-report/
+/playwright/.cache/

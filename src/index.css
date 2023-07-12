@@ -1,16 +1,16 @@
 body {
-    padding: 20px;
+  padding: 20px;
 }
 
 input,
 a {
-    margin-right: 8px;
+  margin-right: 8px;
 }
 
 .done {
-    text-decoration: line-through;
+  text-decoration: line-through;
 }
 
 .list {
-    margin-top: 12px;
+  margin-top: 12px;
 }
