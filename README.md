@@ -1,3 +1,17 @@
+# unit-demo-cra infrastructure
+
+## Contributing
+
+Caution: don't use `pnpm` or `yarn`, use `npm`
+
+- `git clone https://github.com/bernizhel/infrastructure`
+- `cd infrastructure`
+- `npm ci` or `npm install` (will run prepare npm script hook too)
+- work
+- `git add .`
+- `git commit -m "your commit message"`
+
+
 В этом репозитории находится пример приложения с тестами:
 
 - [e2e тесты](e2e/example.spec.ts)
