@@ -1,4 +1,4 @@
-[![Tests on Pull Request](https://github.com/EvgenyTomson/ci-hw/actions/workflows/tests.yml/badge.svg?event=branch_protection_rule)](https://github.com/EvgenyTomson/ci-hw/actions/workflows/tests.yml)
+[![Tests on Pull Request](../../actions/workflows/tests.yml/badge.svg?event=branch_protection_rule)](../../actions/workflows/tests.yml)
 
 
 В этом репозитории находится пример приложения с тестами:
