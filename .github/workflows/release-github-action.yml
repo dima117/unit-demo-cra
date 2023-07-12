@@ -28,7 +28,7 @@ jobs:
       - name: Generate changelog
         id: generate_log
         run: |
-          CHANGELOG=$(git log --pretty=format:"- %s" "${{ steps.get_tags.outputs.previous }}..${{ steps.get_tags.outputs.current }}")
+          CHANGELOG=$(git log --pretty=format:"- %s" "${{ steps.get_tags.outputs.previous }}...${{ steps.get_tags.outputs.current }}")
           echo ::set-output name=log::"${CHANGELOG}"
 
       - name: Create team sync issue
@@ -42,7 +42,7 @@ jobs:
 
             Авто релиза: ${{ github.actor }}
 
-            Время: ${{ steps.date.outputs.date }}
+            Время: ${{ github.event.push.created }}
             
             Changelog:
 
