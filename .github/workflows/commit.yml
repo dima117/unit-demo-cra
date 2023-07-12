@@ -42,3 +42,23 @@ jobs:
         run: |
           echo "🐭 Хэши проверяемых коммитов в ПР  ${{ github.event.pull_request.base.sha }} (не включительно) и ${{ github.event.pull_request.head.sha }} "
           npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+  testing:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: ⬇️ Установка зависимостей
+        run: |
+          npm ci
+      - name: 🧪 Запуск e2e тестов
+        run: |
+          npm run e2e
