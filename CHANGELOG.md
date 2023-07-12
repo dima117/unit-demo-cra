@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/Rubicones/hw-infra/compare/v1.4.0...v1.5.0) (2023-07-12)
+
+
+### Features
+
+* issue customize ([e28897f](https://github.com/Rubicones/hw-infra/commit/e28897fc06f36a17f5b6407883cfdfb7f870cf27))
+
 # [1.4.0](https://github.com/Rubicones/hw-infra/compare/v1.3.0...v1.4.0) (2023-07-12)
 
 
