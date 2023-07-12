@@ -12,3 +12,15 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: latest
+      - name: install dependencies
+        run: npm ci
+      - name: print versions
+        run: |
+          git --version
+          node --version
+          npm --version
+          npx commitlint --version
+      - name: install commitlint
+        run: |
+          npm install conventional-changelog-conventionalcommits
+          npm install commitlint@latest
