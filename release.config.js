@@ -25,10 +25,5 @@ module.exports = {
                 tagFormat: 'v${nextRelease.version}',
             },
         ],
-        ["@semantic-release/github", {
-            assignees: ["Rubicones"],
-            labels: ["RELEASE"],
-            createComment: true
-          }]
     ],
 };
