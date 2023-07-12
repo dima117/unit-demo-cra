@@ -1,6 +1,6 @@
 name: GitHub Actions Commit Lint
 
-on: [pull_request]
+on: [push]
 
 jobs:
   commitlint:

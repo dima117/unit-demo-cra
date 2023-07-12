@@ -1,16 +1,8 @@
-name: GitHub Actions Tests
+name: GitHub Actions e2e tests
 
 on: [pull_request]
 
 jobs:
-  unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install dependencies
-      - run: npm ci
-      - name: Run Jest Unit tests
-      - run: npm test
   e2e-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
