@@ -58,6 +58,7 @@
         ]
     },
     "devDependencies": {
+        "@commitlint/config-conventional": "^17.6.6",
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
         "husky": "^8.0.3",
