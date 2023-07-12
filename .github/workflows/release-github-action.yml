@@ -22,9 +22,11 @@ jobs:
         id: get_tags
         run: |
           CURRENT_TAG=${{ github.ref_name }} 
+          TIMESTAMP=$(git show -s --format=%ai ${CURRENT_TAG})
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${CURRENT_TAG}^)
           echo "current=${CURRENT_TAG}" >> "$GITHUB_OUTPUT"
           echo "previous=${PREVIOUS_TAG}" >> "$GITHUB_OUTPUT"
+          echo "timestamp=${TIMESTAMP}" >> "$GITHUB_OUTPUT"
 
       - name: Generate changelog
         id: generate_log
@@ -43,7 +45,7 @@ jobs:
 
             Авто релиза: ${{ github.actor }}
 
-            Время: ${{ github.event.push.created }}
+            Время: ${{ steps.get_tags.outputs.timestamp }}
             
             Changelog:
 
