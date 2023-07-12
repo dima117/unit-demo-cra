@@ -1,0 +1,63 @@
+name: Release Process
+
+on:
+  push:
+    tags:
+      - 'v\d+'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get previous release tag
+        id: get_previous_release
+        run: echo ::set-output name=previous_tag::$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))
+
+      - name: Extract release version
+        id: extract_version
+        run: echo ::set-output name=version::${GITHUB_REF/refs\/tags\/v/}
+
+      - name: Generate changelog
+        id: generate_changelog
+        run: |
+          git log --pretty=format:"- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)" --abbrev-commit ${get_previous_release.outputs.previous_tag}..HEAD > changelog.txt
+
+      - name: Create release issue
+        id: create_release_issue
+        uses: peter-evans/create-issue-from-file@v2
+        with:
+          title: Release v${{ steps.extract_version.outputs.version }}
+          content-filepath: changelog.txt
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+
+      - name: Update release issue with deployment details
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = "${{ steps.create_release_issue.outputs.issue-number }}";
+            const deployUrl = "https://${{ github.repository_owner }}.github.io/${{ github.repository }}";
+            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+            await octokit.issues.update({
+              owner: github.context.repo.owner,
+              repo: github.context.repo.repo,
+              issue_number: issueNumber,
+              body: `Deployment URL: ${deployUrl}`
+            })
+
+      - name: Close release issue
+        uses: peter-evans/close-issue@v1
+        with:
+          issue-number: ${{ steps.create_release_issue.outputs.issue-number }}
