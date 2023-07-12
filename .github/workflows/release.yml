@@ -30,6 +30,4 @@ jobs:
         run: npx semantic-release
 
       - name: Create Release Issue
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: ./create-release-issue.sh ${{ secrets.GH_TOKEN }} ${{ steps.semantic.outputs.nextRelease.version }} ${{ steps.semantic.outputs.nextRelease.notes }}
