@@ -12,20 +12,42 @@ jobs:
         name: "Create Release"
         runs-on: ubuntu-latest
         defaults:
-            run:
-                working-directory: .
+          run:
+              working-directory: .
         steps:
-            - uses: actions/checkout@v3
-              with:
-                fetch-depth: 0  
+          - uses: actions/checkout@v3
+            with:
+              fetch-depth: 0  
 
-            - name: "Create Release"
-              uses: ./.github/actions/createRelease
-              with: 
-                owner: ${{ github.repository_owner }}
-                repo: ${{ github.event.repository.name }}
-                token: ${{ secrets.GITHUB_TOKEN }}
-                ref: ${{ github.event.ref }}
-                actor: ${{ github.actor }}
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          - name: "Create Release"
+            uses: ./.github/actions/createRelease
+            with: 
+              owner: ${{ github.repository_owner }}
+              repo: ${{ github.event.repository.name }}
+              token: ${{ secrets.GITHUB_TOKEN }}
+              ref: ${{ github.event.ref }}
+              actor: ${{ github.actor }}
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    test_release:
+        name: "Test a release"
+        runs-on: ubuntu-latest
+        needs: release
+        defaults:
+          run:
+              working-directory: .
+        steps:
+          - uses: actions/checkout@v3
+            with:
+              fetch-depth: 0 
+              
+          - name: Install Node
+            uses: actions/setup-node@v3
+            with:
+                node-version: '18.x'
+
+          - name: Install packages
+            run: npm ci
+
+          - name: Test
+            run: echo "Test"
