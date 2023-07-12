@@ -1,6 +1,7 @@
 // Файл создан на основе @commitlint/config-conventional
 
 module.exports = {
+    parserPreset: 'conventional-changelog-conventionalcommits',
     rules: {
       // Тело коммита должно начинаться с пустой строки
       "body-leading-blank": [2, "always"],
