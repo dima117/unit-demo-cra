@@ -21,7 +21,7 @@ jobs:
       - name: Generate change log
         run: |
           CURRENT_TAG=${GITHUB_REF_NAME}
-          PREVIOUS_TAG=$(git describe --abbrev=0 ${CURRENT_TAG}^)
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${CURRENT_TAG}^)
           echo ::set-output name=current::${CURRENT_TAG}
           echo ::set-output name=previous::${PREVIOUS_TAG}
 
