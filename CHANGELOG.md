@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/Rubicones/hw-infra/compare/v1.1.1...v1.1.2) (2023-07-12)
+
+
+### Bug Fixes
+
+* semantic release now puts 'v' at the start of version ([6aff6ea](https://github.com/Rubicones/hw-infra/commit/6aff6eace58558650c154581073141d6da49e5e1))
+
 ## [1.1.1](https://github.com/Rubicones/hw-infra/compare/v1.1.0...v1.1.1) (2023-07-12)
 
 
