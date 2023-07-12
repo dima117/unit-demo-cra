@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VERSION=$1
-CHANGELOG=$2
+VERSION=$2
+CHANGELOG=$3
 TAG_NAME=$(git describe --tags --abbrev=0)
 TAG_DATE=$(git log -1 --pretty=format:"%ai" $TAG_NAME)
 AUTHOR=$(git show $TAG_NAME --pretty="format:%an" --no-patch)
