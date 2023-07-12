@@ -12,12 +12,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+
       - name: Cache commitlint
         id: cache-commitlint
         uses: actions/cache@v3
         with:
-          path: commitlint
+          path: ~/.npm
           key: ${{ runner.os }}-commitlint
+
       - name: Install commitlint
         if: steps.cache-commitlint.outputs.cache-hit != 'true'
         run: |
