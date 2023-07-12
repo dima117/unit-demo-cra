@@ -20,4 +20,4 @@ jobs:
     - name: tests
       run: npm test
     - name: Lint
-      run: eslint ./src/Application.tsx
+      run: npx eslint ./src/Application.tsx
