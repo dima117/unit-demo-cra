@@ -7,20 +7,37 @@ const main = async () => {
         const token = core.getInput("token", {required: true});
         const owner = core.getInput("owner", {required: true});
         const repo = core.getInput("repo", {required: true});
-
-        const ref = core.getInput("ref", {required: true});
-        const tag_name = ref.split("/")[2];
-
         const actor = core.getInput("actor", {required: true});
-        
-        // создаем релиз
+        const ref = core.getInput("ref", {required: true});
+
+        const tag_name = ref.split("/")[2];
         const octokit = github.getOctokit(token);
-        const {data: releaseData} = await octokit.rest.repos.createRelease({
-            owner, 
-            repo,
-            tag_name,
-            generate_release_notes: true,
-        });
+
+        // создаем релиз, если его не существует
+        const {data: releases} = await octokit.rest.repos.listReleases({owner, repo});
+
+        let releaseId;
+        releases.forEach((release) => {
+            if (release.tag_name === tag_name) releaseId = release.id;
+        })
+
+        let releaseData;
+        if (releaseId === undefined) {
+            const {data} = await octokit.rest.repos.createRelease({
+                owner, 
+                repo,
+                tag_name,
+                generate_release_notes: true,
+            });
+            releaseData = data;
+        } else {
+            const {data} = await octokit.rest.repos.updateRelease({
+                owner,
+                repo,
+                release_id: releaseId,
+            })
+            releaseData = data;
+        }
 
         // создаем changelog между двумя тегами
         let tagsOutput = "";
@@ -46,6 +63,7 @@ const main = async () => {
         } else {
             const secondTagName = tags[tags.indexOf(tag_name) - 1].trim();
             // можем идти от HEAD так как 1) в случае push-a нового тега - коммит с новым тегом и будет HEAD 2) в случае ветки release/* - HEAD может также содержать hotfixes
+            // + если бы у нас была ветка release/*, то мы бы делали git log от нее, а не от главной ветки
             await exec.exec('git', ['log', "--pretty=oneline", `HEAD...${secondTagName}`] , commitsOptions);
         }
 
@@ -74,7 +92,7 @@ const main = async () => {
 @${actor}
         
 ## Когда был создан релиз?
-${releaseData.created_at}
+${releaseData.published_at}
         
 ## Какая версия у релиза?
 ${tag_name}
@@ -101,7 +119,7 @@ ${fullChangelog}
 </details>`
         }
 
-        // создаем релиз
+        // создаем issue
         await octokit.rest.issues.create({
             owner,
             repo,
