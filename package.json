@@ -4,6 +4,8 @@
     "homepage": ".",
     "private": true,
     "dependencies": {
+        "@commitlint/cli": "^17.6.6",
+        "@commitlint/config-conventional": "^17.6.6",
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/react": "^13.4.0",
         "@testing-library/user-event": "^14.4.3",
@@ -31,7 +33,9 @@
         "eject": "react-scripts eject",
         "test": "react-scripts test",
         "e2e": "playwright test --project=chromium && playwright show-report",
-        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
+        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\"",
+        "commitlint": "commitlint --edit",
+        "lint": "eslint ."
     },
     "eslintConfig": {
         "extends": [
@@ -59,6 +63,7 @@
     "devDependencies": {
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
+        "husky": "^8.0.3",
         "jest-html-reporter": "^3.7.0"
     }
 }

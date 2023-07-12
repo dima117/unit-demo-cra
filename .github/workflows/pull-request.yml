@@ -1,0 +1,117 @@
+name: pull_request
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths-ignore:
+      - '.github/**/*'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.build.outcome }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Установка зависимостей
+        run: npm ci
+      - name: Build
+        id: build
+        run: npm run build
+  linter:
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.linter.outcome }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Установка зависимостей
+        run: npm ci
+      - name: Запуски линтеров
+        id: linter
+        run: npm run lint
+  e2e:
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.e2e.outcome }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Get short SHA
+        id: short_sha
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
+          echo "short_sha=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+        shell: bash
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Установка зависимостей
+        run: |
+          npm ci
+          npx playwright install --with-deps
+          npm run build
+      - name: Запуск e2e тестов
+        id: e2e
+        run: npx playwright test
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: "e2e-tests-report_${{ steps.short_sha.outputs.short_sha}}"
+          path: playwright-report/
+          retention-days: 30
+  unit:
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.unit.outcome }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Get short SHA
+        id: short_sha
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ GITHUB.SHA }})
+          echo "short_sha=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+        shell: bash
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Установка зависимостей и сборка
+        run: |
+          npm ci
+          npm run build
+      - name: Запуск unit тестов
+        id: unit
+        run: npm run test-ci
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: "unit-tests-report_${{ steps.short_sha.outputs.short_sha}}"
+          path: test-report.html
+          retention-days: 30

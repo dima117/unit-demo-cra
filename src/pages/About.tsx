@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Helmet } from "react-helmet";
-
+//changes
 export const About: FC = () => {
   return (
     <>

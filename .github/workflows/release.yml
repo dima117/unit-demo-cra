@@ -1,0 +1,235 @@
+name: release
+on:
+  push:
+    tags:
+      - "v[0-9]+"
+    paths-ignore:
+      - '.github/**/*'
+  workflow_dispatch:
+jobs:
+  branch:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v3
+      - uses: peterjgrainger/action-create-branch@v2.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: 'release-${{ github.ref_name }}'
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.build.outcome }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Установка зависимостей и сборка
+        id: build
+        run: |
+          npm ci
+          npm run build
+  linter:
+    runs-on: ubuntu-latest
+    needs: [build]
+    outputs:
+      status: ${{ steps.linter.outcome }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Установка зависимостей
+        run: npm ci
+      - name: Запуски линтеров
+        id: linter
+        run: npm run lint
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [build]
+    outputs:
+      status: ${{ steps.e2e.outcome }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Get short SHA
+        id: short_sha
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
+          echo "short_sha=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+        shell: bash
+      - name: Get versions
+        id: version_tags
+        run: |
+          CURRENT_VERSION=${{ github.ref_name }}
+          PREVIOUS_VERSION=$(git describe --abbrev=0 --tags ${{ github.ref_name }}^)
+          echo "current=${CURRENT_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "previous=${PREVIOUS_VERSION}" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Установка зависимостей
+        run: |
+          npm ci
+          npx playwright install --with-deps
+          npm run build
+      - name: Запуск e2e тестов
+        id: e2e
+        run: npx playwright test
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: "e2e-tests-report_${{ steps.short_sha.outputs.short_sha}}"
+          path: playwright-report/
+          retention-days: 30
+  unit:
+    runs-on: ubuntu-latest
+    needs: [build]
+    outputs:
+      status: ${{ steps.unit.outcome }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Get short SHA
+        id: short_sha
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ GITHUB.SHA }})
+          echo "short_sha=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+        shell: bash
+      - name: Get versions
+        id: version_tags
+        run: |
+          CURRENT_VERSION=${{ GITHUB.REF_NAME }}
+          PREVIOUS_VERSION=$(git describe --abbrev=0 --tags ${{ GITHUB.REF_NAME }}^)
+          echo "current=${CURRENT_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "previous=${PREVIOUS_VERSION}" >> "$GITHUB_OUTPUT"
+        shell: bash
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Установка зависимостей и сборка
+        run: |
+          npm ci
+          npm run build
+      - name: Запуск unit тестов
+        id: unit
+        run: npm run test-ci
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: "unit-tests-report_${{ steps.short_sha.outputs.short_sha}}"
+          path: test-report.html
+          retention-days: 30
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build, linter, e2e, unit]
+    outputs:
+      status: ${{ steps.deploy.outcome }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Установка зависимостей
+        run: |
+          npm ci
+          npm run build
+      - uses: peaceiris/actions-gh-pages@v3
+        id: deploy
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_dir: ./build
+  create-issue:
+    runs-on: ubuntu-latest
+    needs: [ build, linter, e2e, unit, deploy ]
+    if: always()
+    outputs:
+      issue_number: ${{ steps.create-issue.outputs.number }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Get runner url
+        id: runner_url
+        shell: bash
+        run: |
+          RUNNER_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "runner_url=${RUNNER_URL}" >> "$GITHUB_OUTPUT"
+      - name: Changelog
+        id: changelog
+        shell: bash
+        run: |
+          CURRENT_VERSION=${{ github.ref_name }}
+          PREVIOUS_VERSION=$(git describe --abbrev=0 --tags ${{ github.ref_name }}^)
+          CHANGELOG=$(
+          cat << EOF
+          $(git log --pretty=format:"- %cs - [%h] - %s" ${CURRENT_VERSION}...${PREVIOUS_VERSION})
+          EOF)
+          echo "CHANGELOG<<EOF" >> "$GITHUB_OUTPUT"
+          echo "${CHANGELOG}" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+      - uses: JasonEtco/create-an-issue@v2
+        if: always()
+        id: create-issue
+        env:
+          GITHUB_TOKEN: ${{ SECRETS.GITHUB_TOKEN }}
+          VERSION: ${{ GITHUB.REF_NAME }}
+          CHANGELOG: ${{ steps.changelog.outputs.changelog }}
+          LINTER_STATUS: ${{ needs.linter.outputs.status }}
+          BUILD_STATUS: ${{ needs.build.outputs.status }}
+          E2E_STATUS: ${{ needs.e2e.outputs.status }}
+          UNIT_STATUS: ${{ needs.unit.outputs.status }}
+          DEPLOY_STATUS: ${{ needs.unit.outputs.status }}
+          RUNNER_URL: ${{ steps.runner_url.outputs.runner_url }}
+        with:
+          update_existing: true
+          search_existing: all
+  close_issue:
+    runs-on: ubuntu-latest
+    needs: [build, linter, e2e, unit, create-issue, deploy]
+    if: success()
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Close Issue
+        run: gh issue close --comment "Auto-closing issue" "${{ needs.create-issue.outputs.issue_number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
