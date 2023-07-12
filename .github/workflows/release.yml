@@ -37,9 +37,9 @@ jobs:
 
       - name: Create release issue
         id: create_release_issue
-        uses: peter-evans/create-issue-from-file@v2
+        uses: peter-evans/create-issue-from-file@v4
         with:
-          title: Release v${{ steps.extract_version.outputs.version }}
+          title: Release ${{ steps.get_curent_version.outputs.current_tag }}
           content-filepath: changelog.txt
           labels: |
             RELEASE
