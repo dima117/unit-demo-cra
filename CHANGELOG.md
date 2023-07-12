@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/Rubicones/hw-infra/compare/v1.1.0...v1.1.1) (2023-07-12)
+
+
+### Bug Fixes
+
+* test patch commit ([696275c](https://github.com/Rubicones/hw-infra/commit/696275cc4ef7a97b197551e649d7afd536d2e74b))
+
 # [1.1.0](https://github.com/Rubicones/hw-infra/compare/v1.0.0...v1.1.0) (2023-07-12)
 
 
