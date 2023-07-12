@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs: 
     validate:
-        name: "Validate Code"
+        name: "Validate PR"
         runs-on: ubuntu-latest
         defaults:
             run:
@@ -26,7 +26,7 @@ jobs:
               run: npm run lint
 
             - name: Install Playwright Browsers
-              run: npx playwright install --with-deps
+              run: npx playwright install --with-deps chromium
 
             - name: Run tests
               run: |
