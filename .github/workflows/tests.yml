@@ -1,0 +1,28 @@
+name: run autotests on PR
+
+on: pull_request
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+      - name: install dependencies
+        run: npm ci
+      - name: print versions
+        run: |
+          git --version
+          node --version
+          npm --version
+          npx commitlint --version
+      - name: install headless playwright
+        run: npx playwright install --with-deps chromium
+      - name: run unit tests
+        run: npm run test
+      - name: run e2e tests
+        run: npm run e2e
