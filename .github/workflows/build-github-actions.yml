@@ -1,10 +1,14 @@
 name: build-github-actions
+run-name: ${{ github.actor }} is running build
 
 on:
   push:
     branches: [ master ]
 
 jobs:
+  call-commitlint-workflow:
+    uses: ./.github/workflows/commitlint-github-actions.yml
+
   call-test-workflow:
     uses: ./.github/workflows/test-github-actions.yml
 
