@@ -8,16 +8,22 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v2
-      - name: Setup Node.js
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js Environment
         uses: actions/setup-node@v2
         with:
-          node-version: 18
-      - name: Install dependencies
+          node-version: '14'
+          
+      - name: Install Dependencies
         run: npm ci
+
       - name: Semantic Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
