@@ -5,6 +5,9 @@ on:
     branches: [ master ]
 
 jobs:
+  call-test-workflow:
+    uses: ./.github/workflows/test-github-actions.yml
+    
   build:
     runs-on: ubuntu-latest
 
