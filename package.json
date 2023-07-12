@@ -30,6 +30,7 @@
         "build": "react-scripts build",
         "eject": "react-scripts eject",
         "test": "react-scripts test",
+        "lint": "npx eslint ./src",
         "e2e": "playwright test --project=chromium && playwright show-report",
         "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
     },
@@ -59,6 +60,8 @@
     "devDependencies": {
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
+        "eslint": "^8.44.0",
+        "eslint-config-react-app": "^7.0.1",
         "jest-html-reporter": "^3.7.0"
     }
 }

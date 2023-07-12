@@ -9,3 +9,13 @@ jobs:
         with:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v5
+  lint:
+    runs-on: ubuntu-latest
+    needs: commitlint
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v3
+      - name: Install deps
+        run: npm ci
+      - name: Linting code
+        run: npm run lint
