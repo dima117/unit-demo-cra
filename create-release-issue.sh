@@ -1,10 +1,9 @@
 #!/bin/bash
 
-VERSION=$1
-NOTES=$2
 REPO=Rubicones/hw-infra
-TOKEN=${{ secrets.GITHUB_TOKEN }}
-
+TOKEN=$1
+VERSION=$2
+NOTES=$3
 curl -X POST -H "Authorization: token $TOKEN" -d '{
   "title": "Release v'"$VERSION"'",
   "body": "'"${NOTES//\"/\\\"}"'",

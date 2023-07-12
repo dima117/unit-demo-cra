@@ -23,7 +23,11 @@ jobs:
         run: npm ci
 
       - name: Semantic Release
+        id: semantic
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
+
+      - name: Create Release Issue
+        run: ./create-release-issue.sh ${{ secrets.GH_TOKEN }} ${{ steps.semantic.outputs.nextRelease.version }} ${{ steps.semantic.outputs.nextRelease.notes }}
