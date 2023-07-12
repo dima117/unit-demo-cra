@@ -1,6 +1,6 @@
 name: test-github-actions
 run-name: ${{ github.actor }} is running tests
-on: [pull_request]
+on: [pull_request, workflow_call]
 jobs:
   setup:
     runs-on: ubuntu-latest
