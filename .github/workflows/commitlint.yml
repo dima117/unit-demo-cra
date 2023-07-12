@@ -23,12 +23,10 @@ jobs:
     - name: Cache commitlint package
       id: cache-commitlint
       uses: actions/cache/save@v3
-      if: steps.restore-commitlint.outputs.cache-hit != 'true'
+      # if: steps.restore-commitlint.outputs.cache-hit != 'true'
       with:
-        path: |
-          path/to/dependencies
-          some/other/dependencies
-        key: ${{ steps.cache-primes-restore.outputs.cache-primary-key }}
+        path: ~/.npm
+        key: ${{ steps.restore-commitlint.outputs.cache-primary-key }}
 
       # - name: Cache commitlint
       #   id: cache-commitlint
