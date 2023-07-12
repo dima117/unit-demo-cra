@@ -12,6 +12,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: Cache commitlint
+        id: cache-commitlint
+        uses: actions/cache@v3
+        with:
+          path: commitlint
+          key: ${{ runner.os }}-commitlint
       # - name: Install required dependencies
       #   run: |
       #     sudo apt install -y git curl
@@ -24,6 +30,7 @@ jobs:
       #     npm --version
       #     npx commitlint --version
       - name: Install commitlint
+        if: steps.cache-commitlint.outputs.cache-hit != 'true'
         run: |
           npm install conventional-changelog-conventionalcommits
           npm install commitlint@latest
