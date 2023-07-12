@@ -21,9 +21,9 @@ jobs:
         key: ${{ runner.os }}-commitlint
       
     - name: Cache commitlint package
-      if: steps.restore-commitlint.outputs.cache-hit != 'true'
       id: cache-commitlint
       uses: actions/cache/save@v3
+      if: steps.restore-commitlint.outputs.cache-hit != 'true'
       with:
         path: |
           path/to/dependencies
