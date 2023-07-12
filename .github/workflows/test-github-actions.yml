@@ -10,7 +10,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'npm'
+
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: nm
 
       - name: Install dependencies
         run: npm ci
@@ -24,7 +28,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'npm'
+
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: nm
 
       - name: Run unit tests
         run: npm run test-ci
@@ -45,7 +53,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'npm'
+
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: nm
              
       - name: Install playwright
         run: npx playwright install --with-deps
