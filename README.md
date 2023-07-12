@@ -11,6 +11,7 @@ Caution: don't use `pnpm` or `yarn`, use `npm`
 - `git add .`
 - `git commit -m "your commit message"`
 
+That's all
 
 В этом репозитории находится пример приложения с тестами:
 
