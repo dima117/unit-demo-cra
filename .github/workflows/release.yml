@@ -1,9 +1,9 @@
 name: Release Process
 
-on:
-  push:
-    tags:
-      - 'v\d+'
+on: [push]
+  # push:
+  #   tags:
+  #     - 'v\d+'
 
 jobs:
   release:
@@ -15,7 +15,7 @@ jobs:
 
       - name: Get previous release tag
         id: get_previous_release
-        run: echo "previous_tag::$(git describe --abbrev=0 --tags $(git rev-list --tags --match="v\d+ --skip=1 --max-count=1))" >> $GITHUB_OUTPUT
+        run: echo "previous_tag::$(git describe --abbrev=0 --tags $(git rev-list --tags --match="v\d+" --skip=1 --max-count=1))" >> $GITHUB_OUTPUT
 
       - name: Extract release version
         id: extract_version
