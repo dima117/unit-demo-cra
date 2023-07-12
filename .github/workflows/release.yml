@@ -14,9 +14,9 @@ jobs:
         uses: actions/checkout@v2
       - run: git fetch --prune --unshallow
 
-      - name: Extract release version
+      - name: Get current release tag
         id: get_curent_version
-        run: echo "current_tag=$(git describe --abbrev=0 --tags --match='v[0-9]*)' HEAD" >> "$GITHUB_OUTPUT"
+        run: echo "current_tag=$(git describe --abbrev=0 --tags --match='v[0-9]*') HEAD" >> "$GITHUB_OUTPUT"
 
       - name: Get previous release tag
         id: get_previous_release
