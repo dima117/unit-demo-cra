@@ -25,7 +25,7 @@ jobs:
         id: generate_changelog
         if: ${{ steps.get_previous_release.outputs.previous_tag != '' }}
         run: |
-          git log --pretty=format:"- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)" --abbrev-commit ${get_previous_release.outputs.previous_tag}..HEAD > changelog.txt
+          git log --pretty=format:"- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)" --abbrev-commit ${get_previous_release.outputs.previous_tag}.HEAD > changelog.txt
 
       - name: Create release issue
         id: create_release_issue
