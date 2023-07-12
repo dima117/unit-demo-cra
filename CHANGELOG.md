@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/Rubicones/hw-infra/compare/v1.1.2...v1.2.0) (2023-07-12)
+
+
+### Features
+
+* work on 'release' issues ([a6e6c3b](https://github.com/Rubicones/hw-infra/commit/a6e6c3b89a586592f81ef77113f941d7b21eb83b))
+
 ## [1.1.2](https://github.com/Rubicones/hw-infra/compare/v1.1.1...v1.1.2) (2023-07-12)
 
 
