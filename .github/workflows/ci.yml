@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run e2e tests
+        run: npm run e2e
+
+      - name: Setup Commitlint
+        run: npm install -g @commitlint/cli @commitlint/config-conventional
+      - name: Lint commit messages
+        run: git log --pretty=format:"%s" ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | npx commitlint
+
+      - name: Check test results
+        run: |
+          if [ ${{ job.status }} != "success" ]; then
+            echo "Tests failed. Aborting merge."
+            exit 1
+          fi
