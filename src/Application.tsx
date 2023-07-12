@@ -14,7 +14,7 @@ export const Application: FC = () => {
         <Link data-testid="link-home" to="/">
           Home
         </Link>
-        <Link to="/about">About</Link>
+        <Link to="/about">Abou t</Link>
       </nav>
       <Routes>
         <Route path="/about" element={about} />
