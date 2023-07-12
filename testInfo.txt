@@ -1,12 +1,17 @@
 
+Running 2 tests using 2 workers
 
-[1A[2KError: Process from config.webServer exited early.
 
+
+[1A[2KError: Timed out waiting 60000ms from config.webServer.
 
 
 
 
 [1A[2K
+[33m  2 skipped[39m
+[31m  1 error was not a part of any test, see above for details[39m
+
 To open last HTML report run:
 [36m[39m
 [36m  npx playwright show-report[39m
