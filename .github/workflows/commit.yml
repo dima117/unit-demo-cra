@@ -31,7 +31,7 @@ jobs:
           npm install conventional-changelog-conventionalcommits
           npm install commitlint@latest
 
-      - run: echo "🐧 Хэши первого и последнего коммитов в пуше  ${{ github.event.before }} и ${{ github.event.after }}"
+      - run: echo "🐧🐈‍⬛ Хэши первого и последнего коммитов в пуше  ${{ github.event.before }} и ${{ github.event.after }}"
 
       - name: Validate pushed commits with commitlint
         if: github.event_name == 'push'
