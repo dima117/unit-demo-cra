@@ -19,6 +19,7 @@ jobs:
           with:
             token: ${{ github.token }}
             tag: ${{ github.ref_name }}
+            excludeTypes:
         - name: Move changelog
           run: cat CHANGELOG.md >> .github/ISSUE_TEMPLATE.md
         - name: Create issue
@@ -26,7 +27,6 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             release: ${{ github.ref_name }}
-            authors: ${{github.actor}}
           with:
             assignees: ${{github.actor}}
             update_existing: true
