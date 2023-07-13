@@ -45,7 +45,7 @@ jobs:
         with:
           actions: 'create-issue'
           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
-          body: Release ${{ steps.get_curent_version.outputs.current_tag }} ${{ steps.first_generate_changelog.outputs.content }} ${{ steps.generate_changelog.outputs.content }}
+          body: ${{ steps.generate_changelog.outputs.content }}
           labels: 'RELEASE'
           
 #       - name: Set labels
