@@ -1,0 +1,24 @@
+name: 'Publish Release Testing Results'
+description: 'Publish Release Testing Results'
+inputs:
+  token:
+    description: 'The token to use to access the GitHub API'
+    required: true
+  owner:
+    description: 'The owner of the repository'
+    required: true
+  repo:
+    description: 'The name of the repository'
+    required: true
+  ref:
+    description: 'Ref to extract a tag'
+    required: true
+  workflow_link:
+    description: 'Link to workflow with tests'
+    required: true
+  deployment:
+    description: 'Deployment info'
+    required: true
+runs:
+  using: 'node16'
+  main: 'dist/index.js'

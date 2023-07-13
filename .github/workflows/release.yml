@@ -30,7 +30,7 @@ jobs:
               actor: ${{ github.actor }}
             env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+    # Tests          
     lint:
         name: "Test Release Lint"
         runs-on: ubuntu-latest
@@ -155,9 +155,9 @@ jobs:
               tests: "${{ toJson(needs) }}"
             env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    deploy:
-        name: "Deploy & Close Issue"
+    # Build & Deploy
+    build:
+        name: "Build"
         runs-on: ubuntu-latest
         needs: [lint, unit_tests, e2e_tests]
         steps:
@@ -173,6 +173,88 @@ jobs:
               fetch-depth: 0 
               ref: release/${{ github.ref_name }}
 
-          - name: "Deploy"
-            run: git branch --show-current
+          - name: Install Node
+            uses: actions/setup-node@v3
+            with:
+                node-version: '18.x'
+
+          - name: "Install packages"
+            run: npm ci  
+
+          - name: "Build"
+            run: npm run build
+          
+          - name: Fix permissions
+            run: |
+              chmod -c -R +rX "./build/" | while read line; do
+                echo "::warning title=Invalid file permissions automatically fixed::$line"
+              done
+          - name: Upload Pages artifact
+            uses: actions/upload-pages-artifact@v2
+            with:
+              path: "./build/"
+              retention-days: "30"
+
+    deploy:
+      needs: [build]
+  
+      permissions:
+        pages: write
+        id-token: write
+  
+      environment:
+        name: github-pages
+        url: ${{ steps.deployment.outputs.page_url }}
+
+      outputs:
+        url: ${{ steps.deployment.outputs.page_url }}
+  
+      runs-on: ubuntu-latest
+      name: "Deploy"
+      steps:
+        - uses: actions/checkout@v3
+          if: ${{ contains(github.ref_name, 'release') }}
+          with:
+            fetch-depth: 0 
+            ref: ${{ github.ref_name }}
+
+        - uses: actions/checkout@v3
+          if: ${{ !contains(github.ref_name, 'release') }}
+          with:
+            fetch-depth: 0 
+            ref: release/${{ github.ref_name }}
+  
+        - name: Deploy to GitHub Pages
+          id: deployment
+          uses: actions/deploy-pages@v2
+
+    deploy_result:
+      name: "Deploy Result"
+      if: ${{ always() }}
+      needs: [deploy]
+      runs-on: ubuntu-latest
+      steps: 
+        - uses: actions/checkout@v3
+          if: ${{ contains(github.ref_name, 'release') }}
+          with:
+            fetch-depth: 0 
+            ref: ${{ github.ref_name }}
+
+        - uses: actions/checkout@v3
+          if: ${{ !contains(github.ref_name, 'release') }}
+          with:
+            fetch-depth: 0 
+            ref: release/${{ github.ref_name }}
+
+        - name: "Publish Deploy Results"
+          uses: ./.github/actions/publishDeployResults
+          with:
+            owner: ${{ github.repository_owner }}
+            repo: ${{ github.event.repository.name }}
+            token: ${{ secrets.GITHUB_TOKEN }}
+            ref: ${{ github.event.ref }}
+            workflow_link: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            deployment: "${{ toJson(needs.deploy) }}"   
+
+
           
