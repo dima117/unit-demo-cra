@@ -53,13 +53,13 @@ jobs:
                 ...metaData,
                 title: TAG,
                 labels: ['RELEASE'],
-                issue_number: issue.number ?? null,
+                issue_number: issue?.number ?? null,
             };
 
             const releaseData = {
                 ...metaData,
                 tag_name: TAG,
-                release_id: issue.number ? getReleaseId() : null, 
+                release_id: issue?.number ? getReleaseId() : null, 
             }
 
             if (issue) {
