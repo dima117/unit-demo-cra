@@ -25,5 +25,8 @@ jobs:
           update_existing: true
       - name: Информация о последнем коммите
         run: |
-          echo "Tag pushed by: ${{ github.actor }}"
-          echo "Commit date: ${{ github.event.head_commit.timestamp }}"
+          for commit in ${{ toJson(github.event.commits) }}; do
+          echo "Commit ID: $(echo $commit | jq -r '.id')"
+          echo "Commit Message: $(echo $commit | jq -r '.message')"
+          # Add more actions or logic based on commit information
+          done
