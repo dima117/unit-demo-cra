@@ -1,0 +1,32 @@
+name: update release
+
+on:
+  push:
+    branches:
+      - release/*
+
+jobs:
+  update-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm install -g auto-changelog
+      - name: Set Tag Name
+        run: |
+          TAG_NAME=$(echo $GITHUB_REF_NAME | cut -d'/' -f2)
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+      - name: Set Issue Number
+        run: |
+          ISSUE_NUMBER=$(gh issue list -S "$TAG_NAME label:RELEASE" | sed "1q;d" | grep -o '[0-9]*' | sed "1q;d)
+          echo "ISSUE_NUMBER=$ISSUE_NUMBER" >> $GITHUB_ENV
+      - name: Edit Release Issue
+        run: |
+          COMMENT_BODY=$(npx auto-changelog --commit-limit false --template keepachangelog --hide-credit --sort-commits date-desc --stdout --unreleased)
+          gh issue edit -b "$COMMENT_BODY"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
