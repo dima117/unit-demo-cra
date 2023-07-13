@@ -8,7 +8,7 @@ jobs:
     container: node:18-alpine
     steps:
       - name: Install deps
-        run: npm ci
+        run: npm install
 
       - name: Jest CI
         run: npm run test-ci
