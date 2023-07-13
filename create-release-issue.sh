@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CHANGELOG=$3
+CHANGELOG=CHANGELOG=$(awk -v version="$VERSION" '/## \[/{flag=1} flag; /## \['$version'\]/{flag=0}' CHANGELOG.md)
 GH_TOKEN=$1
 VERSION=$(git describe --tags --abbrev=0)
 TAG_DATE=$(git log -1 --pretty=format:"%ai" $TAG_NAME)
