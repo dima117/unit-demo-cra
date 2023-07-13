@@ -6,4 +6,4 @@ labels: RELEASE
 :heavy_check_mark: All checks passed  
 {% else %}
 :x: Failed checks:
-{% endfor %}
+{% endif %}
