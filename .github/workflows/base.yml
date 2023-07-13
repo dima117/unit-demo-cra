@@ -26,6 +26,8 @@ jobs:
         run: npm run build --if-present
       - name: Run unit tests
         run: npm run test
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
       - name: Run e2e tests
-        run: npx playwright install --with-deps chromium && npm run e2e
+        run: npm run e2e
 
