@@ -1,4 +1,4 @@
-name: CI
+name: Validate-pull-requests
 
 on:
   pull_request:
