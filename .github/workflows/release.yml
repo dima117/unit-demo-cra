@@ -31,7 +31,12 @@ jobs:
       - name: Generate changelog
         id: generate_changelog
         if: steps.get_previous_release.outputs.previous_tag != ''
-        run: git log --pretty=format:'- %s [%h](https://github.com/${{github.repository}}/commit/%H)' --abbrev-commit ${{steps.get_previous_release.outputs.previous_tag}}...${{steps.get_curent_version.outputs.current_tag}} > changelog.txt
+        run: |
+          echo -e "Author:  $(git show -s --pretty='%an' ${{steps.get_curent_version.outputs.current_tag}})\n" > changelog.txt
+          echo -e "Date:  $(git show -s --pretty='%cD' ${{steps.get_curent_version.outputs.current_tag}})\n\n" >> changelog.txt
+          echo -e "Changelog: \n" >> changelog.txt 
+          git log --pretty=format:'- %s [%h](https://github.com/${{github.repository}}/commit/%H)' --abbrev-commit ${{steps.get_previous_release.outputs.previous_tag}}...${{steps.get_curent_version.outputs.current_tag}} >> changelog.txt;
+#          git show -s --pretty='%an %cD' v1 >> changelog.txt
 #           echo "changelog=$(git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit ${{steps.get_previous_release.outputs.previous_tag}}...${{steps.get_curent_version.outputs.current_tag}})"
       - name: Read changelog.txt
         id: changelog
