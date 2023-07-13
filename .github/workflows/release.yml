@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - v\d+
-    branches:
-      - master
 
 permissions:
   issues: write 
@@ -22,11 +20,13 @@ jobs:
             token: ${{ github.token }}
             tag: ${{ github.ref_name }}
         - name: Move changelog
-          run: cp CHANGELOG.md .github/ISSUE_TEMPLATE.md
+          run: cat CHANGELOG.md >> .github/ISSUE_TEMPLATE.md
         - name: Create issue
           uses: JasonEtco/create-an-issue@v2
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            release: ${{ github.ref_name }}
           with:
+            assignees: ${{github.actor}}
             update_existing: true
             search_existing: all
