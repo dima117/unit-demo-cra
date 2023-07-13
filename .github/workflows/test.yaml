@@ -23,8 +23,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: tests
+      - name: install dependencies
         run: |
           npm i pnpm -g
-          pnpm i
-          pnpm run test:ci
+          pnpm ci
+          pnpx playwright install
+      - name: build
+        run: pnpm run build
+      - name: unit tests
+        run: pnpm run test:unit
+      - name: e2e tests
+        run: pnpm run test:e2e
+
