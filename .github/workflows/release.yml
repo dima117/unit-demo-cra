@@ -14,13 +14,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Exit if not on master branch
-        run: |
-          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          echo $CURRENT_BRANCH
-          if [[ $CURRENT_BRANCH != master ]]; then
-            exit -1
-          fi
       - name: Setup environment
         uses: actions/setup-node@v3
         with:
