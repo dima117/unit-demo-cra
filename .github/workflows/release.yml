@@ -58,6 +58,7 @@ jobs:
                 title: TAG,
                 labels: ['RELEASE'],
                 issue_number: issue?.number ?? null,
+                body: `author: ${metaData.owner}\n test\n`,
             };
 
             const releaseData = {
@@ -65,7 +66,7 @@ jobs:
                 tag_name: TAG,
                 release_id: release?.id ?? null, 
                 title: `Release ${TAG}`,
-                body: "author: ${metaData.owner}\n test\n"
+                body: `author: ${metaData.owner}\n test\n`,
             }
 
             if (issue) {
