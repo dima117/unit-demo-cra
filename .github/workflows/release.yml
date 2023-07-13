@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: set up environment
         run: echo "COMMIT_TIME=$(git show -s --format=%ci ${{ github.sha }})" >> $GITHUB_ENV
 
