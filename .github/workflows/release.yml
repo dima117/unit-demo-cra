@@ -54,7 +54,7 @@ jobs:
                 }
             }
 
-            const issue = getIssue();
+            const issue = await getIssue();
             console.log("got issue: ");
             console.log(issue);
             const issueData = {
