@@ -156,8 +156,7 @@ jobs:
           script: |
             const issueNumber = "${{ steps.create_release_issue.outputs.issue-number }}";
             const deployUrl = "https://${{ github.repository_owner }}.github.io/${{ github.repository }}";
-            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
-            await octokit.issues.update({
+            await github.rest.issues.update({
               owner: github.context.repo.owner,
               repo: github.context.repo.repo,
               issue_number: issueNumber,
