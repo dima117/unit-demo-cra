@@ -1,8 +1,9 @@
 ---
-title: Release ${{ env.release }}
+title: Release {{ env.release }}
 labels: RELEASE
 ---
-# Release ${{ env.release }}
-Release date: {{ date | date('YYYY, MMMM Do') }}
+# Release {{ env.release }}
 
-## Changelog
+Date: {{ date | date('YYYY, MMMM Do') }}
+
+Author(s): {{ env.authors }}

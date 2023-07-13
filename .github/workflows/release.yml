@@ -26,6 +26,7 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             release: ${{ github.ref_name }}
+            authors: ${{github.actor}}
           with:
             assignees: ${{github.actor}}
             update_existing: true
