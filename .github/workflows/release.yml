@@ -19,7 +19,7 @@ jobs:
         with:
           github-token: ${{ secrets.TOKEN }}
           script: |
-            cosnt getLabel = async () => {
+            const getLabel = async () => {
                 return await github.rest.issues.getLabel({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
