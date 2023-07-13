@@ -36,12 +36,18 @@ jobs:
         run: |
           git log --pretty=format:"- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)" --abbrev-commit $(steps.get_previous_release.outputs.previous_tag)...$(steps.get_curent_version.outputs.current_tag) > changelog.md
 
+      - name: Read changelog.md
+        id: changelog
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./changelog.md
+      
       - name: Create issue
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'create-issue'
           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
-          body: $(cat changelog.md)
+          body: ${{ steps.changelog.outputs.content }}
           labels: 'RELEASE'
           
 #       - name: Set labels
