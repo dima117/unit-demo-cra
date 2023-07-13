@@ -32,6 +32,6 @@ jobs:
             github.rest.issues.create({
                  owner: context.repo.owner,
                  repo: context.repo.repo,
-                 title: `release ${${{ github.ref_name }}}`,
-                 labels: [RELEASE_LABEL,],
+                 title: `${{ github.ref_name }}`,
+                 labels: [RELEASE_LABEL],
             });
