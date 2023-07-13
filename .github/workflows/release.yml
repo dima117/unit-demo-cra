@@ -32,7 +32,7 @@ jobs:
       - name: Generate changelog
         id: generate_changelog
         if: steps.get_previous_release.outputs.previous_tag != ''
-        run: git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit ${{steps.get_previous_release.outputs.previous_tag}}...${{steps.get_curent_version.outputs.current_tag}}) > changelog.txt
+        run: git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit ${{steps.get_previous_release.outputs.previous_tag}}...${{steps.get_curent_version.outputs.current_tag}} > changelog.txt
 #           echo "changelog=$(git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit ${{steps.get_previous_release.outputs.previous_tag}}...${{steps.get_curent_version.outputs.current_tag}})"
       - name: Read changelog.txt
         id: changelog
