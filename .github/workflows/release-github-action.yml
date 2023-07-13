@@ -59,9 +59,11 @@ jobs:
   create_release_branch:
     name: Create release branch
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Create release branch
         run: |
           BRANCH_NAME=release-${{ github.ref_name }}
