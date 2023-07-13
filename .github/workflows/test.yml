@@ -8,7 +8,7 @@ jobs:
     container: node:18-alpine
     steps:
       - name: Install deps
-        run: npm install
+        run: yarn --frozen-lockfile
 
       - name: Jest CI
-        run: npm run test-ci
+        run: yarn test-ci
