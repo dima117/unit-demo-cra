@@ -40,7 +40,7 @@ jobs:
         id: changelog
         uses: juliangruber/read-file-action@v1
         with:
-          path: ./changelog.md
+          path: changelog.md
       
       - name: Create issue
         uses: actions-cool/issues-helper@v3
