@@ -1,0 +1,51 @@
+name: CI and Release
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types:
+      - created
+
+jobs:
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+
+
+      - name: Run Tests
+        run: test-ci
+
+      - name: Run Linter
+        run: npm run lint
+
+  release:
+    name: Release Process
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+
+
+      - name: Generate Changelog
+        run: # Команда или скрипт для генерации changelog
+
+      - name: Create Release Record
+        run: # Команда или скрипт для создания записи релиза в реестре релизов (issue на GitHub)
+
+      - name: Run Tests
+        run: # Команда или скрипт для запуска автотестов
+
+      - name: Deploy to gh-pages
+        run: # Команда или скрипт для выкладывания на gh-pages
+
+      - name: Close Release Issue
+        run: # Команда или скрипт для закрытия релизного issue
