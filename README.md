@@ -30,9 +30,6 @@ HUSKY=0 git commit -m 'non valid message'
 Как запустить e2e тесты:
 
 ```sh
-# скачать браузеры
-npx playwright install
-
 # запустить тесты
 npm run e2e
 ```

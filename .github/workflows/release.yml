@@ -1,0 +1,28 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref_type  == 'tag' }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Получить имя тега
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          update_existing: true
+      - name: Информация о последнем коммите
+        run: |
+          echo "Tag pushed by: ${{ github.actor }}"
+          echo "Commit date: ${{ github.event.head_commit.timestamp }}"
