@@ -38,7 +38,7 @@ jobs:
         run: |
           BRANCH_NAME=release-${{ github.ref_name }}
           git checkout -b $BRANCH_NAME
-          git push https://${{ secrets.GH_ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY} $BRANCH_NAME
+          git push https://sr480:${{ secrets.GH_ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY} $BRANCH_NAME
 
 
       - name: Create team sync issue
