@@ -26,7 +26,29 @@ jobs:
       - name: unit-test
         run: npm test
       - name: download browser
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium 
       - name: e2e test
-        run: npm run e2e
+        timeout-minutes: 1
+        run: |
+          cat > monitor.sh << 'EOF'
+          #!/bin/bash
+          COMMAND="npm run e2e"
+          WORD="Press"
+
+          $COMMAND > output.log 2>&1 &
+
+          PID=$!
+
+          while true; do
+            if grep -q "$WORD" output.log; then
+              kill $PID
+              break
+            fi
+            sleep 1
+          done
+          EOF
+          sudo bash monitor.sh
+      - name: Print error if time outed on previous step
+        if: cancelled()
+        run: cat output.log
       
