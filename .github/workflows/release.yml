@@ -29,7 +29,7 @@ jobs:
                 repo: context.repo.repo,
             }
 
-            const body = `Author: [${metaData.owner}](https://github.com/${metaData.owner})\n Release Time $COMMIT_TIME\n`;
+            const body = `Author: [${metaData.owner}](https://github.com/${metaData.owner})\n Release Time ${process.env.COMMIT_TIME}\n`;
 
             const getIssue = async () => {
                 const issues = await github.rest.issues.listForRepo({...metaData, labels: "RELEASE"})
