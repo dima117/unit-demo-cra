@@ -28,13 +28,13 @@ jobs:
         id: first_generate_changelog
         if: steps.get_previous_release.outputs.previous_tag == ''
         run: |
-          git log --pretty=format:"- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)" --abbrev-commit $(steps.get_curent_version.outputs.current_tag) > changelog.txt
+          git log --pretty=format:"- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)" --abbrev-commit $(steps.get_curent_version.outputs.current_tag) > changelog.md
 
       - name: Generate changelog
         id: generate_changelog
         if: steps.get_previous_release.outputs.previous_tag != ''
         run: |
-          git log --pretty=format:"- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)" --abbrev-commit $(steps.get_previous_release.outputs.previous_tag)...$(steps.get_curent_version.outputs.current_tag) > changelog.txt
+          git log --pretty=format:"- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)" --abbrev-commit $(steps.get_previous_release.outputs.previous_tag)...$(steps.get_curent_version.outputs.current_tag) > changelog.md
 
       - name: Create release issue
         id: create_release_issue
@@ -42,7 +42,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
-          content-filepath: changelog.txt
+          content-filepath: changelog.md
           labels: |
             RELEASE
 
