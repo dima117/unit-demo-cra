@@ -20,24 +20,18 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-      - name: Print versions
-        run: |
-          git --version
-          node --version
-          npm --version
-          npx commitlint --version
-      - name: Install commitlint
+      - name: Установка commitlint
         run: |
           npm install conventional-changelog-conventionalcommits
           npm install commitlint@latest
 
-      - name: Validate pushed commits with commitlint
+      - name: Проверка запушенных коммитов (сообщений) через commitlint
         if: github.event_name == 'push'
         run: |
           echo "🐧 Хэши первого и последнего коммитов в пуше  ${{ github.event.before }} (не включается в проверку) и ${{ github.event.after }}"
           npx commitlint --from ${{ github.event.before }} --to HEAD --verbose
 
-      - name: Validate PR commits with commitlint
+      - name: Проверка коммитов PR (сообщений) через commitlint
         if: github.event_name == 'pull_request'
         run: |
           echo "🐭 Хэши проверяемых коммитов в ПР  ${{ github.event.pull_request.base.sha }} (не включительно) и ${{ github.event.pull_request.head.sha }} "
@@ -63,7 +57,7 @@ jobs:
       - name: 🧪 Запуск e2e тестов
         run: |
           npm run e2e-ci
-      - name: 🧙‍♂️ Сохраняем артефакты
+      - name: 🧙‍♂️ Сохранение артефактов
         if: always()
         uses: actions/upload-artifact@v2
         with:
