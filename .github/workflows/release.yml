@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v\d+
+    branches:
+      - master
+
+permissions:
+  issues: write 
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v3
+        - name: Create changelog
+          id: changelog
+          uses: requarks/changelog-action@v1
+          with:
+            token: ${{ github.token }}
+            tag: ${{ github.ref_name }}
+        - name: Move changelog
+          run: cp CHANGELOG.md .github/ISSUE_TEMPLATE.md
+        - name: Create issue
+          uses: JasonEtco/create-an-issue@v2
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            update_existing: true
+            search_existing: all
