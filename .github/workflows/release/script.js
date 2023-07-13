@@ -1,5 +1,5 @@
 module.exports = async ({ github, context }) => {
-  const TAG = "${{ github.ref_name }}";
+  const TAG = github.ref_name;
   const GH_URL = "https://github.com/";
   const { COMMIT_TIME } = process.env;
 
