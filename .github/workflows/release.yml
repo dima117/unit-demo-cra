@@ -19,14 +19,8 @@ jobs:
         with:
           github-token: ${{ secrets.TOKEN }}
           script: |
-            const title = ${{ github.ref }}
-
-            const createIssue = async () => {
-                await github.issues.create({
-                     owner: context.repo.owner,
-                     repo: context.repo.repo,
-                     title,
-                });
-            };
-
-            createIssue();
+            github.issues.create({
+                 owner: context.repo.owner,
+                 repo: context.repo.repo,
+                 title: ${{ github.ref }},
+            });
