@@ -9,6 +9,9 @@ permissions:
   contents: read
   issues: write
 
+env:
+  COMMIT_TIME: $(git show -s --format=%ci ${{ github.sha }})
+
 jobs:
   create-issue:
     runs-on: ubuntu-latest
@@ -20,6 +23,8 @@ jobs:
           github-token: ${{ secrets.TOKEN }}
           script: |
             const TAG = "${{ github.ref_name }}"
+
+            const body = `Author: [${metaData.owner}](https://github.com/${metaData.owner})\n Release Time $COMMIT_TIME\n`, 
 
             const metaData = {
                 owner: context.actor,
@@ -58,7 +63,7 @@ jobs:
                 title: TAG,
                 labels: ['RELEASE'],
                 issue_number: issue?.number ?? null,
-                body: `author: ${metaData.owner}\n test\n`,
+                body,
             };
 
             const releaseData = {
@@ -66,7 +71,7 @@ jobs:
                 tag_name: TAG,
                 release_id: release?.id ?? null, 
                 title: `Release ${TAG}`,
-                body: `author: ${metaData.owner}\n test\n`,
+                body,
             }
 
             if (issue) {
