@@ -3,7 +3,7 @@ on:
   pull_request:
   push:
     branches: # Проверяем только влитие в ветку разработки и релизные ветки
-      - main
+      - master
       - release/**
 jobs:
   # Запускаем проверку eslint
