@@ -44,7 +44,7 @@ jobs:
         uses: lee-dohm/select-matching-issues@v1
         with:
           format: raw
-          query: label:'RELEASE' title:'Release ${{ steps.get_curent_version.outputs.current_tag }}'
+          query: 'label:RELEASE'
           token: ${{ github.token }}
           
 #       - name: Create Issue
