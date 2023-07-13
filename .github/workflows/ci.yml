@@ -1,7 +1,7 @@
 name: CI
 
 on:
-  pull_request:
+  push:
     branches:
       - master
 
@@ -30,7 +30,7 @@ jobs:
       - name: Setup Commitlint
         run: npm install -g @commitlint/cli @commitlint/config-conventional
       - name: Lint commit messages
-        run: git log --pretty=format:"%s" ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }} | npx commitlint
+        run: git log --pretty=format:"%s" ${{ github.sha }} | npx commitlint
 
       - name: Check test results
         run: |
