@@ -38,14 +38,40 @@ jobs:
         uses: juliangruber/read-file-action@v1
         with:
           path: changelog.txt
+        
+      - name: Get issue
+        id: get_issue
+        uses: lee-dohm/select-matching-issues@v1
+        with:
+          format: raw
+          query: label:RELEASE title:Release ${{ steps.get_curent_version.outputs.current_tag }}
+          token: ${{ github.token }}
+          
+#       - name: Create Issue
+#         if: steps.check_if_issue_exists.outputs.exists == 'false'
+#         uses: JasonEtco/create-an-issue@master
+#         env:
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Create issue
+      - if: steps.get_issue.outputs.path == ''
+        name: Create issue
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'create-issue'
           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
           body: ${{ steps.changelog.outputs.content }}
           labels: 'RELEASE'
+          
+      - if: steps.get_issue.outputs.path != ''
+        name: Update issue
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'update-issue'
+          title: Release ${{ steps.get_curent_version.outputs.current_tag }}
+          body: ${{ steps.changelog.outputs.content }}
+          labels: 'RELEASE'
+          isue-number: ${{ steps.get_issue.outputs.path }}
+          
           
 #       - name: Set labels
 #         uses: actions-cool/issues-helper@v3
