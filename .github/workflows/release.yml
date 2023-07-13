@@ -19,9 +19,53 @@ jobs:
         with:
           github-token: ${{ secrets.TOKEN }}
           script: |
-            github.rest.issues.create({
-                 owner: context.repo.owner,
-                 repo: context.repo.repo,
-                 title: `${{ github.ref_name }}`,
-                 labels: ['RELEASE'],
-            });
+            const TAG = ${{ github.ref_name }}
+
+            const metaData = {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+            }
+
+            const getIssue = async () => {
+                const issues = await github.issues.listForRepo({...metaData, labels: ["RELEASE"]});
+
+                for (const issue of issues) {
+                    if (issue.title === TAG) {
+                        return issue;
+                    }
+                }
+            }
+
+            const getReleaseId = async () => {
+                const releases = await github.rest.repos.listReleases(metaData);
+
+                for (const release of releases) {
+                    if (release.tag_name === TAG) {
+                        return release.id;
+                    }
+                }
+            }
+
+            const issue = getIssue();
+
+            const issueData = {
+                ...metaData,
+                title: TAG,
+                labels: ['RELEASE'],
+                issue_number: issue.number ?? null,
+            };
+
+            const releaseData = {
+                ...metaData,
+                tag_name: TAG,
+                release_id: issue.number ? getReleaseId() : null, 
+            }
+
+            if (issue) {
+                github.rest.issues.update(issueData);
+                github.rest.repos.updateRelease(releaseData);
+            } 
+            else {
+                github.rest.issues.create(issueData);
+                github.rest.repos.createRelease(releaseData);
+            }
