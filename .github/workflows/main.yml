@@ -34,3 +34,23 @@ jobs:
       - name: Validate PR commits with commitlint
         if: github.event_name == 'pull_request'
         run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
+  
+  run_tests:
+    runs-on: [ubuntu-latest]
+
+    steps:
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+
+      - name: Install dependencies and buld app
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run unit tests
+        run: npm run test
+          
+          
+      
+      
