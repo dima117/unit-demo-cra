@@ -2,6 +2,8 @@ name: release
 
 on:
   push:
+    branches:
+      - release/*
     tags:
       - "v[0-9]+"
 
@@ -31,3 +33,14 @@ jobs:
           gh issue create -t "$ISSUE_TITLE" -b "$ISSUE_BODY" -l "RELEASE"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release Branch
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          RELEASE_BRANCH=release/$GITHUB_REF_NAME
+          git branch $RELEASE_BRANCH $GITHUB_REF_NAME
+      - name: Push Release Branch
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ env.RELEASE_BRANCH }}
