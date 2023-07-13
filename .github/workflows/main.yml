@@ -19,8 +19,7 @@ jobs:
       - name: Validate current commit (last commit) with commitlint
         if: github.event_name == 'push'
         run: |
-          git fetch
-          npx commitlint --from=HEAD --verbose
+          npx commitlint --from=HEAD~1
 
       - name: Validate PR commits with commitlint
         if: github.event_name == 'pull_request'
