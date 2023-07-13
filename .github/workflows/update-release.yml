@@ -22,7 +22,7 @@ jobs:
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
       - name: Set Issue Number
         run: |
-          ISSUE_NUMBER=$(gh issue list -S "$TAG_NAME label:RELEASE" | sed "1q;d" | grep -o '[0-9]*' | sed "1q;d)
+          ISSUE_NUMBER=$(gh issue list -S "$TAG_NAME label:RELEASE" | sed "1q;d" | grep -o '[0-9]*' | sed "1q;d")
           echo "ISSUE_NUMBER=$ISSUE_NUMBER" >> $GITHUB_ENV
       - name: Edit Release Issue
         run: |
