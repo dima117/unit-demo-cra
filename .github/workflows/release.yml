@@ -17,6 +17,7 @@ jobs:
       - name: Exit if not on master branch
         run: |
           CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          echo $CURRENT_BRANCH
           if [[ $CURRENT_BRANCH != master ]]; then
             exit -1
           fi
