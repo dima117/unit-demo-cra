@@ -22,9 +22,9 @@ jobs:
         with:
           github-token: ${{ secrets.TOKEN }}
           script: |
-            const TAG = "${{ github.ref_name }}"
+            const TAG = "${{ github.ref_name }}";
 
-            const body = `Author: [${metaData.owner}](https://github.com/${metaData.owner})\n Release Time $COMMIT_TIME\n`, 
+            const body = `Author: [${metaData.owner}](https://github.com/${metaData.owner})\n Release Time $COMMIT_TIME\n`;
 
             const metaData = {
                 owner: context.actor,
