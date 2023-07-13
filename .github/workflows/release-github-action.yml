@@ -67,4 +67,4 @@ jobs:
         run: |
           BRANCH_NAME=release-${{ github.ref_name }}
           git checkout -b $BRANCH_NAME
-          git push origin $BRANCH_NAME
+          git push -u origin $BRANCH_NAME
