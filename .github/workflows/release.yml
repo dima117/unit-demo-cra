@@ -17,7 +17,7 @@ jobs:
       - name: create release issue
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.TOKEN }}
           script: |
             const title = ${{ github.ref }}
 
