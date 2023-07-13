@@ -38,11 +38,13 @@ jobs:
         run: |
           BRANCH_NAME=release-${{ github.ref_name }}
           git checkout -b $BRANCH_NAME
-          git push https://sr480:${{ secrets.GH_ACCESS_TOKEN }}@github.com/${GITHUB_REPOSITORY} $BRANCH_NAME
+          git push https://sr480:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY} $BRANCH_NAME
 
 
       - name: Create team sync issue
         uses: imjohnbo/issue-bot@3d96848fb5e9a4a473bb81ae62b4b4866a56e93a
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           assignees: "sr480"
           labels: "RELEASE"
@@ -60,5 +62,3 @@ jobs:
             
           pinned: false
           close-previous: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
