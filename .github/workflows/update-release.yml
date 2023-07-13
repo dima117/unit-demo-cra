@@ -27,6 +27,6 @@ jobs:
       - name: Edit Release Issue
         run: |
           COMMENT_BODY=$(npx auto-changelog --commit-limit false --template keepachangelog --hide-credit --sort-commits date-desc --stdout --unreleased)
-          gh issue $ISSUE_NUMBER edit -b "$COMMENT_BODY"
+          gh issue edit $ISSUE_NUMBER -b "$COMMENT_BODY"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
