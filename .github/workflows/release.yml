@@ -45,7 +45,7 @@ jobs:
         with:
           actions: 'create-issue'
           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
-          body: RELEASE ${{ steps.generate_changelog.outputs.changelog }} RELEASE
+          body: RELEASE ${{ git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit $(steps.get_previous_release.outputs.previous_tag)...$(steps.get_curent_version.outputs.current_tag) }} RELEASE
           labels: 'RELEASE'
           
 #       - name: Set labels
