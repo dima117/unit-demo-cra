@@ -27,4 +27,4 @@ jobs:
         run: |
           npm i pnpm -g
           pnpm i
-          pnpm run ci:test
+          pnpm run test:ci
