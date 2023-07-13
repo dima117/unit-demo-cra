@@ -32,14 +32,13 @@ jobs:
       - name: Generate changelog
         id: generate_changelog
         if: steps.get_previous_release.outputs.previous_tag != ''
-        run: 
-          echo "changelog=$(git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit ${{steps.get_previous_release.outputs.previous_tag}}...${{steps.get_curent_version.outputs.current_tag}})" >> $GITHUB_OUTPUT
-          echo "changelog=$(git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit ${{steps.get_previous_release.outputs.previous_tag}}...${{steps.get_curent_version.outputs.current_tag}})"
-#       - name: Read changelog.md
-#         id: changelog
-#         uses: juliangruber/read-file-action@v1
-#         with:
-#           path: changelog.md
+        run: git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit ${{steps.get_previous_release.outputs.previous_tag}}...${{steps.get_curent_version.outputs.current_tag}}) > changelog.txt
+#           echo "changelog=$(git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit ${{steps.get_previous_release.outputs.previous_tag}}...${{steps.get_curent_version.outputs.current_tag}})"
+      - name: Read changelog.txt
+        id: changelog
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: changelog.txt
       
       - name: Create issue
         uses: actions-cool/issues-helper@v3
