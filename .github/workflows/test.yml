@@ -6,6 +6,5 @@ jobs:
     container: node:18-alpine
     steps:
       - uses: actions/checkout@v3
-      - run: yarn --frozen-lockfile
-      - run: ls
-      - run: yarn test-ci
+      - run: npm ci
+      - run: npm run test-ci
