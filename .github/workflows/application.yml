@@ -8,13 +8,11 @@ jobs:
         with:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v4
-  check-bats-version:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - run: npm install -g bats
-      - run: bats -v
       - run: npm run test
