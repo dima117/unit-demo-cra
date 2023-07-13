@@ -38,7 +38,7 @@ jobs:
         run: |
           BRANCH_NAME=release-${{ github.ref_name }}
           git checkout -b $BRANCH_NAME
-          git push https://sr480:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY} $BRANCH_NAME
+          git push origin $BRANCH_NAME
 
 
       - name: Create team sync issue
