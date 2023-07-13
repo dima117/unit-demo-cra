@@ -1,6 +1,3 @@
-[![Tests on Pull Request](../../actions/workflows/tests.yml/badge.svg?event=branch_protection_rule)](../../actions/workflows/tests.yml)
-
-
 В этом репозитории находится пример приложения с тестами:
 
 - [e2e тесты](e2e/example.spec.ts)
