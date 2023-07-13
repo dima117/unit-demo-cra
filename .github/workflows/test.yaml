@@ -27,7 +27,7 @@ jobs:
         run: |
           npm i pnpm -g
           pnpm i
-          pnpx playwright install
+          pnpx playwright install --with-deps chronium
       - name: build
         run: pnpm run build
       - name: unit tests
