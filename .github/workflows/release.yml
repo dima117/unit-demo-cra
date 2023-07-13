@@ -19,7 +19,7 @@ jobs:
         with:
           github-token: ${{ secrets.TOKEN }}
           script: |
-            const TAG = ${{ github.ref_name }}
+            const TAG = "${{ github.ref_name }}"
 
             const metaData = {
                 owner: context.repo.owner,
