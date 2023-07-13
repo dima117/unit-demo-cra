@@ -1,10 +1,10 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 
 import { About } from "./pages/About";
 import { Home } from "./pages/Home";
 
-export const Application: FC = () => {
+export const Application = () => {
   const home = <Home />;
   const about = <About />;
 

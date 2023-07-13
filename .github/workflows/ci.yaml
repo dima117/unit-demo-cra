@@ -1,0 +1,54 @@
+name: CI Pull Requests
+on:
+  pull_request:
+  push:
+    branches: # Проверяем только влитие в ветку разработки и релизные ветки
+      - main
+      - release/**
+jobs:
+  # Запускаем проверку eslint
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v3
+      - name: Install deps
+        run: npm install
+      - name: Lint ci
+        run: npm run lint
+
+  # Запускаем юнит-тесты
+  unit-testing:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v3
+      - name: Install deps
+        run: npm ci
+      - name: Test app unit
+        run: npm run test
+
+  # Запускаем e2e-тесты
+  e2e-testing:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v3
+      - name: Install deps
+        run: npm ci
+      - name: Test app e2e
+        run: npm run e2e
+
+  # Запускаем сборку
+  build:
+    runs-on: ubuntu-latest
+    needs: [unit-testing, e2e-testing]
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v3
+      - name: Install deps
+        run: npm install
+      - name: Build App
+        run: npm run build

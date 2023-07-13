@@ -28,6 +28,8 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
+        "lint": "npx eslint src/**/*.{js,jsx,ts,tsx}",
+        "lint:fix": "npm run lint -- --fix",
         "eject": "react-scripts eject",
         "test": "react-scripts test",
         "e2e": "playwright test --project=chromium && playwright show-report",
@@ -61,6 +63,7 @@
         "@commitlint/config-conventional": "^17.6.6",
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
+        "eslint": "^8.44.0",
         "husky": "^8.0.3",
         "jest-html-reporter": "^3.7.0"
     }
