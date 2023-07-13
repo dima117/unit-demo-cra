@@ -27,4 +27,4 @@ jobs:
           github-token: ${{ secrets.TOKEN }}
           script: |
             const script = require('.github/workflows/release/script.js');
-            await script({ github, context, tag: ${{ github.ref_name }} });
+            await script({ github, context, tag: "${{ github.ref_name }}" });
