@@ -144,9 +144,17 @@ jobs:
               ref: release/${{ github.ref_name }}
 
           - name: "Show results"
-            run: |
-              echo ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-              echo ${{ toJson(needs) }}
+            uses: ./.github/actions/publishReleaseTestingResults
+            with: 
+              owner: ${{ github.repository_owner }}
+              repo: ${{ github.event.repository.name }}
+              token: ${{ secrets.GITHUB_TOKEN }}
+              ref: ${{ github.event.ref }}
+              head_commit: "${{ toJson(github.event.head_commit) }}"
+              workflow_link: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              tests: "${{ toJson(needs) }}"
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     deploy:
         name: "Deploy & Close Issue"
