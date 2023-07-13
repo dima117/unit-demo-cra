@@ -5,6 +5,7 @@ on: pull_request
 jobs:
   unit_tests:
     runs-on: ubuntu-latest
+    container: node:18-alpine
     steps:
       - name: Install deps
         run: npm ci
