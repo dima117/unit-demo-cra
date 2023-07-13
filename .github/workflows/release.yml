@@ -65,8 +65,7 @@ jobs:
                 tag_name: TAG,
                 release_id: release?.id ?? null, 
                 title: `Release ${TAG}`,
-                body: "author: ${metaData.owner}\n
-                       test\n"
+                body: "author: ${metaData.owner}\n test\n"
             }
 
             if (issue) {
