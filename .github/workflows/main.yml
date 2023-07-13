@@ -21,7 +21,7 @@ jobs:
         if: github.event_name == 'push'
         run: |
           git fetch
-          npx commitlint --from=HEAD~1 --verbose
+          npx commitlint --from=HEAD --verbose
 
       - name: Validate PR commits with commitlint
         if: github.event_name == 'pull_request'
