@@ -37,9 +37,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           release: ${{ github.ref_name }}
-          verified: ${{needs.review.result == 'success'}}
-          review-url: ${{needs.review.outputs.url}}
-          gh-url: ${{needs.deploy.outputs.url}}
+          reviewVerified: ${{needs.review.result == 'success'}}
+          reviewUrl: ${{needs.review.outputs.url}}
+          ghPagesVerified: ${{needs.deploy.result == 'success'}}
+          ghPagesUrl: ${{needs.deploy.outputs.url}}
         with:
           assignees: ${{github.actor}}
           update_existing: true

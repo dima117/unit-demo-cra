@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      # - name: Setup project
-      #   uses: ./.github/actions/setup
-      # - name: Deploy to GH pages
-      #   uses: JamesIves/github-pages-deploy-action@v4
-      #   with:
-      #     folder: build
+      - name: Setup project
+        uses: ./.github/actions/setup
+      - name: Deploy to GH pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build
