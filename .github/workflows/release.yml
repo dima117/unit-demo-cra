@@ -27,7 +27,7 @@ jobs:
             }
 
             const getIssue = async () => {
-                const issues = await github.issues.listForRepo({...metaData, labels: ["RELEASE"]});
+                const issues = await github.rest.issues.listForRepo({...metaData, labels: "RELEASE"});
 
                 for (const issue of issues) {
                     if (issue.title === TAG) {
