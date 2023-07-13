@@ -28,5 +28,5 @@ npm run e2e
 Как запустить модульные тесты:
 
 ```sh
-npm test
+npm run test
 ```
