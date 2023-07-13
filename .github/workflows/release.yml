@@ -149,21 +149,21 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
 
-      - name: Update release issue with deployment details
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const issueNumber = "${{ steps.create_release_issue.outputs.issue-number }}";
-            const deployUrl = "https://${{ github.repository_owner }}.github.io/${{ github.repository }}";
-            await github.rest.issues.update({
-              owner: github.context.repo.owner,
-              repo: github.context.repo.repo,
-              issue_number: issueNumber,
-              body: `Deployment URL: ${deployUrl}`
-            })
+#       - name: Update release issue with deployment details
+#         uses: actions/github-script@v4
+#         with:
+#           github-token: ${{ secrets.GITHUB_TOKEN }}
+#           script: |
+#             const issueNumber = "${{ steps.create_release_issue.outputs.issue-number }}";
+#             const deployUrl = "https://${{ github.repository_owner }}.github.io/${{ github.repository }}";
+#             await github.rest.issues.update({
+#               owner: github.context.repo.owner,
+#               repo: github.context.repo.repo,
+#               issue_number: issueNumber,
+#               body: `Deployment URL: ${deployUrl}`
+#             })
 
-      - name: Close release issue
-        uses: peter-evans/close-issue@v1
-        with:
-          issue-number: ${{ steps.create_release_issue.outputs.issue-number }}
+#       - name: Close release issue
+#         uses: peter-evans/close-issue@v1
+#         with:
+#           issue-number: ${{ steps.create_release_issue.outputs.issue-number }}
