@@ -13,18 +13,18 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-  strategy:
-    matrix:
-      node-version: [ 18.x ]
-  steps:
-    - name: checkout
-      uses: actions/checkout@v3
-    - name: use node ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: tests
-      run: |
-        npm i pnpm -g
-        pnpm i
-        pnpm run ci:test
+    strategy:
+      matrix:
+        node-version: [ 18.x ]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: use node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: tests
+        run: |
+          npm i pnpm -g
+          pnpm i
+          pnpm run ci:test
