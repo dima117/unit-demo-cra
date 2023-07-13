@@ -1,11 +1,13 @@
-name: Run test
-on: [pull_request:]
+name: Tests on PR
+
+on: pull_request
+
 jobs:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Check out repository code
-      uses: actions/checkout@v3
-    - name: Install deps
-      run: npm ci
-    - name: Lint
-      run: npm run commitlint
+  unit_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install deps
+        run: npm ci
+
+      - name: Jest CI
+        run: npm run test-ci
