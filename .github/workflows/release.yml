@@ -1,0 +1,34 @@
+name: New release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+'
+
+jobs:
+  release:
+    name: Create release
+    permissions:
+      contents: read
+      issues: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+         token: ${{ github.token }}
+         tag: ${{ github.ref_name }}
+         writeToFile: false
+      - name: Create an issue
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_CHANGELOG: ${{ steps.changelog.outputs.changes }}
+          RELEASE_AUTHOR: ${{ github.actor }}
+          RELEASE_NO: ${{ github.ref_name }}
+          RELEASE_DATE: ${{ github.event.repository.updated_at}}
+        with:
+          filename: /ISSUE_TEMPLATE/release-issue-template.md
