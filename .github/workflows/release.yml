@@ -42,7 +42,7 @@ jobs:
           actions: 'create-issue'
           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
           body: |
-            ${{car changelog.md}}
+            ${{cat changelog.md}}
           labels: 'RELEASE'
           
 #       - name: Set labels
