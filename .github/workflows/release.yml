@@ -19,19 +19,9 @@ jobs:
         with:
           github-token: ${{ secrets.TOKEN }}
           script: |
-            const getLabel = async () => {
-                return await github.rest.issues.getLabel({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    name: "RELEASE",
-                });
-            }
-
-            const RELEASE_LABEL = getLabel();
-
             github.rest.issues.create({
                  owner: context.repo.owner,
                  repo: context.repo.repo,
                  title: `${{ github.ref_name }}`,
-                 labels: [RELEASE_LABEL],
+                 labels: ['RELEASE'],
             });
