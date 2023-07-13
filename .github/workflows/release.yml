@@ -2,8 +2,6 @@ name: release
 
 on:
   push:
-    branches:
-      - master
     tags:
       - "v[0-9]+"
 
@@ -14,6 +12,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Exit if not on master branch
+        if: endsWith(github.ref, 'master') == false
+        run: exit -1
       - name: Setup environment
         uses: actions/setup-node@v3
         with:
@@ -25,3 +26,5 @@ jobs:
           ISSUE_TITLE=$(git tag $GITHUB_REF_NAME -l --format 'Release %(refname:short) by %(authorname)')
           ISSUE_BODY=$(npx auto-changelog --commit-limit false --template keepachangelog --hide-credit --sort-commits date-desc --stdout)
           gh issue create -t "$ISSUE_TITLE" -b "$ISSUE_BODY" -l "RELEASE"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
