@@ -1,10 +1,14 @@
 name: CI Pull Requests
 on:
   pull_request:
+    branches:
+      - master
+      - release/**
   push:
     branches: # Проверяем только влитие в ветку разработки и релизные ветки
       - master
       - release/**
+      
 jobs:
   # Запускаем проверку eslint
   lint:
