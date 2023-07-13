@@ -36,15 +36,27 @@ jobs:
         run: |
           git log --pretty=format:"- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)" --abbrev-commit $(steps.get_previous_release.outputs.previous_tag)...$(steps.get_curent_version.outputs.current_tag) > changelog.md
 
-      - name: Create release issue
-        id: create_release_issue
-        uses: peter-evans/create-issue-from-file@v4
+      - name: Open issue
+        uses: actions-cool/issues-helper@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: Release ${{ steps.get_curent_version.outputs.current_tag }}
-          content-filepath: changelog.md
-          labels: |
-            RELEASE
+          actions: 'open-issue'
+          
+      - name: Set labels
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'set-labels'
+          issue-number: ${{ github.event.issue.number }}
+          labels: 'RELEASE'
+          
+#       - name: Create release issue
+#         id: create_release_issue
+#         uses: peter-evans/create-issue-from-file@v4
+#         with:
+#           token: ${{ secrets.GITHUB_TOKEN }}
+#           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
+#           content-filepath: changelog.md
+#           labels: |
+#             RELEASE
 
       - name: Run tests
         run: npm run test
