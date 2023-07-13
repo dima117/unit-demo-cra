@@ -55,7 +55,7 @@ jobs:
 
       - name: Read issuesfile.txt
         id: issuesfile
-        run: echo "issue_number=$(tail c -1 ${{ steps.get_issue.outputs.path }})" >> "$GITHUB_OUTPUT"
+        run: echo "issue_number=$(tail -c 1 ${{ steps.get_issue.outputs.path }})" >> "$GITHUB_OUTPUT"
 #         uses: juliangruber/read-file-action@v1
 #         with:
 #           path: changelog.txt
