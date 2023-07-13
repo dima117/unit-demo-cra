@@ -12,6 +12,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.REPO_SECRET }}
       - name: Install required dependencies
         run: |
+          sudo apt upgrade
           apt update
           apt install -y sudo
           sudo apt install -y git curl
