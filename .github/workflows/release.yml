@@ -2,8 +2,6 @@ name: release
 
 on:
   push:
-    branches:
-      - release/*
     tags:
       - "v[0-9]+"
 
@@ -34,8 +32,4 @@ jobs:
           RELEASE_BRANCH=release/$GITHUB_REF_NAME
           echo "RELEASE_BRANCH=$RELEASE_BRANCH" >> $GITHUB_ENV
           git branch $RELEASE_BRANCH $GITHUB_REF_NAME
-      - name: Push Release Branch
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ env.RELEASE_BRANCH }}
+          git push origin $RELEASE_BRANCH
