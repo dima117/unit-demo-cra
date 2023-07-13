@@ -108,7 +108,7 @@ jobs:
 #             RELEASE
 
       - uses: actions/setup-node@v3
-      - name: Setup node
+        name: Setup node
         with:
           node-version: ${{ matrix.node }}
 
