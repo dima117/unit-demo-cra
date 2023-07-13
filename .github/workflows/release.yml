@@ -24,7 +24,7 @@ jobs:
         if: steps.get_curent_version.outputs.current_tag != ''
         run: 
           echo "previous_tag=$(git describe --abbrev=0 --tags --match='v[0-9]*' (git describe --abbrev=0 --tags --match='v[0-9]*' HEAD)^)" >> "$GITHUB_OUTPUT"
-          echo previous_tag=$(git describe --abbrev=0 --tags --match='v[0-9]*' (git describe --abbrev=0 --tags --match='v[0-9]*' HEAD)^)
+          echo "previous_tag=$(git describe --abbrev=0 --tags --match='v[0-9]*' (git describe --abbrev=0 --tags --match='v[0-9]*' HEAD)^)"
 #       - name: First generate changelog
 #         id: first_generate_changelog
 #         if: steps.get_previous_release.outputs.previous_tag == ''
