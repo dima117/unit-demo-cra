@@ -27,12 +27,12 @@ jobs:
       - name: First generate changelog
         id: first_generate_changelog
         if: steps.get_previous_release.outputs.previous_tag == ''
-        run: echo "content=$(git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit $(steps.get_curent_version.outputs.current_tag))" >> "$GITHUB_OUTPUT"
+        run: echo "changelog=$(git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit $(steps.get_curent_version.outputs.current_tag))" >> "$GITHUB_OUTPUT"
 
       - name: Generate changelog
         id: generate_changelog
         if: steps.get_previous_release.outputs.previous_tag != ''
-        run: echo "content=$(git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit $(steps.get_previous_release.outputs.previous_tag)...$(steps.get_curent_version.outputs.current_tag))" >> "$GITHUB_OUTPUT"
+        run: echo "changelog=$(git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit $(steps.get_previous_release.outputs.previous_tag)...$(steps.get_curent_version.outputs.current_tag))" >> "$GITHUB_OUTPUT"
 
 #       - name: Read changelog.md
 #         id: changelog
@@ -45,7 +45,7 @@ jobs:
         with:
           actions: 'create-issue'
           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
-          body: ${{ steps.generate_changelog.outputs.content }}
+          body: ${{ steps.generate_changelog.outputs.changelog }}
           labels: 'RELEASE'
           
 #       - name: Set labels
