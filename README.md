@@ -1,32 +1,23 @@
-В этом репозитории находится пример приложения с тестами:
+# Отчёт о выполненной работе
 
-- [e2e тесты](e2e/example.spec.ts)
-- [unit тесты](src/example.test.tsx)
+## Linting
 
-Для запуска примеров необходимо установить [NodeJS](https://nodejs.org/en/download/) 16 или выше.
+Для валидации сообщений коммитов используется [git-commit-msg-linter](https://www.npmjs.com/package/git-commit-msg-linter). Настройки пакета не требуется, всё запускается автоматически после установки.
 
-Как запустить:
+Рекомендуемый формат сообщения:
 
-```sh
-# установить зависимости
-npm ci
-
-# запустить приложение
-npm start
+```
+<type>(<scope?>): <short summary>
 ```
 
-Как запустить e2e тесты:
+где:
 
-```sh
-# скачать браузеры
-npx playwright install
+- `type` - тип коммита, например *feat|fix|docs|style|refactor|test|chore|perf|ci|build|temp*;
+- `scope` - область коммита, опционально, может быть чем угодно, например *CHANGELOG|compiler|README*;
+- `short summary` - краткое описание, текст в строчном регистре, без точки в конце.
 
-# запустить тесты
-npm run e2e
-```
+Примеры:
 
-Как запустить модульные тесты:
-
-```sh
-npm test
-```
+- Плохой: `Correct spelling of CHANGELOG`;
+- Хороший: `docs: correct spelling of CHANGELOG`;
+- Отличный: `docs(CHANGELOG): correct spelling`.
