@@ -44,15 +44,11 @@ jobs:
               kill $PID
               break
             fi
-
-            if grep -q "failed" output.log; then
-              kill $PID
-              break
-            fi
             sleep 1
           done
           EOF
-          sudo bash monitor.sh
+          sudo chmod +x monitor.sh
+          ./monitor.sh
           if grep -q "failed" output.log; then
             cat output.log
             exit 1
