@@ -69,7 +69,7 @@ jobs:
           body: ${{ steps.changelog.outputs.content }}
           labels: 'RELEASE'
           
-      - if: steps.issuesfile.outputs.issue_num != ''
+      - if: steps.issuesfile.outputs.issue_number != ''
         name: Update issue
         uses: actions-cool/issues-helper@v3
         with:
