@@ -77,7 +77,7 @@ jobs:
           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
           body: ${{ steps.changelog.outputs.content }}
           labels: 'RELEASE'
-          isue-number: ${{ steps.issuesfile.outputs.issue_num }}
+          isue-number: ${{ steps.issuesfile.outputs.issue_number }}
           
           
 #       - name: Set labels
