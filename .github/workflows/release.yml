@@ -1,28 +1,80 @@
-name: Release
+name: CI release
 
 on:
+  workflow_run:
+    workflows: ["CI build"]
+    types:
+      - completed
   push:
     tags:
       - 'v\d+'
 
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 jobs:
-  stuff:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+
+      - run: echo "COMMIT_TIME=$(git show -s --format=%ci ${{ github.ref_name }})" >> $GITHUB_ENV
+      - run: echo "CURRENT_TIME=$(date +'%Y-%m-%d %T')" >> $GITHUB_ENV
+      - run: echo "TAG=$(git tag --sort=-committerdate | head -1)" >> $GITHUB_ENV
+      - run: echo "PREV_TAG=$(git tag --sort=-committerdate | head -2 | awk '{split($0, tags, "\n")} END {print tags[1]}')" >> $GITHUB_ENV
+      - run: echo "CHANGES=$(git log --pretty="- %s" $TAG..$PREV_TAG)" >> $GITHUB_ENV
+      - run: echo "COMMITS=$(echo "$CHANGES" | wc -l)" >> $GITHUB_ENV
+
+      - name: Create release issue
+        id: create_issue
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        with:
+          assignees: ${{ github.actor }}
+          filename: .github/issue-template.md
+          update_existing: true
+          search_existing: all
+
+      - name: Create release branch
+        run: |
+          git config --global user.name 'IKBOstudent'
+          git config --global user.email '90282668+IKBOstudent@users.noreply.github.com'
+          git checkout -b release/${{ github.ref_name }}
+          git push -f origin release/${{ github.ref_name }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Close Issue
+        run: gh issue close --comment "Auto-closing issue" ${{ steps.create_issue.outputs.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy:
+    needs: release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Create release issue
-        uses: JasonEtco/create-an-issue@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          filename: .github/issue-template.md
-          milestone: 1
-          update_existing: true
-          search_existing: all
+      - name: Install and Build
+        run: |
+          npm ci
+          npm run build
 
-      - run: "echo Created issue number ${{ toJson(github) }}"
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build

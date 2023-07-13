@@ -1,4 +1,4 @@
-name: CI
+name: CI build
 
 on:
   workflow_dispatch:
@@ -38,6 +38,3 @@ jobs:
 
       - name: Run e2e tests
         run: npm run ci:test:e2e
-
-      - name: Build
-        run: npm run build
