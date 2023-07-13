@@ -1,5 +1,4 @@
-module.exports = async ({ github, context }) => {
-  const TAG = github.ref_name;
+module.exports = async ({ github, context, tag }) => {
   const GH_URL = "https://github.com/";
   const { COMMIT_TIME } = process.env;
 
@@ -19,7 +18,7 @@ module.exports = async ({ github, context }) => {
       .catch(() => {});
 
     for (const issue of issues) {
-      if (issue.title === TAG) {
+      if (issue.title === tag) {
         return issue;
       }
     }
@@ -32,7 +31,7 @@ module.exports = async ({ github, context }) => {
       .catch(() => {});
 
     for (const release of releases) {
-      if (release.tag_name === TAG) {
+      if (release.tag_name === tag) {
         return release;
       }
     }
@@ -43,7 +42,7 @@ module.exports = async ({ github, context }) => {
 
   const issueData = {
     ...metaData,
-    title: TAG,
+    title: tag,
     labels: ["RELEASE"],
     issue_number: issue?.number ?? null,
     body,
@@ -51,9 +50,9 @@ module.exports = async ({ github, context }) => {
 
   const releaseData = {
     ...metaData,
-    tag_name: TAG,
+    tag_name: tag,
     release_id: release?.id ?? null,
-    title: `Release ${TAG}`,
+    title: `Release ${tag}`,
     body,
   };
 
