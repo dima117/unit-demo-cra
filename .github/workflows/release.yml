@@ -6,7 +6,8 @@ on:
       - v\d+
 
 permissions:
-  issues: write 
+  issues: write
+  contents: write 
 
 jobs:
   review:
