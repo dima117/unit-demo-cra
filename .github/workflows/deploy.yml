@@ -1,0 +1,23 @@
+name: Deploy
+on:
+  workflow_dispatch:
+  workflow_call:
+    outputs:
+      url:
+        description: GH pages URL
+        value: https://www.google.com/
+
+permissions:
+    contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # - name: Setup project
+      #   uses: ./.github/actions/setup
+      # - name: Deploy to GH pages
+      #   uses: JamesIves/github-pages-deploy-action@v4
+      #   with:
+      #     folder: build

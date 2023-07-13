@@ -5,6 +5,11 @@ on:
     branches:
       - master
       - develop
+  workflow_call:
+    outputs:
+      url:
+        description: Workflow URL
+        value: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 jobs:
   lint:
@@ -15,6 +20,8 @@ jobs:
         uses: ./.github/actions/setup
       - name: Lint
         run: npm run lint
+    outputs:
+      test: 123
   unit-tests:
     runs-on: ubuntu-latest
     steps:

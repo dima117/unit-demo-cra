@@ -9,25 +9,37 @@ permissions:
   issues: write 
 
 jobs:
+  review:
+    uses: ./.github/workflows/review-changes.yml
+  deploy:
+    uses: ./.github/workflows/deploy.yml
+    needs: review
   changelog:
     runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs:
+      - review
+      - deploy
     steps:
-        - uses: actions/checkout@v3
-        - name: Create changelog
-          id: changelog
-          uses: requarks/changelog-action@v1
-          with:
-            token: ${{ github.token }}
-            tag: ${{ github.ref_name }}
-            excludeTypes:
-        - name: Move changelog
-          run: cat CHANGELOG.md >> .github/ISSUE_TEMPLATE.md
-        - name: Create issue
-          uses: JasonEtco/create-an-issue@v2
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            release: ${{ github.ref_name }}
-          with:
-            assignees: ${{github.actor}}
-            update_existing: true
-            search_existing: all
+      - uses: actions/checkout@v3
+      - name: Create changelog
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+          excludeTypes:
+      - name: Move changelog
+        run: cat CHANGELOG.md >> .github/ISSUE_TEMPLATE.md
+      - name: Create issue
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          release: ${{ github.ref_name }}
+          verified: ${{needs.review.result == 'success'}}
+          review-url: ${{needs.review.outputs.url}}
+          gh-url: ${{needs.deploy.outputs.url}}
+        with:
+          assignees: ${{github.actor}}
+          update_existing: true
+          search_existing: all
