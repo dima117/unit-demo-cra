@@ -8,7 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
           token: ${{ secrets.REPO_SECRET }}
       - uses: actions/setup-node@v1
         with:
@@ -32,7 +31,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
           token: ${{ secrets.REPO_SECRET }}
       - uses: actions/setup-node@v1
         with:
@@ -41,11 +39,12 @@ jobs:
       - name: Install dependencies and buld app
         run: |
           npm ci
+          npx playwright install --with-deps chromium
           npm run build
 
       - name: Run unit tests
         run: |
-          npm run test-ci
+          npm run e2e
           
           
       
