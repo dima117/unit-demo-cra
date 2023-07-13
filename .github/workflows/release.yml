@@ -55,7 +55,7 @@ jobs:
 
       - name: Read issuesfile.txt
         id: issuesfile
-        run: echo "issue_number=$(tail -c 1 ${{ steps.get_issue.outputs.path }})" >> "$GITHUB_OUTPUT"
+        run: echo "issue_number=$(tail -1 ${{ steps.get_issue.outputs.path }})" >> "$GITHUB_OUTPUT"
 #         uses: juliangruber/read-file-action@v1
 #         with:
 #           path: changelog.txt
@@ -77,7 +77,7 @@ jobs:
           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
           body: ${{ steps.changelog.outputs.content }}
           labels: 'RELEASE'
-          isue-number: ${{ steps.issuesfile.outputs.issue_number }}
+          issue-number: ${{ steps.issuesfile.outputs.issue_number }}
           
           
 #       - name: Set labels
