@@ -60,6 +60,7 @@
         "@jest/globals": "^29.6.1",
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
+        "git-commit-msg-linter": "^5.0.4",
         "jest-html-reporter": "^3.7.0"
     }
 }
