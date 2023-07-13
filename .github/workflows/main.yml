@@ -11,7 +11,7 @@ jobs:
           token: ${{ secrets.REPO_SECRET }}
       - uses: actions/setup-node@v1
         with:
-          node-version: '10.x'
+          node-version: '14.x'
       - name: Install commitlint
         run: |
           npm install conventional-changelog-conventionalcommits
@@ -38,7 +38,7 @@ jobs:
 
       - name: Install dependencies and buld app
         run: |
-          npm ci
+          npm ci --force
           npx playwright install --with-deps chromium
           npm run build
 
