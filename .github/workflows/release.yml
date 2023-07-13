@@ -1,0 +1,28 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v\d+'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  stuff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create release issue
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          filename: .github/issue-template.md
+          milestone: 1
+          update_existing: true
+          search_existing: all
+
+      - run: "echo Created issue number ${{ toJson(github) }}"
