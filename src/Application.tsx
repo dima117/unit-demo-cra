@@ -19,6 +19,6 @@ export const Application = (): JSX.Element => {
         <Route path="/about" element={about} />
         <Route path="/" element={home} />
       </Routes>
-    </div>
+    </div
   );
 };
