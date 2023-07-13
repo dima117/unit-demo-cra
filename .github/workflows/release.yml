@@ -13,7 +13,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Exit if not on master branch
-        if: endsWith(github.ref, 'master') == false
+        if: github.ref != refs/heads/master
         run: exit -1
       - name: Setup environment
         uses: actions/setup-node@v3
