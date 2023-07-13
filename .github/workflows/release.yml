@@ -9,14 +9,14 @@ permissions:
   contents: read
   issues: write
 
-env:
-  COMMIT_TIME: $(git show -s --format=%ci ${{ github.sha }})
-
 jobs:
   create-issue:
     runs-on: ubuntu-latest
 
     steps:
+      - name: set up environment
+        run: echo "COMMIT_TIME=$(git show -s --format=%ci ${{ github.sha }})" >> $GITHUB_ENV
+
       - name: create release issue
         uses: actions/github-script@v6
         with:
