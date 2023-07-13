@@ -36,6 +36,7 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "no-tabs": "off",
         "react/react-in-jsx-scope": "off",
         "testing-library/prefer-screen-queries": "off",
         "testing-library/no-debugging-utils": "off",
