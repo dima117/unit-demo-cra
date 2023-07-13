@@ -55,7 +55,9 @@ jobs:
           npm run build
 
       - name: Run unit tests
-        run: npm run test
+        run: |
+          npm run test
+          a
           
           
       
