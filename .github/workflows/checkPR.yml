@@ -44,11 +44,17 @@ jobs:
               kill $PID
               break
             fi
+
+            if grep -q "failed" output.log; then
+              kill $PID
+              break
+            fi
             sleep 1
           done
           EOF
           sudo bash monitor.sh
-      - name: Print error if time outed on previous step
-        if: cancelled()
-        run: cat output.log
+          if grep -q "failed" output.log; then
+            cat output.log
+            exit 1
+          fi
       
