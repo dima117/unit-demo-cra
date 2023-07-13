@@ -22,12 +22,14 @@ jobs:
             const TAG = "${{ github.ref_name }}"
 
             const metaData = {
-                owner: context.repo.owner,
+                owner: context.actor,
                 repo: context.repo.repo,
             }
 
             const getIssue = async () => {
-                const issues = await github.rest.issues.listForRepo({...metaData, labels: "RELEASE"}).then((res) => res.data);
+                const issues = await github.rest.issues.listForRepo({...metaData, labels: "RELEASE"})
+                    .then((res) => res.data)
+                    .catch((err) => null);
 
                 for (const issue of issues) {
                     if (issue.title === TAG) {
@@ -36,19 +38,21 @@ jobs:
                 }
             }
 
-            const getReleaseId = async () => {
-                const releases = await github.rest.repos.listReleases(metaData).then((res) => res.data);
+            const getRelease = async () => {
+                const releases = await github.rest.repos.listReleases(metaData)
+                    .then((res) => res.data)
+                    .catch((err) => null);
 
                 for (const release of releases) {
                     if (release.tag_name === TAG) {
-                        return release.id;
+                        return release;
                     }
                 }
             }
 
             const issue = await getIssue();
-            console.log("got issue: ");
-            console.log(issue);
+            const release = await getRelease();
+
             const issueData = {
                 ...metaData,
                 title: TAG,
@@ -59,14 +63,20 @@ jobs:
             const releaseData = {
                 ...metaData,
                 tag_name: TAG,
-                release_id: issue?.number ? getReleaseId() : null, 
+                release_id: release?.id ?? null, 
+                title: `Release ${TAG}`,
+                body: "author: ${metaData.owner}\n
+                       test\n"
             }
 
             if (issue) {
                 github.rest.issues.update(issueData);
-                github.rest.repos.updateRelease(releaseData);
-            } 
-            else {
+            } else {
                 github.rest.issues.create(issueData);
+            }
+
+            if (release) {
+                github.rest.repos.updateRelease(releaseData);
+            } else {
                 github.rest.repos.createRelease(releaseData);
             }
