@@ -16,8 +16,8 @@ jobs:
           node-version: 18
       - name: Install commitlint
         run: |
-          npm install conventional-changelog-conventionalcommits
-          npm install commitlint@latest
+          npm i @commitlint/cli @commitlint/config-conventional
+          echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitlint.config.js
 
       - name: Validate last commit
         if: github.event_name == 'push'
