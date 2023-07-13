@@ -1,0 +1,12 @@
+name:  commitlint
+on: push
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        run: actions/checkout@v3
+      - name: npm_install
+        run: npm ci
+      - name: check_by_commitlint
+        run: commitlint --from HEAD~1 --to HEAD
