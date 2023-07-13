@@ -30,5 +30,3 @@ jobs:
           RELEASE_AUTHOR: ${{ github.actor }}
           RELEASE_NO: ${{ github.ref_name }}
           RELEASE_DATE: ${{ github.event.repository.updated_at}}
-        with:
-          filename: /ISSUE_TEMPLATE/release-issue-template.md
