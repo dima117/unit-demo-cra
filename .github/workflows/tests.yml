@@ -1,0 +1,23 @@
+name: Run tests for pull request
+run-name: Running tests for ${{ github.event.pull_request.title }} for commit ${{ github.event.pull_request.head.sha }}
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  Install dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install npm packages
+        run: npm ci
+      - name: Install puppeteer
+        run: npx playwright install --with-deps chromium
+  Run unit tests:
+    needs: Install dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm test
+  Run e2e tests:
+    needs: [Install dependencies, Run unit tests]
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm run e2e
