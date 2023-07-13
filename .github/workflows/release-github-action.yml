@@ -38,7 +38,8 @@ jobs:
         run: |
           BRANCH_NAME=release-${{ github.ref_name }}
           git checkout -b $BRANCH_NAME
-          git push origin $BRANCH_NAME
+          git push https://${GH_ACCESS_TOKEN}@github.com/${GITHUB_REPOSITORY} $BRANCH_NAME
+
 
       - name: Create team sync issue
         uses: imjohnbo/issue-bot@3d96848fb5e9a4a473bb81ae62b4b4866a56e93a
