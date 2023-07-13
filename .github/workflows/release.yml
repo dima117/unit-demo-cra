@@ -103,8 +103,41 @@ jobs:
 #           labels: |
 #             RELEASE
 
-      - name: Run tests
-        run: npm run test
+      - uses: actions/setup-node@v3
+      - name: Setup node
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Cache necessary modules
+        id: cache-npm-modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-modules
+
+      - name: "Install necessary modules"
+        run: npm install
+
+      - name: "Build project"
+        run: npm run build
+
+      - name: Cache playwright
+        id: cache-playwright
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright
+
+      - name: "Install playwright"
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: "Tests"
+        run: npm run test:ci
+
+      - name: "Run Playwright tests"
+        run: npm run test:all:ci
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
