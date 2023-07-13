@@ -59,8 +59,7 @@ jobs:
   create_release_branch:
     name: Create release branch
     runs-on: ubuntu-latest
-    permissions:
-      workflows: write
+    permissions: write-all
     steps:
       - uses: actions/checkout@v3
 
