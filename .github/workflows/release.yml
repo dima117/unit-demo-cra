@@ -13,8 +13,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: Exit if not on master branch
-        if: github.ref != 'refs/heads/master'
-        run: exit -1
+        run: |
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          if [[ $CURRENT_BRANCH == master ]]; then
+            exit -1
+          fi
       - name: Setup environment
         uses: actions/setup-node@v3
         with:
