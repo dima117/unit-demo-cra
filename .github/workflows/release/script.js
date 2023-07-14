@@ -36,7 +36,7 @@ module.exports = async ({ github, context, exec, TAG }) => {
   const appendChangeLog = async (body) => {
     let output = '';
     
-    await exec.exec(`git log --oneline --reverse ${prevTag.name}..HEAD`, [], {
+    await exec.exec(`git log --oneline --reverse ${COMMIT_BEFORE}..${COMMIT_AFTER}`, [], {
       listeners: {
         stdout: (data) => output += data.toString(),
         stderr: (data) => output += data.toString(),
