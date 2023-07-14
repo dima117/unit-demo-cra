@@ -1,4 +1,4 @@
-Rname: PR_check
+name: PR_check
 
 on: pull_request
 jobs:
