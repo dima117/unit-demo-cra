@@ -70,6 +70,7 @@ jobs:
         run: |
           COMMENT_BODY=$(npx auto-changelog --commit-limit false --template keepachangelog --hide-credit --sort-commits date-desc --stdout --unreleased)
           echo "${{ steps.get-issue-number.outputs.result }}"
+          gh issue reopen ${{ steps.get-issue-number.outputs.result }}
           gh issue edit ${{ steps.get-issue-number.outputs.result }} -b "$COMMENT_BODY"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -186,6 +187,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Close Release Issue
+        if: needs.deploy.result == 'success'
         run: |
           gh issue close ${{ needs.release.outputs.issue-number }} -r completed
         env:
