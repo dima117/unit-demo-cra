@@ -11,7 +11,7 @@ create_issue_payload() {
   {
     "title": "Release $VERSION",
     "labels": ["RELEASE"],
-    "body": "**Release version:** $VERSION \n**Tagged by:** $AUTHOR \n**Date:** $TAG_DATE \n\n[Link to checks results](https://github.com/$GITHUB_REPOSITORY/actions/runs/$RUN_ID)"
+    "body": "**Release version:** $VERSION \n**Tagged by:** $AUTHOR \n**Date:** $TAG_DATE \n\n[Check tests results link](https://github.com/$GITHUB_REPOSITORY/actions/runs/$RUN_ID)"
   }
 EOF
 }
