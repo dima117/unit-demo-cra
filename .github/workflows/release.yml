@@ -21,7 +21,7 @@ jobs:
         id: get-previous-tag
         run: |
           echo "PREV_TAG=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))" >> $GITHUB_ENV
-          echo ${{env.PREV_TAG}}
+          echo ${{ env.PREV_TAG }}
 
       - name: Коммиты между релизами
         id: collect-commits
