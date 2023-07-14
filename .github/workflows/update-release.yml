@@ -22,21 +22,21 @@ jobs:
           echo $TAG_NAME
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
       - name: Find Release Issue
-          id: find-issue
-          uses: actions-cool/issues-helper@v3
-          with:
-            actions: 'find-issues'
-            token: ${{ secrets.GITHUB_TOKEN }}
-            title-includes: '${{ env.TAG_NAME }}'
-            labels: 'RELEASE'
+        id: find-issue
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'find-issues'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title-includes: '${{ env.TAG_NAME }}'
+          labels: 'RELEASE'
       - name: Get Release Issue Number
-          uses: actions/github-script@v6
-            id: get-issue-number
-            with:
-              script: |
-                const issues = JSON.parse('${{ steps.find-issue.outputs.issues }}');
-                const issue = issues[0];
-                return issue.number;
+        id: get-issue-number
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issues = JSON.parse('${{ steps.find-issue.outputs.issues }}');
+            const issue = issues[0];
+            return issue.number;
       - name: Edit Release Issue
         run: |
           COMMENT_BODY=$(npx auto-changelog --commit-limit false --template keepachangelog --hide-credit --sort-commits date-desc --stdout --unreleased)
