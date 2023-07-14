@@ -1,12 +1,12 @@
-name: Release
+name: CI
 
 on:
-  push:
-    tags:
-      - "v*"
+  pull_request:
+    branches:
+      - master
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,64 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Get release version
-        id: get_version
-        run: echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
-
-      - name: Get previous release tag
-        id: get_previous_tag
-        run: |
-          PREVIOUS_TAG=$(git describe --abbrev=0 --tags $(git rev-list --tags='v*' --max-count=1))
-          echo "::set-output name=previous_tag::$PREVIOUS_TAG"
-
-      - name: Generate changelog
-        id: generate_changelog
-        run: |
-          CHANGELOG=$(git log --pretty=format:"- %s (%an)" $(git describe --abbrev=0 --tags)..HEAD)
-          echo "::set-output name=changelog::$CHANGELOG"
-
-      - name: Check if release issue exists
-        id: check_issue
-        run: |
-          ISSUE_NUMBER=$(gh issue list --label RELEASE --state open --author "$(git log -1 --pretty=format:'%an')" --title "Release ${{ steps.get_version.outputs.version }}" --json number --template "{{.Number}}")
-          echo "::set-output name=issue_number::$ISSUE_NUMBER"
-
-      - name: Create or update release issue
-        uses: peter-evans/create-issue-from-file@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          title: Release ${{ steps.get_version.outputs.version }}
-          body: |
-            **Changelog:**
-            ${{ steps.generate_changelog.outputs.changelog }}
-        if: steps.check_issue.outputs.issue_number == ''
-
-      - name: Update release issue
-        run: |
-          gh issue update ${{ steps.check_issue.outputs.issue_number }} --title "Release ${{ steps.get_version.outputs.version }}" --body "**Changelog:**\n${{ steps.generate_changelog.outputs.changelog }}"
-        if: steps.check_issue.outputs.issue_number != ''
-
-  ci:
-    needs: release
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "16"
+          node-version: 16
 
       - name: Install dependencies
         run: npm ci
@@ -89,7 +32,6 @@ jobs:
 
       - name: Setup Commitlint
         run: npm install -g @commitlint/cli @commitlint/config-conventional
-
       - name: Lint commit messages
         run: git log --pretty=format:"%s" ${{ github.sha }} | npx commitlint
 
@@ -99,30 +41,3 @@ jobs:
             echo "Tests failed. Aborting merge."
             exit 1
           fi
-
-      - name: Save test results
-        id: test_results
-        run: echo "::set-output name=test_results::${{ job.status }}"
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          personal_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
-          publish_branch: gh-pages
-
-      - name: Get GitHub Pages URL
-        id: gh_pages_url
-        run: |
-          echo "::set-output name=url::https://${{ github.repository_owner }}.github.io/${{ github.repository }}/"
-
-      - name: Update release issue with GitHub Pages URL
-        run: |
-          gh issue update ${{ steps.check_issue.outputs.issue_number }} --body "GitHub Pages URL: ${{ steps.gh_pages_url.outputs.url }}"
-        if: steps.check_issue.outputs.issue_number != ''
-
-      - name: Close release issue
-        uses: peter-evans/close-issue@v1
-        with:
-          issue-number: ${{ steps.check_issue.outputs.issue_number }}
-        if: steps.check_issue.outputs.issue_number != ''
