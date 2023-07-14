@@ -23,10 +23,15 @@ jobs:
           TAG_DATE: ${{ github.event.head_commit.timestamp }}
         with:
           update_existing: true
-      - name: Информация о последнем коммите
+      - name: Get previous tag
+        id: get-previous-tag
+        run: echo ::set-output name=prev_tag::$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))
+
+      - name: Collect commits
+        id: collect-commits
         run: |
-          for commit in ${{ toJson(github.event.commits) }}; do
-          echo "Commit ID: $(echo $commit | jq -r '.id')"
-          echo "Commit Message: $(echo $commit | jq -r '.message')"
-          # Add more actions or logic based on commit information
-          done
+          commits=$(git log --pretty=format:"%s" ${GITHUB_REF} ^${{ steps.get-previous-tag.outputs.prev_tag }})
+          echo ::set-env name=COMMIT_LIST::$commits
+
+      - name: Display commit list
+        run: echo ${{ env.COMMIT_LIST }}

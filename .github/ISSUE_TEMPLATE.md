@@ -2,7 +2,9 @@
 title: RELEASE version {{env.RELEASE_VERSION}}
 ---
 
-Someone just started release! Here's who did it: `{{ payload.sender.login }}`.
-What we have in payload: {{ payload.commits }}
+Инициатор релиза: `{{ payload.sender.login }}`.
 
-Date: {{env.TAG_DATE}}
+Запуск процесса релиза: {{env.TAG_DATE}}
+
+Список коммитов
+{{ env.COMMIT_LIST }}
