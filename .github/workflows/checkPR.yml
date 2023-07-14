@@ -39,10 +39,18 @@ jobs:
           PID=$!
 
           while true; do
+            echo "Checking output.log"
+            cat output.log
             if grep -q "$WORD" output.log; then
+              echo "Killing test process"
               kill $PID
               break
             fi
+            if grep -q "failed" output.log; then
+            echo "Killing test process"
+            kill $PID
+            break
+          fi
             sleep 1
           done
           EOF
