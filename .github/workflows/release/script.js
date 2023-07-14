@@ -52,7 +52,7 @@ module.exports = async ({ github, context, exec, TAG }) => {
     }
 
     const changelog = await buildChangelog();
-    return `![Tests](https://img.shields.io/badge/Tests-In%20progress-yellow) \n \
+    return `[![Tests](https://img.shields.io/badge/Tests-In%20progress-yellow)](https://github.com/Memesaurus/SHRI_Infrastructure/actions/workflows/tests.yml?query=event%3Arelease++) \n \
             Author: [${metaData.owner}](${GH_URL}${metaData.owner})\n \
             Release Time: ${COMMIT_TIME}\n \
             Changelog: \n \
