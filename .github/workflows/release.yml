@@ -21,13 +21,13 @@ jobs:
         id: version
         run: |
           # Extract the numerical part from the RELEASE_VERSION
-          version=${{ env.RELEASE_VERSION#v }}
+          version=${RELEASE_VERSION#v}
 
           # Decrease the version by 1
           decreased_version=$((version - 1))
 
           # Set the decreased version as a new environment variable
-          echo "DECREASED_VERSION=$decreased_version" >> $GITHUB_ENV
+          export DECREASED_VERSION=$decreased_version
 
       - name: Коммиты между релизами
         id: collect-commits
