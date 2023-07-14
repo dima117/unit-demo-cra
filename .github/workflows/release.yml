@@ -1,0 +1,231 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+'
+
+jobs:
+
+  # Creates or updates an issue for current release tag if release version is valid.
+  issue:
+    runs-on: ubuntu-latest
+
+    outputs:
+      new_version: ${{ steps.get_latest_release_version.outputs.new_version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get Latest Release Version
+        id: get_latest_release_version
+        run: |
+          latest_release=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name')
+          
+          latest_version="${latest_release#v}"
+          new_tag="${{ github.ref }}"
+          new_version="${new_tag#refs/tags/v}"
+          echo "latest_version=$latest_version" >> $GITHUB_OUTPUT
+          echo "new_version=$new_version" >> $GITHUB_OUTPUT
+
+      - name: Check Tag Version
+        run: |
+          new_version="${{ steps.get_latest_release_version.outputs.new_version }}"
+          latest_version="${{ steps.get_latest_release_version.outputs.latest_version }}"
+          
+          if [[ "$latest_version" == "null" ]]; then
+            echo "First version. No previous releases. Tag is valid."
+          elif [[ "$new_version" -le "$latest_version" ]]; then
+            echo "Error: New tag version is not greater than the latest release version."
+            exit 1
+          fi
+
+      - name: Get Tag Information
+        id: tag
+        run: |
+          echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "author=${{ github.actor }}" >> $GITHUB_OUTPUT
+          echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        if: ${{ steps.get_latest_release_version.outputs.latest_version != 'null' }}
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.1.0
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        id: get_issue
+        run: |
+          issue_name="Release ${{ steps.tag.outputs.version }}"
+          issue_number=$(gh issue list --search "$issue_name" --json number -q '.[0].number')
+          echo "issue_number=$issue_number" >> $GITHUB_OUTPUT
+
+      - name: Create or Update GitHub RELEASE Issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          latest_version="${{ steps.get_latest_release_version.outputs.latest_version }}"
+          if [[ "$latest_version" == "null" ]]; then
+            changelog="First release"
+          else
+            changelog="${{ steps.changelog.outputs.changelog }}"
+          fi
+          
+          body=$(cat <<-EOM
+          Author: ${{ steps.tag.outputs.author }}
+          Date: ${{ steps.tag.outputs.date }}
+          Version: ${{ steps.tag.outputs.version }}
+
+          Changelog:
+          $changelog
+          EOM
+          )
+
+          issue_number=${{ steps.get_issue.outputs.issue_number }}
+
+          echo $issue_number
+
+          if [[ -z $issue_number ]]; then
+            gh issue create \
+            --title "Release ${{ steps.tag.outputs.version }}" \
+            --body "${body}" \
+            --label "RELEASE" \
+            --assignee "${{ steps.tag.outputs.author }}"
+          else 
+            gh issue edit $issue_number \
+            --title "Release ${{ steps.tag.outputs.version }}" \
+            --body "${body}"
+          fi         
+
+
+  # Adds a link of current run to the issue comment.
+  checks_result:
+    needs: [ issue ]
+    if: needs.issue.result == 'success'
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get Issue
+        id: get_issue
+        run: |
+          issue_name="Release ${{ steps.tag.outputs.version }}"
+          issue_number=$(gh issue list --search "$issue_name" --json number -q '.[0].number')
+          echo "issue_number=$issue_number" >> $GITHUB_OUTPUT
+
+      - name: Add Comment with Results
+        run: |
+          issue_number=${{ steps.get_issue.outputs.issue_number }}
+          url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          
+          gh issue comment $issue_number \
+          --body "Workflow results: $url"
+
+
+  # Runs ESLint and Tests
+  eslint:
+    needs: [ issue ]
+    uses: ./.github/workflows/eslint.yml
+
+  test:
+    needs: [ issue ]
+    uses: ./.github/workflows/test.yml
+
+
+  # Deploys new version if everything is successful
+  deploy:
+    needs: [ issue, checks_result, eslint, test ]
+    if: success()
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
+    outputs:
+      deployment_url: ${{ steps.get_deployment_info.outputs.deployment_url }}
+      commit_url: ${{ steps.get_deployment_info.outputs.commit_url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install dev dependencies
+        run: npm install --only=dev
+
+      - name: Run Deploy
+        env:
+          GIT_USER_EMAIL: ${{ secrets.EMAIL }}
+          GIT_USER_NAME: vladkoncha
+        run: |
+          git config user.email "$GIT_USER_EMAIL"
+          git config user.name "$GIT_USER_NAME"
+          git remote set-url origin https://$GIT_USER_NAME:${{ secrets.RELEASE_TOKEN }}@github.com/$GIT_USER_NAME/shri-infrastructure-hw-2023.git
+          
+          commit_message="feat!: deploy app to GitHub Pages - Version ${{ needs.issue.outputs.new_version }}"
+          npm run deploy -- -m "$commit_message"
+
+      - name: Get Commit and Deployment Information
+        id: get_deployment_info
+        run: |
+          commit_sha=$(git ls-remote origin "gh-pages" | awk '{ print $1 }')
+          deployment_url="https://vladkoncha.github.io/shri-infrastructure-hw-2023"
+          commit_url="https://github.com/vladkoncha/shri-infrastructure-hw-2023/commit/$commit_sha"
+          
+          echo "commit_sha=$commit_sha" >> $GITHUB_OUTPUT
+          echo "deployment_url=$deployment_url" >> $GITHUB_OUTPUT
+          echo "commit_url=$commit_url" >> $GITHUB_OUTPUT
+
+      - name: Get Issue
+        id: get_issue
+        run: |
+          issue_name="Release ${{ steps.tag.outputs.version }}"
+          issue_number=$(gh issue list --search "$issue_name" --json number -q '.[0].number')
+          echo "issue_number=$issue_number" >> $GITHUB_OUTPUT
+
+      - name: Add Comment with Deploy
+        run: |
+          issue_number=${{ steps.get_issue.outputs.issue_number }}
+          deployment_url=${{ steps.get_deployment_info.outputs.deployment_url }}
+          commit_url=${{ steps.get_deployment_info.outputs.commit_url }}
+          
+          gh issue close $issue_number \
+          -c "Deployed successfully at: $deployment_url Commit: $commit_url" \
+          -r "completed"
+
+
+  # Creates new release if deployment is successful
+  release:
+    needs: [ deploy ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Deployed here: ${{ needs.deploy.outputs.deployment_url }}
+          draft: false
+          prerelease: false
