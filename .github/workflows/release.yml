@@ -25,6 +25,6 @@ jobs:
       release: ${{ github.ref_name }}
       review-verified: ${{ needs.review.result == 'success' }}
       review-url: ${{ needs.review.outputs.url }}
-      deploy-verified: ${{ needs.deploy.outputs.deploy-status == 'success' }}
+      deploy-verified: ${{ contains(fromJson('["success", "skipped"]'), needs.deploy.outputs.deploy-status) }}
       deploy-url: ${{ needs.deploy.outputs.workflow-url }}
-      pages-url: ${{ needs.deploy.outputs.paged-url }}
+      pages-url: ${{ needs.deploy.outputs.pages-url }}

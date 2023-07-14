@@ -60,6 +60,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Close issue
         if: ${{inputs.review-verified && inputs.deploy-verified}}
-        run: gh issue close --comment "Close due to successful release" "${{steps.issue.outputs.number}}"
+        run: gh issue close ${{steps.issue.outputs.number}} --comment "Close due to successful release"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
