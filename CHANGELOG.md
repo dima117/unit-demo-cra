@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/Rubicones/hw-infra/compare/v1.8.0...v1.8.1) (2023-07-14)
+
+
+### Bug Fixes
+
+* temporarily remove changelog ([f02236c](https://github.com/Rubicones/hw-infra/commit/f02236c1fa7ab92571440c21b3e615141789d021))
+
 # [1.8.0](https://github.com/Rubicones/hw-infra/compare/v1.7.1...v1.8.0) (2023-07-14)
 
 
