@@ -28,8 +28,7 @@ jobs:
               token: ${{ secrets.GITHUB_TOKEN }}
               ref: ${{ github.event.ref }}
               actor: ${{ github.actor }}
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     # Tests          
     lint:
         name: "Test Release Lint"
@@ -143,7 +142,7 @@ jobs:
               fetch-depth: 0 
               ref: release/${{ github.ref_name }}
 
-          - name: "Show results"
+          - name: "Publish results"
             uses: ./.github/actions/publishReleaseTestingResults
             with: 
               owner: ${{ github.repository_owner }}
@@ -153,8 +152,7 @@ jobs:
               head_commit: "${{ toJson(github.event.head_commit) }}"
               workflow_link: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
               tests: "${{ toJson(needs) }}"
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     # Build & Deploy
     build:
         name: "Build"
@@ -189,11 +187,12 @@ jobs:
               chmod -c -R +rX "./build/" | while read line; do
                 echo "::warning title=Invalid file permissions automatically fixed::$line"
               done
+
           - name: Upload Pages artifact
             uses: actions/upload-pages-artifact@v2
             with:
               path: "./build/"
-              retention-days: "30"
+              retention-days: "90"
 
     deploy:
       needs: [build]
