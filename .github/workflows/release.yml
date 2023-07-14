@@ -116,7 +116,58 @@ jobs:
           fetch-depth: 0
       - name: Comment Release Issue
         run: |
-          COMMENT_BODY='Build results: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          COMMENT_BODY='Test results: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          gh issue comment ${{ needs.release.outputs.issue-number }} -b "$COMMENT_BODY"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  build:
+    needs: [release, unit-test, e2e-test, comment-test-result]
+    outputs:
+      page-url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: "./build"
+
+  deploy:
+    needs: build
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+
+  comment-deploy:
+    needs: [release, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Comment Release Issue
+        run: |
+          COMMENT_BODY='Deploy results: ${{ needs.deploy.outputs.page-url }}'
           gh issue comment ${{ needs.release.outputs.issue-number }} -b "$COMMENT_BODY"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
