@@ -51,6 +51,7 @@ jobs:
           actions: "find-issues"
           token: ${{ secrets.GITHUB_TOKEN }}
           title-includes: "${{ env.TAG_NAME }}"
+          issue-state: "all"
           labels: "RELEASE"
       - name: Get Release Issue Number
         id: get-issue-number
@@ -59,6 +60,9 @@ jobs:
           script: |
             console.log(${{ steps.find-issue.outputs.issues }});
             const issues = ${{ steps.find-issue.outputs.issues }};
+            if (!issues.length) {
+              throw Error("release issue not found");
+            }
             const issue = issues[0];
             return issue.number;
       - name: Edit Release Issue
@@ -159,16 +163,26 @@ jobs:
         uses: actions/deploy-pages@v2
 
   comment-deploy:
+    if: always()
     needs: [release, deploy]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Set Success Message
+        if: deploy.status == 'success'
+        run: |
+          COMMENT_BODY='Deploy success: ${{ needs.deploy.outputs.page-url }}'
+          echo 'COMMENT_BODY=$COMMENT_BODY' >> $GITHUB_ENV
+      - name: Set Failure Message
+        if: deploy.status != 'success'
+        run: |
+          COMMENT_BODY='Deploy failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          echo 'COMMENT_BODY=$COMMENT_BODY' >> $GITHUB_ENV
       - name: Comment Release Issue
         run: |
-          COMMENT_BODY='Deploy results: ${{ needs.deploy.outputs.page-url }}'
-          gh issue comment ${{ needs.release.outputs.issue-number }} -b "$COMMENT_BODY"
+          gh issue comment ${{ needs.release.outputs.issue-number }} -b "${{ env.COMMENT_BODY }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Close Release Issue
