@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build:
+  tests_and_linting:
     runs-on: ubuntu-latest
 
     steps:
