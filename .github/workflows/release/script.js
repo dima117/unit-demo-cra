@@ -43,7 +43,7 @@ module.exports = async ({ github, context, exec, TAG }) => {
       }
     });
 
-    return body + "\n" + output;
+    return body + output;
   }
 
   const buildInitBody = async (body) => {
