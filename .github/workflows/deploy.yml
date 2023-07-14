@@ -2,7 +2,7 @@ name: deploy to gh-pages
 
 on:
   workflow_run:
-    workflows: [Node.js CI]
+    workflows: ["Node.js CI"]
     types: [completed]
 
 permissions:
