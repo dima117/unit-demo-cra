@@ -74,7 +74,7 @@ module.exports = async ({ github, context, exec, TAG }) => {
     tag_name: TAG,
     release_id: release?.id ?? null,
     title: TAG,
-    body: release.body ?? initBody,
+    body: release?.body ?? initBody,
   };
 
   if (issue) {
