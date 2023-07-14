@@ -56,7 +56,10 @@ jobs:
       - name: Report status
         if: ${{!(inputs.review-verified && inputs.deploy-verified)}}
         run: gh issue comment ${{steps.issue.outputs.number}} --body "Can't close because of failed processess"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Close issue
         if: ${{inputs.review-verified && inputs.deploy-verified}}
         run: gh issue close --comment "Close due to successful release" "${{steps.issue.outputs.number}}"
-      
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
