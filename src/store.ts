@@ -1,60 +1,61 @@
-import { createStore } from "redux";
+import { createStore } from 'redux'
+import type { Store } from 'redux'
 
 export interface ApplicationState {
-  text: string;
-  items: string[];
-  done: Record<number, boolean>;
+  text: string
+  items: string[]
+  done: Record<number, boolean>
 }
 
-const items = ["Позавтракать", "Сходить в магазин", "Покормить кота"];
+const items = ['Позавтракать', 'Сходить в магазин', 'Покормить кота']
 
-const DEFAULT_STATE = { items, done: {}, text: "" };
+const DEFAULT_STATE = { items, done: {}, text: '' }
 
 // actions
-export const addItem = (text: string) => ({ type: "ADD_ITEM", text } as const);
-export const setText = (text: string) => ({ type: "SET_TEXT", text } as const);
+export const addItem = (text: string) => ({ type: 'ADD_ITEM', text } as const)
+export const setText = (text: string) => ({ type: 'SET_TEXT', text } as const)
 export const setDone = (index: number, done: boolean) =>
-  ({ type: "SET_DONE", index, done } as const);
+  ({ type: 'SET_DONE', index, done } as const)
 
 export type Action =
   | ReturnType<typeof addItem>
   | ReturnType<typeof setText>
-  | ReturnType<typeof setDone>;
+  | ReturnType<typeof setDone>
 
 // reducer
 const rootReducer = (
   state: ApplicationState = DEFAULT_STATE,
   action: Action
-) => {
+): ApplicationState => {
   switch (action.type) {
-    case "ADD_ITEM":
+    case 'ADD_ITEM':
       return {
         ...state,
-        text: "",
-        items: [...state.items, action.text],
-      };
-    case "SET_TEXT":
+        text: '',
+        items: [...state.items, action.text]
+      }
+    case 'SET_TEXT':
       return {
         ...state,
-        text: action.text,
-      };
-    case "SET_DONE":
+        text: action.text
+      }
+    case 'SET_DONE':
       return {
         ...state,
         done: {
           ...state.done,
-          [action.index]: action.done,
-        },
-      };
+          [action.index]: action.done
+        }
+      }
     default:
-      return state;
+      return state
   }
-};
+}
 
 // epics
 
-export function initStore() {
-  const store = createStore<ApplicationState, Action, {}, {}>(rootReducer);
+export function initStore (): Store<ApplicationState, Action> {
+  const store = createStore<ApplicationState, Action, Record<string, unknown>, Record<string, unknown>>(rootReducer)
 
-  return store;
+  return store
 }
