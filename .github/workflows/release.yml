@@ -26,7 +26,7 @@ jobs:
         if: github.ref_type == 'tag'
         run: |
           ISSUE_TITLE=$(git tag $GITHUB_REF_NAME -l --format 'Release %(refname:short) by %(authorname)')
-          ISSUE_BODY=$(npx auto-changelog --commit-limit false --template keepachangelog --hide-credit --sort-commits date-desc --stdout)
+          ISSUE_BODY=$(npx auto-changelog --commit-limit false --template keepachangelog --hide-credit --sort-commits date-desc --stdout --starting-version $GITHUB_REF_NAME --ending-version $GITHUB_REF_NAME)
           gh issue create -t "$ISSUE_TITLE" -b "$ISSUE_BODY" -l "RELEASE"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -68,7 +68,7 @@ jobs:
       - name: Edit Release Issue
         if: github.ref_type == 'branch'
         run: |
-          COMMENT_BODY=$(npx auto-changelog --commit-limit false --template keepachangelog --hide-credit --sort-commits date-desc --stdout --unreleased)
+          COMMENT_BODY=$(npx auto-changelog --commit-limit false --template keepachangelog --hide-credit --sort-commits date-desc --stdout --unreleased --starting-version ${{ env.TAG_NAME }} --ending-version ${{ env.TAG_NAME }})
           echo "${{ steps.get-issue-number.outputs.result }}"
           gh issue reopen ${{ steps.get-issue-number.outputs.result }}
           gh issue edit ${{ steps.get-issue-number.outputs.result }} -b "$COMMENT_BODY"
