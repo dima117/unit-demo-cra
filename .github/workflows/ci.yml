@@ -15,7 +15,9 @@ jobs:
        fi
     - name: Install playwright 
       run: npx playwright install
-    - name: Run e2e tests
-      run: npm run e2e
+    - name: Run e2e-ci tests
+      run: npm run e2e-ci
+    - name: Run test-ci tests
+      run: npm run test-ci
     - name: Run tests
       run: npm test
