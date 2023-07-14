@@ -24,8 +24,10 @@ module.exports = async ({ github, context, exec, TAG }) => {
     let output = '';
     
     await exec.exec(`git log --oneline ${prevTag.name}..HEAD`, {
-      stdout: (data) => output += data.toString(),
-      stderr: (data) => output += data.toString(),
+      listeners: {
+        stdout: (data) => output += data.toString(),
+        stderr: (data) => output += data.toString(),
+      }
     });
     console.log(output);
     return output;
