@@ -19,7 +19,10 @@ jobs:
           fetch-depth: 0
 
       - name: set up environment
-        run: echo "COMMIT_TIME=$(git show -s --format=%ci ${{ github.sha }})" >> $GITHUB_ENV
+        run: |
+          echo "COMMIT_TIME=$(git show -s --format=%ci ${{ github.sha }})" >> $GITHUB_ENV
+          echo "COMMIT_BEFORE=${{github.event.before}}" >> $GITHUB_ENV
+          echo "COMMIT_AFTER=${{github.event.after}}" >> $GITHUB_ENV
 
       - name: create release issue
         uses: actions/github-script@v6

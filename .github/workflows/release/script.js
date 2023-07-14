@@ -1,6 +1,6 @@
 module.exports = async ({ github, context, exec, TAG }) => {
   const GH_URL = "https://github.com/";
-  const { COMMIT_TIME } = process.env;
+  const { COMMIT_TIME, COMMIT_BEFORE, COMMIT_AFTER } = process.env;
   const LABEL = "RELEASE";
 
   const metaData = {
@@ -18,30 +18,46 @@ module.exports = async ({ github, context, exec, TAG }) => {
     }
   }
 
-  const getCommitHistory = async () => {
+  const buildChangelog = async () => {
     const prevTag = await getPreviousReleaseTag();
   
     let output = '';
     
-    await exec.exec(`git log --oneline ${prevTag.name}..HEAD`, [], {
+    await exec.exec(`git log --oneline --reverse ${prevTag.name}..HEAD`, [], {
       listeners: {
         stdout: (data) => output += data.toString(),
         stderr: (data) => output += data.toString(),
       }
     });
-    console.log(output);
+
     return output;
   }
 
-  const buildChangelog = async () => {
-    return await getCommitHistory();
+  const appendChangeLog = async (body) => {
+    let output = '';
+    
+    await exec.exec(`git log --oneline --reverse ${prevTag.name}..HEAD`, [], {
+      listeners: {
+        stdout: (data) => output += data.toString(),
+        stderr: (data) => output += data.toString(),
+      }
+    });
+
+    return body + "\n" + output;
   }
 
-  const changelog = await buildChangelog();
+  const buildInitBody = async (body) => {
+    if (body) {
+      return appendChangeLog(body);
+    }
 
-  const initBody = `Author: [${metaData.owner}](${GH_URL}${metaData.owner})\n \
-              Release Time: ${COMMIT_TIME}\n \
-              Changelog: ${changelog}`;
+    const changelog = await buildChangelog();
+    return `Author: [${metaData.owner}](${GH_URL}${metaData.owner})\n \
+                Release Time: ${COMMIT_TIME}\n \
+                Changelog: \n \
+                ${changelog}`;
+  }
+
 
   const getIssue = async () => {
     const issues = await github.rest.issues
@@ -77,7 +93,7 @@ module.exports = async ({ github, context, exec, TAG }) => {
     title: TAG,
     labels: [LABEL],
     issue_number: issue?.number ?? null,
-    body: issue?.body ?? initBody,
+    body: await buildInitBody(issue?.body),
   };
 
   const releaseData = {
@@ -85,7 +101,7 @@ module.exports = async ({ github, context, exec, TAG }) => {
     tag_name: TAG,
     release_id: release?.id ?? null,
     title: TAG,
-    body: release?.body ?? initBody,
+    body: await buildInitBody(release?.body),
   };
 
   if (issue) {
