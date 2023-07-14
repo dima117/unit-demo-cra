@@ -1,4 +1,4 @@
-module.exports = async ({ github, context, TAG }) => {
+module.exports = async ({ github, context, exec, TAG }) => {
   const GH_URL = "https://github.com/";
   const { COMMIT_TIME } = process.env;
   const LABEL = "RELEASE";
@@ -8,13 +8,29 @@ module.exports = async ({ github, context, TAG }) => {
     repo: context.repo.repo,
   };
 
-  const buildChangelog = async () => {
-    return "tba";
+  const getPreviousReleaseTag = async () => {
+    const tags = await github.rest.repos.listTags(metaData)
+      .then((res) => res.data)
+      .catch(() => {}); 
+    
+    if(tags) {
+      return tags[1];
+    }
   }
 
-  const body = `Author: [${metaData.owner}](${GH_URL}${metaData.owner})\n \
+  const getCommitHistory = async () => {
+    const prevTag = await getPreviousReleaseTag();
+
+    return await exec.exec(`git log --oneline ${prevTag.commit.sha}..HEAD`).stdout;
+  }
+
+  const buildChangelog = async () => {
+    return await getCommitHistory();
+  }
+
+  const initBody = `Author: [${metaData.owner}](${GH_URL}${metaData.owner})\n \
               Release Time: ${COMMIT_TIME}\n \
-              Changelog: ${buildChangelog()}`;
+              Changelog: ${await buildChangelog()}`;
 
   const getIssue = async () => {
     const issues = await github.rest.issues
@@ -50,7 +66,7 @@ module.exports = async ({ github, context, TAG }) => {
     title: TAG,
     labels: [LABEL],
     issue_number: issue?.number ?? null,
-    body,
+    body: issue?.body ?? initBody,
   };
 
   const releaseData = {
@@ -58,7 +74,7 @@ module.exports = async ({ github, context, TAG }) => {
     tag_name: TAG,
     release_id: release?.id ?? null,
     title: TAG,
-    body,
+    body: release.body ?? initBody,
   };
 
   if (issue) {
