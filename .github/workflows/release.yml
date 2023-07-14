@@ -68,10 +68,10 @@ jobs:
       - name: Edit Release Issue
         if: github.ref_type == 'branch'
         run: |
-          COMMENT_BODY=$(npx auto-changelog --commit-limit false --template keepachangelog --hide-credit --sort-commits date-desc --stdout --unreleased --starting-version ${{ env.TAG_NAME }} --ending-version ${{ env.TAG_NAME }})
+          COMMENT_BODY=$(npx auto-changelog --commit-limit false --hide-credit --sort-commits date-desc --stdout --unreleased-only)
           echo "${{ steps.get-issue-number.outputs.result }}"
           gh issue reopen ${{ steps.get-issue-number.outputs.result }}
-          gh issue edit ${{ steps.get-issue-number.outputs.result }} -b "$COMMENT_BODY"
+          gh issue comment ${{ steps.get-issue-number.outputs.result }} -b "$COMMENT_BODY"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   unit-test:
