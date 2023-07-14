@@ -23,9 +23,9 @@ jobs:
         run: npm run build
         if: always()
       - name: unit testing
-        run: npm run test:unit:ci
+        run: npm run test-ci
         if: always()
       - name: e2e testing
-        run: npm run test:e2e:ci
+        run: npm run e2e-ci
         if: always()
 
