@@ -174,12 +174,12 @@ jobs:
         if: needs.deploy.result == 'success'
         run: |
           COMMENT_BODY='Deploy success: ${{ needs.deploy.outputs.page-url }}'
-          echo 'COMMENT_BODY=$COMMENT_BODY' >> $GITHUB_ENV
+          echo "COMMENT_BODY=$COMMENT_BODY" >> $GITHUB_ENV
       - name: Set Failure Message
         if: needs.deploy.result != 'success'
         run: |
           COMMENT_BODY='Deploy failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-          echo 'COMMENT_BODY=$COMMENT_BODY' >> $GITHUB_ENV
+          echo "COMMENT_BODY=$COMMENT_BODY" >> $GITHUB_ENV
       - name: Comment Release Issue
         run: |
           gh issue comment ${{ needs.release.outputs.issue-number }} -b "${{ env.COMMENT_BODY }}"
