@@ -19,7 +19,9 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Получить предыдущий релизный тег
         id: get-previous-tag
-        run: echo "PREV_TAG=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))" >> $GITHUB_ENV
+        run: |
+          echo "PREV_TAG=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))" >> $GITHUB_ENV
+          echo ${{env.PREV_TAG}}
 
       - name: Коммиты между релизами
         id: collect-commits
@@ -30,6 +32,7 @@ jobs:
         run: echo $COMMIT_LIST
       - uses: JasonEtco/create-an-issue@v2
         env:
+          COMMIT_LIST: ${{ env.COMMIT_LIST }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_DATE: ${{ github.event.head_commit.timestamp }}
         with:
