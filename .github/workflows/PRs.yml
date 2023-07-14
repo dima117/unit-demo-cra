@@ -1,4 +1,4 @@
-name: Commit-lint
+Rname: PR_check
 
 on: pull_request
 jobs:
