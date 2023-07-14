@@ -22,6 +22,7 @@ jobs:
           npx playwright install
       - name: Run linting and tests
         run: |
+          npm start
           npm run lint
           npm test
           npm run e2e
