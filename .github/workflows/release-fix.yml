@@ -1,0 +1,25 @@
+name: CI release
+
+on:
+  push:
+    branches:
+      - 'release\/v\d+'
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+
+      - run: echo "FIX_MSG=$(git log -1 --pretty="- %s")"
+
+    #   - name: Edit issue
+    #     run: gh issue edit $ISSUE_URL
+    #     env:
+    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

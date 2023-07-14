@@ -1,10 +1,6 @@
 name: CI release
 
 on:
-  workflow_run:
-    workflows: ["CI build"]
-    types:
-      - completed
   push:
     tags:
       - 'v\d+'
@@ -20,6 +16,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.PAT }}
+          fetch-depth: 2
 
       - run: echo "COMMIT_TIME=$(git show -s --format=%ci ${{ github.ref_name }})" >> $GITHUB_ENV
       - run: echo "CURRENT_TIME=$(date +'%Y-%m-%d %T')" >> $GITHUB_ENV
@@ -58,23 +55,7 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Close Issue
-        run: gh issue close --comment "Auto-closing issue" ${{ steps.create_issue.outputs.number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  deploy:
-    needs: release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install and Build
-        run: |
-          npm ci
-          npm run build
-
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: build
+      # - name: Close Issue
+      #   run: gh issue close --comment "Auto-closing issue" ${{ steps.create_issue.outputs.number }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
