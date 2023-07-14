@@ -26,6 +26,6 @@ jobs:
         run: npm run test:unit:ci
         if: always()
       - name: e2e testing
-        run: npm run test:unit:e2e
+        run: npm run test:e2e:ci
         if: always()
 
