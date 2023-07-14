@@ -1,7 +1,15 @@
+const { getIssue, getRelease } = require("../utils");
+
 module.exports = async ({ github, context, exec, TAG }) => {
   const GH_URL = "https://github.com/";
   const { COMMIT_TIME, COMMIT_BEFORE, COMMIT_AFTER } = process.env;
   const LABEL = "RELEASE";
+  const SUCCESS_URL = "https://img.shields.io/badge/Tests-Passing-success";
+  const FAILURE_URL = "https://img.shields.io/badge/Tests-Failed-red";
+  const IN_PROGRESS_URL =
+    "https://img.shields.io/badge/Tests-In%20progress-yellow";
+  const ACTIONS_URL =
+    "https://github.com/Memesaurus/SHRI_Infrastructure/actions/workflows/tests.yml";
 
   const metaData = {
     owner: context.actor,
@@ -9,42 +17,48 @@ module.exports = async ({ github, context, exec, TAG }) => {
   };
 
   const getPreviousReleaseTag = async () => {
-    const tags = await github.rest.repos.listTags(metaData)
+    const tags = await github.rest.repos
+      .listTags(metaData)
       .then((res) => res.data)
-      .catch(() => {}); 
-    
-    if(tags) {
+      .catch(() => {});
+
+    if (tags) {
       return tags[1];
     }
-  }
+  };
 
   const buildChangelog = async () => {
     const prevTag = await getPreviousReleaseTag();
-  
-    let output = '';
-    
+
+    let output = "";
+
     await exec.exec(`git log --oneline --reverse ${prevTag.name}..HEAD`, [], {
       listeners: {
-        stdout: (data) => output += data.toString(),
-        stderr: (data) => output += data.toString(),
-      }
+        stdout: (data) => (output += data.toString()),
+        stderr: (data) => (output += data.toString()),
+      },
     });
 
     return output;
-  }
+  };
 
   const appendChangeLog = async (body) => {
-    let output = '';
-    
-    await exec.exec(`git log --oneline --reverse ${COMMIT_BEFORE}..${COMMIT_AFTER}`, [], {
-      listeners: {
-        stdout: (data) => output += data.toString(),
-        stderr: (data) => output += data.toString(),
-      }
-    });
+    let output = "";
 
+    await exec.exec(
+      `git log --oneline --reverse ${COMMIT_BEFORE}..${COMMIT_AFTER}`,
+      [],
+      {
+        listeners: {
+          stdout: (data) => (output += data.toString()),
+          stderr: (data) => (output += data.toString()),
+        },
+      }
+    );
+    body = body.replace(SUCCESS_URL, IN_PROGRESS_URL);
+    body = body.replace(FAILURE_URL, IN_PROGRESS_URL);
     return body + output;
-  }
+  };
 
   const buildInitBody = async (body) => {
     if (body) {
@@ -52,42 +66,15 @@ module.exports = async ({ github, context, exec, TAG }) => {
     }
 
     const changelog = await buildChangelog();
-    return `[![Tests](https://img.shields.io/badge/Tests-In%20progress-yellow)](https://github.com/Memesaurus/SHRI_Infrastructure/actions/workflows/tests.yml?query=branch%3A${TAG}++) \n \
+    return `[![Tests](${IN_PROGRESS_URL})](${ACTIONS_URL}?query=branch%3A${TAG}++) \n \
             Author: [${metaData.owner}](${GH_URL}${metaData.owner})\n \
             Release Time: ${COMMIT_TIME}\n \
             Changelog: \n \
             ${changelog}`;
-  }
-
-
-  const getIssue = async () => {
-    const issues = await github.rest.issues
-      .listForRepo({ ...metaData, labels: LABEL })
-      .then((res) => res.data)
-      .catch(() => {});
-
-    for (const issue of issues) {
-      if (issue.title === TAG) {
-        return issue;
-      }
-    }
   };
 
-  const getRelease = async () => {
-    const releases = await github.rest.repos
-      .listReleases(metaData)
-      .then((res) => res.data)
-      .catch(() => {});
-
-    for (const release of releases) {
-      if (release.tag_name === TAG) {
-        return release;
-      }
-    }
-  };
-
-  const issue = await getIssue();
-  const release = await getRelease();
+  const issue = await getIssue(metaData, TAG, LABEL);
+  const release = await getRelease(metaData, TAG);
 
   const issueData = {
     ...metaData,

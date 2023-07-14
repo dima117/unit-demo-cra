@@ -31,6 +31,7 @@ jobs:
         run: npm run build --if-present
 
       - name: run unit tests
+        id: unit
         run: npm run test-ci
       - uses: actions/upload-artifact@v3
         if: always()
@@ -75,4 +76,32 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
-          retention-days: 30
+          retention-days: 30}
+
+  set_badge_success:
+    needs: [unit_tests, integration_tests]
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+
+    steps:
+      - name: set badge
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const script = require('.github/workflows/tests/setBadge.js');
+            await script({ github, context, TAG: ${{ github.ref_name }} success: true });
+
+  set_badge_failure:
+    needs: [unit_tests, integration_tests]
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+
+    steps:
+      - name: set badge
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const script = require('.github/workflows/tests/setBadge.js');
+            await script({ github, context, TAG: ${{ github.ref_name }} ,success: false });
