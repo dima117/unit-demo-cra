@@ -1,10 +1,15 @@
 #!/bin/sh
 
 GH_TOKEN=$1
+echo "token sat"
 VERSION=$(git describe --tags --abbrev=0)
+echo "version sat"
 TAG_DATE=$(git log -1 --pretty=format:"%ai" $VERSION)
+echo "tag date sat"
 AUTHOR=$(git show $VERSION --pretty="format:%an" --no-patch)
+echo "author sat"
 RUN_ID=$2
+echo "runid sat"
 
 create_issue_payload() {
   cat <<EOF
@@ -15,6 +20,7 @@ create_issue_payload() {
   }
 EOF
 }
+echo "created issue payload"
 
 EXISTING_ISSUE=$(curl \
   -H "Authorization: token $GH_TOKEN" \
