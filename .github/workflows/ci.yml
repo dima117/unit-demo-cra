@@ -13,6 +13,8 @@ jobs:
         else
           npm install
        fi
+    - name: Install playwright 
+      run: npx playwright install
     - name: Run e2e tests
       run: npm run e2e
     - name: Run tests
