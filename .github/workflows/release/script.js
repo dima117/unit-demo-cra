@@ -1,24 +1,29 @@
-module.exports = async ({ github, context, tag }) => {
+module.exports = async ({ github, context, TAG }) => {
   const GH_URL = "https://github.com/";
   const { COMMIT_TIME } = process.env;
+  const LABEL = "RELEASE";
 
   const metaData = {
     owner: context.actor,
     repo: context.repo.repo,
   };
 
+  const buildChangelog = async () => {
+    return "tba";
+  }
+
   const body = `Author: [${metaData.owner}](${GH_URL}${metaData.owner})\n \
               Release Time: ${COMMIT_TIME}\n \
-              Changelog: TBA :)`;
+              Changelog: ${buildChangelog()}`;
 
   const getIssue = async () => {
     const issues = await github.rest.issues
-      .listForRepo({ ...metaData, labels: "RELEASE" })
+      .listForRepo({ ...metaData, labels: LABEL })
       .then((res) => res.data)
       .catch(() => {});
 
     for (const issue of issues) {
-      if (issue.title === tag) {
+      if (issue.title === TAG) {
         return issue;
       }
     }
@@ -31,7 +36,7 @@ module.exports = async ({ github, context, tag }) => {
       .catch(() => {});
 
     for (const release of releases) {
-      if (release.tag_name === tag) {
+      if (release.tag_name === TAG) {
         return release;
       }
     }
@@ -42,17 +47,17 @@ module.exports = async ({ github, context, tag }) => {
 
   const issueData = {
     ...metaData,
-    title: tag,
-    labels: ["RELEASE"],
+    title: TAG,
+    labels: [LABEL],
     issue_number: issue?.number ?? null,
     body,
   };
 
   const releaseData = {
     ...metaData,
-    tag_name: tag,
+    tag_name: TAG,
     release_id: release?.id ?? null,
-    title: `Release ${tag}`,
+    title: TAG,
     body,
   };
 
