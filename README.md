@@ -18,7 +18,10 @@ npm start
 
 ```sh
 # Activate husky hooks
-npm run setup-git-linter
+npx husky install
+
+# Add git hooks
+npx husky add .husky/commit-msg  'npx --no -- commitlint --edit ${1}'
 ```
 
 Как запустить e2e тесты:
