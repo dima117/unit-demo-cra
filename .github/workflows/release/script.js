@@ -52,10 +52,11 @@ module.exports = async ({ github, context, exec, TAG }) => {
     }
 
     const changelog = await buildChangelog();
-    return `Author: [${metaData.owner}](${GH_URL}${metaData.owner})\n \
-                Release Time: ${COMMIT_TIME}\n \
-                Changelog: \n \
-                ${changelog}`;
+    return `![Tests](https://img.shields.io/badge/Tests-In%20progress-yellow) \n \
+            Author: [${metaData.owner}](${GH_URL}${metaData.owner})\n \
+            Release Time: ${COMMIT_TIME}\n \
+            Changelog: \n \
+            ${changelog}`;
   }
 
 
