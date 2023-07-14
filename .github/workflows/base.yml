@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: unit-test-cra
     runs-on: ubuntu-latest
 
     strategy:
