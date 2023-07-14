@@ -7,7 +7,7 @@ on:
 
 permissions:
   issues: write
-  contents: write 
+  contents: write
 
 jobs:
   review:
@@ -16,32 +16,15 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     needs: review
   changelog:
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/changelog.yml
     if: ${{ always() }}
     needs:
       - review
       - deploy
-    steps:
-      - uses: actions/checkout@v3
-      - name: Create changelog
-        id: changelog
-        uses: requarks/changelog-action@v1
-        with:
-          token: ${{ github.token }}
-          tag: ${{ github.ref_name }}
-          excludeTypes:
-      - name: Move changelog
-        run: cat CHANGELOG.md >> .github/ISSUE_TEMPLATE.md
-      - name: Create issue
-        uses: JasonEtco/create-an-issue@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          release: ${{ github.ref_name }}
-          reviewVerified: ${{needs.review.result == 'success'}}
-          reviewUrl: ${{needs.review.outputs.url}}
-          ghPagesVerified: ${{needs.deploy.result == 'success'}}
-          ghPagesUrl: ${{needs.deploy.outputs.url}}
-        with:
-          assignees: ${{github.actor}}
-          update_existing: true
-          search_existing: all
+    with:
+      release: ${{ github.ref_name }}
+      review-verified: ${{ needs.review.result == 'success' }}
+      review-url: ${{ needs.review.outputs.url }}
+      deploy-verified: ${{ needs.deploy.outputs.deploy-status == 'success' }}
+      deploy-url: ${{ needs.deploy.outputs.workflow-url }}
+      pages-url: ${{ needs.deploy.outputs.paged-url }}

@@ -20,8 +20,6 @@ jobs:
         uses: ./.github/actions/setup
       - name: Lint
         run: npm run lint
-    outputs:
-      test: 123
   unit-tests:
     runs-on: ubuntu-latest
     steps:

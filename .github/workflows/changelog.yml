@@ -1,0 +1,62 @@
+name: Changelog
+on:
+  workflow_call:
+    inputs:
+      release:
+        required: true
+        type: string
+      review-verified:
+        required: true
+        type: boolean
+      review-url:
+        required: true
+        type: string
+      deploy-verified:
+        required: true
+        type: boolean
+      deploy-url:
+        required: true
+        type: string
+      pages-url:
+        required: true
+        type: string
+
+permissions:
+  issues: write
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create changelog
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ inputs.release }}
+          excludeTypes:
+      - name: Move changelog
+        run: cat CHANGELOG.md >> .github/ISSUE_TEMPLATE.md
+      - name: Create issue
+        id: issue
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          release: ${{ inputs.release }}
+          reviewVerified: ${{ inputs.review-verified }}
+          reviewUrl: ${{ inputs.review-url }}
+          deployVerified: ${{ inputs.deploy-verified }}
+          deployUrl: ${{ inputs.deploy-url }}
+          pagesUrl: ${{ inputs.pages-url }}
+        with:
+          assignees: ${{ github.actor }}
+          update_existing: true
+          search_existing: all
+      - name: Report status
+        if: ${{!(inputs.review-verified && inputs.deploy-verified)}}
+        run: gh issue comment ${{steps.issue.outputs.number}} --body "Can't close because of failed processess"
+      - name: Close issue
+        if: ${{inputs.review-verified && inputs.deploy-verified}}
+        run: gh issue close --comment "Close due to successful release" "${{steps.issue.outputs.number}}"
+      

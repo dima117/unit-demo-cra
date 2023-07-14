@@ -3,9 +3,15 @@ on:
   workflow_dispatch:
   workflow_call:
     outputs:
-      url:
+      paged-url:
         description: GH pages URL
         value: "https://${{github.repository_owner}}.github.io/${{github.event.repository.name}}"
+      deploy-status:
+        description: Deploy status
+        value: ${{jobs.deploy.outputs.deploy-status}}
+      workflow-url:
+        description: Workflow URL
+        value: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 permissions:
   contents: write
@@ -13,11 +19,14 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    outputs:
+      deploy-status: ${{steps.deploy.outputs.deployment-status}}
     steps:
       - uses: actions/checkout@v3
       - name: Setup project
         uses: ./.github/actions/setup
       - name: Deploy to GH pages
+        id: deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: build
