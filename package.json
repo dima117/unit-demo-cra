@@ -1,7 +1,7 @@
 {
     "name": "unit-demo-cra",
     "version": "0.1.0",
-    "homepage": ".",
+    "homepage": "https://memesaurus.github.io/SHRI_Infrastructure/",
     "private": true,
     "dependencies": {
         "@octokit/rest": "^20.0.1",
@@ -32,7 +32,9 @@
         "eject": "react-scripts eject",
         "test": "react-scripts test",
         "e2e": "playwright test --project=chromium",
-        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
+        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\"",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d build"
     },
     "eslintConfig": {
         "extends": [
@@ -63,6 +65,7 @@
         "@commitlint/travis-cli": "^17.6.6",
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
+        "gh-pages": "^5.0.0",
         "husky": "^8.0.3",
         "jest-html-reporter": "^3.7.0"
     }

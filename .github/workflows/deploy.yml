@@ -1,0 +1,27 @@
+name: deploy to gh-pages
+
+on:
+  workflow_run:
+    workflows: [Node.js CI]
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: deploy with gh-pages
+        run: |
+          git remote origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git 
+          npm run deploy -- -u "github-actions-bot <support+actions@github.com>"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
