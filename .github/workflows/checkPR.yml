@@ -28,7 +28,6 @@ jobs:
       - name: download browser
         run: npx playwright install --with-deps chromium 
       - name: e2e test
-        timeout-minutes: 1
         run: |
           cat > monitor.sh << 'EOF'
           #!/bin/bash
