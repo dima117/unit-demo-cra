@@ -73,8 +73,8 @@ module.exports = async ({ github, context, exec, TAG }) => {
             ${changelog}`;
   };
 
-  const issue = await getIssue(metaData, TAG, LABEL);
-  const release = await getRelease(metaData, TAG);
+  const issue = await getIssue(github, metaData, TAG, LABEL);
+  const release = await getRelease(github, metaData, TAG);
 
   const issueData = {
     ...metaData,

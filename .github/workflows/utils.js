@@ -1,4 +1,4 @@
-const getIssue = async (metaData, tag, label) => {
+const getIssue = async (github, metaData, tag, label) => {
   const issues = await github.rest.issues
     .listForRepo({ ...metaData, labels: label })
     .then((res) => res.data)
@@ -11,7 +11,7 @@ const getIssue = async (metaData, tag, label) => {
   }
 };
 
-const getRelease = async (metaData, tag) => {
+const getRelease = async (github, metaData, tag) => {
   const releases = await github.rest.repos
     .listReleases(metaData)
     .then((res) => res.data)

@@ -11,8 +11,8 @@ module.exports = async ({ github, context, TAG, success }) => {
   const IN_PROGRESS_URL =
     "https://img.shields.io/badge/Tests-In%20progress-yellow";
 
-  const issue = await getIssue(metaData, TAG, LABEL);
-  const release = await getRelease(metaData, TAG);
+  const issue = await getIssue(github, metaData, TAG, LABEL);
+  const release = await getRelease(github, metaData, TAG);
 
   if (issue) {
     const body = issue.body.replace(
