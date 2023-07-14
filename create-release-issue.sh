@@ -22,26 +22,26 @@ EOF
 }
 echo "created issue payload"
 
-EXISTING_ISSUE=$(curl \
-  -H "Authorization: token $GH_TOKEN" \
-  -H "Accept: application/vnd.github.v3+json" \
-  -X GET \
-  https://api.github.com/search/issues?q=repo:$GITHUB_REPOSITORY+label:RELEASE+title:"Release $VERSION")
+# EXISTING_ISSUE=$(curl \
+#   -H "Authorization: token $GH_TOKEN" \
+#   -H "Accept: application/vnd.github.v3+json" \
+#   -X GET \
+#   https://api.github.com/search/issues?q=repo:$GITHUB_REPOSITORY+label:RELEASE+title:"Release $VERSION")
 
-EXISTING_ISSUE_NUMBER=$(echo $EXISTING_ISSUE | jq '.items[0].number')
+# EXISTING_ISSUE_NUMBER=$(echo $EXISTING_ISSUE | jq '.items[0].number')
 
-if [ -n "$EXISTING_ISSUE_NUMBER" ]; then
-  curl \
-    -X PATCH \
-    -H "Authorization: token $GH_TOKEN" \
-    -H "Accept: application/vnd.github.v3+json" \
-    https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$EXISTING_ISSUE_NUMBER \
-    -d "$(create_issue_payload)"
-else
-  curl \
-    -X POST \
-    -H "Authorization: token $GH_TOKEN" \
-    -H "Accept: application/vnd.github.v3+json" \
-    https://api.github.com/repos/$GITHUB_REPOSITORY/issues \
-    -d "$(create_issue_payload)"
-fi
+# if [ -n "$EXISTING_ISSUE_NUMBER" ]; then
+#   curl \
+#     -X PATCH \
+#     -H "Authorization: token $GH_TOKEN" \
+#     -H "Accept: application/vnd.github.v3+json" \
+#     https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$EXISTING_ISSUE_NUMBER \
+#     -d "$(create_issue_payload)"
+# else
+#   curl \
+#     -X POST \
+#     -H "Authorization: token $GH_TOKEN" \
+#     -H "Accept: application/vnd.github.v3+json" \
+#     https://api.github.com/repos/$GITHUB_REPOSITORY/issues \
+#     -d "$(create_issue_payload)"
+# fi
