@@ -104,4 +104,4 @@ jobs:
           github-token: ${{ secrets.TOKEN }}
           script: |
             const script = require('.github\workflows\tests_workflow\setBadge.js');
-            await script({ github, context, TAG: ${{ github.ref_name }} ,success: false });
+            await script({ github, context, TAG: "${{ github.ref_name }}" ,success: false });
