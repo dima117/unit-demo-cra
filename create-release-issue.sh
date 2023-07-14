@@ -10,7 +10,7 @@ create_issue_payload() {
   {
     "title": "Release $VERSION",
     "labels": ["RELEASE"],
-    "body": "**Release version:** $VERSION \n**Tagged by:** $AUTHOR \n**Date:** $TAG_DATE \n\n$CHANGELOG"
+    "body": "**Release version:** $VERSION \n**Tagged by:** $AUTHOR \n**Date:** $TAG_DATE \n"
   }
 EOF
 }
