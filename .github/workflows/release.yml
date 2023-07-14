@@ -28,7 +28,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
-
+      - name: Install JQ
+        run: sudo apt-get install jq
       - name: Create Release Issue
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
