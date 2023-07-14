@@ -4,9 +4,11 @@ on:
   push:
     tags:
       - "v[0-9]+"
+    branches:
+      - release/*
 
 jobs:
-  create-release:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,6 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm install -g auto-changelog
       - name: Create Release Issue
+        if: github.ref_type == 'tag'
         run: |
           ISSUE_TITLE=$(git tag $GITHUB_REF_NAME -l --format 'Release %(refname:short) by %(authorname)')
           ISSUE_BODY=$(npx auto-changelog --commit-limit false --template keepachangelog --hide-credit --sort-commits date-desc --stdout)
@@ -26,6 +29,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release Branch
+        if: github.ref_type == 'tag'
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
@@ -33,3 +37,33 @@ jobs:
           echo "RELEASE_BRANCH=$RELEASE_BRANCH" >> $GITHUB_ENV
           git branch $RELEASE_BRANCH $GITHUB_REF_NAME
           git push origin $RELEASE_BRANCH
+      - name: Set Tag Name
+        run: |
+          TAG_NAME=$(echo $GITHUB_REF_NAME | cut -d'/' -f2)
+          echo $TAG_NAME
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+      - name: Find Release Issue
+        id: find-issue
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'find-issues'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title-includes: '${{ env.TAG_NAME }}'
+          labels: 'RELEASE'
+      - name: Get Release Issue Number
+        id: get-issue-number
+        uses: actions/github-script@v6
+        with:
+          script: |
+            console.log(${{ steps.find-issue.outputs.issues }});
+            const issues = ${{ steps.find-issue.outputs.issues }};
+            const issue = issues[0];
+            return issue.number;
+      - name: Edit Release Issue
+        if: github.ref_type == 'branch'
+        run: |
+          COMMENT_BODY=$(npx auto-changelog --commit-limit false --template keepachangelog --hide-credit --sort-commits date-desc --stdout --unreleased)
+          echo "${{ steps.get-issue-number.outputs.result }}"
+          gh issue edit ${{ steps.get-issue-number.outputs.result }} -b "$COMMENT_BODY"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
