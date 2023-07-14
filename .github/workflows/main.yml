@@ -1,0 +1,17 @@
+name: Commit-lint
+
+on: pull_request
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Import modules
+        run: npm ci
+      - name: tests
+        run: npm run test | npm run e2e | npm run test-ci
