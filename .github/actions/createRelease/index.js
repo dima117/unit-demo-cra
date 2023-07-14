@@ -23,6 +23,9 @@ const main = async () => {
         if (!branchExists) {
             await exec.exec("git", ["checkout", "-b", releaseBranchName])
             await exec.exec("git", ["push", "origin", releaseBranchName])
+        } else {
+            await exec.exec("git", ["checkout", releaseBranchName])
+            await exec.exec("git", ["pull", "origin", releaseBranchName])
         }
 
         // создаем релиз, если его не существует

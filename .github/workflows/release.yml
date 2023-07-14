@@ -211,18 +211,6 @@ jobs:
       runs-on: ubuntu-latest
       name: "Deploy"
       steps:
-        - uses: actions/checkout@v3
-          if: ${{ contains(github.ref_name, 'release') }}
-          with:
-            fetch-depth: 0 
-            ref: ${{ github.ref_name }}
-
-        - uses: actions/checkout@v3
-          if: ${{ !contains(github.ref_name, 'release') }}
-          with:
-            fetch-depth: 0 
-            ref: release/${{ github.ref_name }}
-  
         - name: Deploy to GitHub Pages
           id: deployment
           uses: actions/deploy-pages@v2
