@@ -32,3 +32,5 @@ jobs:
         run: |
           commits=$(git log --pretty=format:"%s" ${GITHUB_REF} ^${{ steps.get-previous-tag.outputs.prev_tag }})
           echo "COMMIT_LIST=$commits" >> $GITHUB_ENV
+      - name: Display commit list
+        run: echo $COMMIT_LIST
