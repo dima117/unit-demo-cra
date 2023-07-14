@@ -1,47 +1,33 @@
 name: Tests CI
 
-#on: [ pull_request, workflow_call ]
-
-on:
-  pull_request_target:
-    types:
-      - synchronize
-  workflow_run:
-    workflows: [ "workflow_call" ]
-    types:
-      - completed
+on: [ pull_request, workflow_call ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        commit: ${{ github.event.pull_request.commits }}
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-            node-version: 16
+          node-version: 16
 
-      - name: Run tests for commit
+      - run: npm ci
+      - run: npm install --only=dev
+      - run: npx playwright install
+      - run: npm run build --if-present
+
+      - name: Run unit tests
+        run: npm run test-ci
+
+      - name: Install XVFB
+        run: sudo apt-get install xvfb -y
+
+      - name: Start XVFB
         run: |
-          git checkout ${{ matrix.commit }}
-
-          npm ci
-          npm install --only=dev
-          npx playwright install
-          npm run build --if-present
-
-          npm run test-ci
-
-          sudo apt-get install xvfb -y
-          
           export DISPLAY=:1
           Xvfb :1 -screen 0 1024x768x24 > /dev/null 2>&1 &
-          
-          xvfb-run npm run e2e-ci
+      - name: Run e2e tests
+        run: xvfb-run npm run e2e-ci
