@@ -24,8 +24,8 @@ jobs:
           npx commitlint --version
       - name: Install commitlint
         run: |
-          npm install conventional-changelog-conventionalcommits
-          npm install commitlint@latest
+          npm install conventional-changelog-conventionalcommits --legacy-peer-deps
+          npm install commitlint@latest --legacy-peer-deps
       - name: Validate PR commits with commitlint
         if: github.event_name == 'pull_request'
         run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
