@@ -14,6 +14,12 @@ npm ci
 # запустить приложение
 npm start
 ```
+Как настроить линтер коммитов git:
+
+```sh
+# Activate husky hooks
+npm run setup-git-linter
+```
 
 Как запустить e2e тесты:
 
