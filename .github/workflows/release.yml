@@ -1,0 +1,120 @@
+name: Release
+
+on:
+  push:
+    tags: [v*]
+
+jobs:
+  release:
+    name: Create Release
+    permissions:
+      contents: write
+      issues: write
+    outputs:
+      issue_number: ${{ steps.add-issue.outputs.number }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+         token: ${{ github.token }}
+         tag: ${{ github.ref_name }}
+         writeToFile: false
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          allowUpdates: true
+          draft: false
+          makeLatest: true
+          name: ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.changes }}
+          token: ${{ github.token }}
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: ./.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - run: npm ci --prefer-offline --cache=./.npm
+      - name: Add issue to project
+        id: add-issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_BODY: ${{ steps.changelog.outputs.changes }}
+          ACTOR: ${{ github.actor }}
+          ACTION_REF: ${{ github.ref_name }}
+          ACTIONS_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node register.js
+
+  quality:
+    name: Check quality
+    uses: ./.github/workflows/quality.yml
+
+  deploy:
+    name: Deploy
+    permissions:
+      contents: write
+    needs: [quality, release]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: ./.npm
+        key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-npm-
+
+    - name: Install npm dependencies
+      run: npm ci --prefer-offline --cache=./.npm
+
+    - name: Run build
+      run: npm run build
+
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: build
+
+  update-register:
+    name: Update register
+    permissions:
+      issues: write
+    needs: [deploy, release]
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ISSUE_NUMBER: ${{ needs.release.outputs.issue_number }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: ./.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - run: npm ci --prefer-offline --cache=./.npm
+      - run: node update-register.js
+
+  close-issue:
+    name: Close issue
+    permissions:
+      issues: write
+    needs: [update-register, release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - run: gh issue close --comment "Авто закрытие issue" ${{ needs.release.outputs.issue_number }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

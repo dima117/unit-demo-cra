@@ -1,6 +1,8 @@
 name: Quality
 
-on: push
+on:
+  pull_request:
+  workflow_call:
 
 jobs:
   jest:
@@ -9,11 +11,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: ".nvmrc"
 
       - name: Cache dependencies
         uses: actions/cache@v2.1.6
@@ -34,11 +31,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: ".nvmrc"
 
       - name: Cache dependencies
         uses: actions/cache@v2.1.6
@@ -79,11 +71,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: ".nvmrc"
 
       - name: Cache dependencies
         uses: actions/cache@v3
