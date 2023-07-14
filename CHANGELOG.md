@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/Rubicones/hw-infra/compare/v1.9.0...v1.9.1) (2023-07-14)
+
+
+### Bug Fixes
+
+* fix in release job ([c687975](https://github.com/Rubicones/hw-infra/commit/c687975d53d3e35cb079dab1f8d65bddda075e45))
+
 # [1.9.0](https://github.com/Rubicones/hw-infra/compare/v1.8.1...v1.9.0) (2023-07-14)
 
 
