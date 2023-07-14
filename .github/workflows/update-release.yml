@@ -34,7 +34,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const issues = JSON.parse('${{ steps.find-issue.outputs.issues }}');
+            console.log(${{ steps.find-issue.outputs.issues }});
+            const issues = ${{ steps.find-issue.outputs.issues }};
             const issue = issues[0];
             return issue.number;
       - name: Edit Release Issue
