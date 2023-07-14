@@ -23,11 +23,11 @@ module.exports = async ({ github, context, exec, TAG }) => {
   
     let output = '';
     
-    await exec.exec(`git log --oneline ${prevTag.commit.sha}..HEAD`, {
+    await exec.exec(`git log --oneline ${prevTag.commit.name}..HEAD`, {
       stdout: (data) => output += data.toString(),
       stderr: (data) => output += data.toString(),
     });
-
+    console.log(output);
     return output;
   }
 
@@ -35,9 +35,11 @@ module.exports = async ({ github, context, exec, TAG }) => {
     return await getCommitHistory();
   }
 
+  const changelog = await buildChangelog();
+
   const initBody = `Author: [${metaData.owner}](${GH_URL}${metaData.owner})\n \
               Release Time: ${COMMIT_TIME}\n \
-              Changelog: ${await buildChangelog()}`;
+              Changelog: ${changelog}`;
 
   const getIssue = async () => {
     const issues = await github.rest.issues
