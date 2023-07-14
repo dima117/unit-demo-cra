@@ -122,8 +122,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build:
     needs: [release, unit-test, e2e-test, comment-test-result]
-    outputs:
-      page-url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -143,6 +141,8 @@ jobs:
 
   deploy:
     needs: build
+    outputs:
+      page-url: ${{ steps.deployment.outputs.page_url }}
 
     permissions:
       pages: write
