@@ -40,6 +40,7 @@ jobs:
         run: npm ci --legacy-peer-deps
       - name: Run Eslint
         run: npm run lint-ts
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -47,10 +48,25 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
+
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
       - name: Run build
         run: npm run build
+
+      - name: Save build result
+        if: ${{ success() }}
+        run: echo "Build - success!" > build-result.txt
+
+      - name: Save build result
+        if: ${{ failure() }}
+        run: echo "Build - error!" > build-result.txt
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-result
+          path: build-result.txt
+
   integrationtests:
     name: 'Playwright Tests - ${{ matrix.project }} - Shard ${{ matrix.shardIndex }} of ${{ matrix.shardTotal }}'
     runs-on: ubuntu-latest
@@ -71,3 +87,36 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run integration tests
         run: xvfb-run npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+  makepr:
+    name: Make-PR
+    needs: [commitlint, tslint, build, integrationtests]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download build result
+        uses: actions/download-artifact@v3
+        with:
+          name: build-result
+          path: build-result
+
+      - name: Read build result
+        run: |
+          build_result=$(cat build-result/build-result.txt)
+          echo "Build result: $build_result"
+      
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: feature/automated-pr
+          title: Automated Pull Request
+          body: |
+            This pull request is automatically created based on the results of the pipeline.
+
+            Details:
+              - Commit Lint: [Add commit lint details here]
+              - TSLint: [Add TSLint details here]
+              - Build: $build_result
+              - Integration Tests: [Add integration tests details here]
