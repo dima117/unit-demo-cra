@@ -70,4 +70,4 @@ jobs:
       - name: Install browsers
         run: npx playwright install --with-deps
       - name: Run integration tests
-        run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: xvfb-run npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
