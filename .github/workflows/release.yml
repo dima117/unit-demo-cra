@@ -171,12 +171,12 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set Success Message
-        if: deploy.status == 'success'
+        if: needs.deploy.result == 'success'
         run: |
           COMMENT_BODY='Deploy success: ${{ needs.deploy.outputs.page-url }}'
           echo 'COMMENT_BODY=$COMMENT_BODY' >> $GITHUB_ENV
       - name: Set Failure Message
-        if: deploy.status != 'success'
+        if: needs.deploy.result != 'success'
         run: |
           COMMENT_BODY='Deploy failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
           echo 'COMMENT_BODY=$COMMENT_BODY' >> $GITHUB_ENV
