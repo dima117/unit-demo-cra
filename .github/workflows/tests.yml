@@ -89,7 +89,7 @@ jobs:
         with:
           github-token: ${{ secrets.TOKEN }}
           script: |
-            const script = require('.github\workflows\tests_workflow\setBadge.js');
+            const script = require('.github/workflows/tests_workflow/setBadge.js');
             await script({ github, context, TAG: "${{ github.ref_name }}", success: true });
 
   set_badge_failure:
@@ -103,5 +103,5 @@ jobs:
         with:
           github-token: ${{ secrets.TOKEN }}
           script: |
-            const script = require('.github\workflows\tests_workflow\setBadge.js');
+            const script = require('.github/workflows/tests_workflow/setBadge.js');
             await script({ github, context, TAG: "${{ github.ref_name }}", success: false });
