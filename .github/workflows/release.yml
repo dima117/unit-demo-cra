@@ -31,7 +31,4 @@ jobs:
         id: collect-commits
         run: |
           commits=$(git log --pretty=format:"%s" ${GITHUB_REF} ^${{ steps.get-previous-tag.outputs.prev_tag }})
-          echo ::set-env name=COMMIT_LIST::$commits
-
-      - name: Display commit list
-        run: echo ${{ env.COMMIT_LIST }}
+          echo "COMMIT_LIST=$commits" >> $GITHUB_ENV
