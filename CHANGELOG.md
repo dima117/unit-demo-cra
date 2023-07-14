@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/Rubicones/hw-infra/compare/v1.8.1...v1.9.0) (2023-07-14)
+
+
+### Features
+
+* release tests added ([8ec0573](https://github.com/Rubicones/hw-infra/commit/8ec05732b4eeb7a7e5b4ca1e0a0e503c668c0e93))
+
 ## [1.8.1](https://github.com/Rubicones/hw-infra/compare/v1.8.0...v1.8.1) (2023-07-14)
 
 
