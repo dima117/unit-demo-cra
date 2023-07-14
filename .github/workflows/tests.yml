@@ -85,7 +85,7 @@ jobs:
   set_badge_success:
     needs: [unit_tests, integration_tests]
     runs-on: ubuntu-latest
-    if: ${{ success() }}
+    if: github.event_name == 'push' && success()
 
     steps:
       - name: set badge
@@ -99,7 +99,7 @@ jobs:
   set_badge_failure:
     needs: [unit_tests, integration_tests]
     runs-on: ubuntu-latest
-    if: ${{ failure() }}
+    if: github.event_name == 'push' && failure()
 
     steps:
       - name: set badge
