@@ -14,9 +14,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: "16"
 
       - name: Install dependencies
         run: npm ci
@@ -43,8 +43,8 @@ jobs:
       - name: Check if release issue exists
         id: check_issue
         run: |
-          ISSUE_NUMBER=$(gh issue list --label RELEASE --state open --author "$(git log -1 --pretty=format:'%an')" --title "Release ${{ steps.get_version.outputs.version }}" --json number --template "{{.Number}}")
-          echo "::set-output name=issue_number::$ISSUE_NUMBER"
+          ISSUE_INFO=$(gh issue list --label RELEASE --state open --author "$(git log -1 --pretty=format:'%an')" --search "title:\"Release ${{ steps.get_version.outputs.version }}\"" --json number --template "{{.Number}}")
+          echo "::set-output name=issue_number::$ISSUE_INFO"
 
       - name: Create or update release issue
         uses: peter-evans/create-issue-from-file@v3
@@ -69,13 +69,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout master branch
+        run: git checkout master
+
       - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: "16"
 
       - name: Install dependencies
         run: npm ci
