@@ -21,7 +21,7 @@ module.exports = async ({ github, context, exec, TAG }) => {
   const getCommitHistory = async () => {
     const prevTag = await getPreviousReleaseTag();
 
-    const { stdout } = await exec.exec(`git log --oneline ${prevTag.commit.sha}..HEAD`);
+    const { stdout } = await exec.exec(`git log --oneline ${prevTag.commit.sha}..HEAD | cat`);
     console.log(stdout);
 
     return stdout;
