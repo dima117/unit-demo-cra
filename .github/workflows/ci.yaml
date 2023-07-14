@@ -109,7 +109,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MAKE_PR_PAT }}
           branch: feature/automated-pr
           title: Automated Pull Request
           body: |
