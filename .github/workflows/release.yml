@@ -171,3 +171,8 @@ jobs:
           gh issue comment ${{ needs.release.outputs.issue-number }} -b "$COMMENT_BODY"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Close Release Issue
+        run: |
+          gh issue close ${{ needs.release.outputs.issue-number }} -r completed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
