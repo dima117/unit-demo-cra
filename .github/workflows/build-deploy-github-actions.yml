@@ -50,6 +50,8 @@ jobs:
       
         if: success()
       - name: Close Issue
+        env:
+          GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
         run: |
           BRANCH=${{ github.ref_name }}
           ISSUE_TITLE="Release ${BRANCH#*-}"
