@@ -1,65 +1,107 @@
 name: Release
+
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
+
+permissions:
+  issues: write
+  contents: read
+
 jobs:
   release:
     runs-on: ubuntu-latest
-    outputs:
-      issue_number: ${{ steps.create_issue.outputs.result }}
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Install auto-changelog
-        run: npm i -g auto-changelog
+
+      - name: Write info to output
+        id: tags
+        run: |
+          curTag=${{ github.ref_name }}
+          prevTag=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
+          echo "Version switched from ${prevTag} to ${curTag}" >> $GITHUB_OUTPUT
+          echo "Release date is $(date +'%d.%m.%Y %H:%M:%S')" >> $GITHUB_OUTPUT
+          echo "Author is ${{ github.actor }}" >> $GITHUB_OUTPUT
+
       - name: Create changelog
-        run: auto-changelog --commit-limit false --template keepachangelog
+        id: create_changelog
+        uses: ardalanamini/auto-changelog@v4
+        with:
+          github-token: ${{ github.token }}
+          semver: false
+
       - name: Create issue
         id: create_issue
-        uses: actions/github-script@v6
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          VERSION: ${{ steps.tags.outputs.currentTag}}
+          AUTHOR: ${{ steps.tags.outputs.author }}
+          DATE: ${{ steps.tags.outputs.date }}
+          CHANGELOG: ${{ steps.build_changelog.outputs.changelog }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const description = fs.readFileSync('CHANGELOG.md', 'utf8');
-            const version = '${{ github.ref }}'.replace('refs/tags/', '');
-            const [person, repository] = '${{ github.repository }}'.split('/');
-            const issue = { person, repository, title: `Release ${version} by ${{ github.actor }}`, body: description, labels: ['RELEASE'] };
-            const response = await github.rest.issues.create(issue);
-            return response.data.number;
-  check_issue:
+          update_existing: true
+          search_existing: all
+
+      - name: Create comment with results
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ steps.create_issue.outputs.number }}
+          body: |
+            ## Tests results №${{ github.run_id }}
+            You can download files on this link:
+            ${{github.server_url}}/${{ github.repository }}/actions/runs/${{github.run_id}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    outputs:
+      issueNumber: ${{ steps.create_issue.outputs.number }}
+
+  deploy:
     needs: release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+        with:
+          token: ${{ secrets.GH_TOKEN_ACTION }}
+
+      - name: Create new branch
+        run: |
+          git checkout -b release-${{ github.ref_name }}
+          git push -u origin release-${{ github.ref_name }}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Install dependencies
-        run: npm ci
-      - name: Run tests
+
+      - name: Build
         run: |
-          npm run test-ci
-          npm run e2e
-      - name: Build project
-        run: PUBLIC_URL="/shri-cicd-task" npm run build
-      - name: Deploy
+          npm ci
+          PUBLIC_URL="/shri-cicd-task" npm run build
+
+      - name: Deploy to pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: build
-      - name: Close issue
-        if: ${{ success() }}
-        uses: actions/github-script@v6
+
+      - name: Comment deploy
+        uses: peter-evans/create-or-update-comment@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const issue_number = parseInt(${{ needs.release.outputs.issue_number }});
-            const [person, repository] = '${{ github.repository }}'.split('/');
-            github.rest.issues.update({
-              owner: person,
-              repo: repository,
-              issue_number: issue_number,
-              state: "closed"
-            });
+          issue-number: ${{ needs.release.outputs.issueNumber }}
+          body: |
+            ## Deploy №${{ github.run_id }}
+            You can see this on link: https://dmitriyberkutoff.github.io/shri-cicd-task/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Close issue
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{ needs.release.outputs.issueNumber }}
+          comment: |
+            ## Close Issue
+            Issue closed after success!
