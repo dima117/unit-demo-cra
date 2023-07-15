@@ -1,6 +1,6 @@
 name: tests
 run-name: ${{ github.actor }} is running tests
-on: [ pull_request, workflow_call ]
+on: [ push, pull_request ]
 
 jobs:
   setup:
