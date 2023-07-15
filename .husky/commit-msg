@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 echo "Идёи проверка прекоммит хуком"
-npx --no -- commitlint --edit ${1}
+npx commitlint --edit ${1}
 npm run commitlint ${1}
+
