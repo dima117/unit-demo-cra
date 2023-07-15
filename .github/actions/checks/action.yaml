@@ -1,6 +1,6 @@
 # it is a reusable part of code, because it is needed for releases and commits
 
-name: Tests
+name: Unit and e2e tests
 
 on:
   workflow_call:

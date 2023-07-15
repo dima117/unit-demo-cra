@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Run unit and e2e tests
-        uses: ./.github/workflows/checks.yaml
+        uses: ./.github/actions/checks
         with:
           save-artifacts: true
 

@@ -21,4 +21,4 @@ jobs:
         with:
           fetch-depth: 0
     - name: Run tests from reusable workflow
-      uses: ./.github/workflows/checks.yaml
+      uses: ./.github/actions/checks
