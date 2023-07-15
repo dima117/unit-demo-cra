@@ -22,9 +22,9 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ $RELEASE_NAME }}
-          name: ${{ $RELEASE_NAME }}
+          tag_name: ${{ env.RELEASE_NAME }}
+          name: ${{ env.RELEASE_NAME }}
           body: |
-            This is the release ${{ $RELEASE_NAME }}.
+            This is the release ${{ env.RELEASE_NAME }}.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
