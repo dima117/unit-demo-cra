@@ -20,9 +20,9 @@ jobs:
 
       - name: Get previous tag
         id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        with:
-          fallback: 4b825dc642cb6eb9a060e54bf8d69288fbee4904
+        env:
+          CURRENT_TAG: ${{ steps.get_version.outputs.VERSION }}
+        run: echo "::set-output name=TAGNAME::$(git describe --abbrev=0 --tags $CURRENT_TAG)"
 
       - name: Set diff
         id: diff
