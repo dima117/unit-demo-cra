@@ -47,21 +47,4 @@ jobs:
               ${{ steps.git-log.outputs.git-log }}
           pinned: false
           close-previous: false
-  test-workflow:
-    uses: ./.github/workflows/pr-test.yaml
-  build-and-deploy:
-    needs: test-workflow
-    concurrency: ci-${{ github.ref }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
 
-      - name: Install and Build
-        run: |
-          npm ci
-          npm run build
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: build
