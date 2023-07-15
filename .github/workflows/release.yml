@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write 
     steps:
     - uses: actions/checkout@v3
     - run: echo CHANGELOG=$(git log --oneline `git tag -l | sort -r | head -n 1`..HEAD) >> $GITHUB_ENV
@@ -19,4 +20,8 @@ jobs:
       with:
         tag: ${{github.ref_name}}
         body: ${{ env.CHANGELOG }}
-        
+    - uses: JasonEtco/create-an-issue@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        filename: .github/ISSUE_TEMPLATE.md
