@@ -50,7 +50,9 @@ jobs:
         id: generate_log
         run: |
           CHANGELOG=$(git log --pretty=format:"- %s" "${{ steps.get_tags.outputs.previous }}...${{ steps.get_tags.outputs.current }}")
-          echo "log=${CHANGELOG}" >> "$GITHUB_OUTPUT"
+          echo "Display changelog:"
+          echo $CHANGELOG
+          echo "log='${CHANGELOG}'" >> "$GITHUB_OUTPUT"
 
       - name: ✍️ Create team sync issue
         uses: imjohnbo/issue-bot@3d96848fb5e9a4a473bb81ae62b4b4866a56e93a
