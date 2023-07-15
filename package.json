@@ -12,6 +12,7 @@
         "@types/react": "^18.0.25",
         "@types/react-dom": "^18.0.9",
         "jest-teamcity": "^1.11.0",
+        "npx": "^10.2.2",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-helmet": "^6.1.0",
@@ -31,7 +32,8 @@
         "eject": "react-scripts eject",
         "test": "react-scripts test",
         "e2e": "playwright test --project=chromium && playwright show-report",
-        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
+        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\"",
+        "commitlint": "commitlint --edit"
     },
     "eslintConfig": {
         "extends": [
@@ -59,6 +61,12 @@
     "devDependencies": {
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
-        "jest-html-reporter": "^3.7.0"
+        "jest-html-reporter": "^3.7.0",
+        "lefthook": "^1.4.5"
+    },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
     }
 }
