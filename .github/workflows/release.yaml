@@ -20,14 +20,14 @@ jobs:
 
       - name: Get previous tag
         id: previoustag
-        env:
-          CURRENT_TAG: ${{ steps.get_version.outputs.VERSION }}
-        run: echo "::set-output name=TAGNAME::$(git describe --abbrev=0 --tags $CURRENT_TAG)"
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 4b825dc642cb6eb9a060e54bf8d69288fbee4904
 
       - name: Set diff
         id: diff
         env:
-          LAST_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
+          LAST_TAG: ${{ steps.previoustag.outputs.tag }}
         run: |
           git_hash=$(git rev-parse --short "$GITHUB_SHA")
           diff=$(git log --pretty='%h; author: %cn;  subject:%s'  $LAST_TAG..$git_hash | cat)
