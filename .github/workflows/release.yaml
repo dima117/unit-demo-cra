@@ -28,7 +28,7 @@ jobs:
           LAST_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
           CURRENT_TAG: ${{ steps.get_version.outputs.VERSION }}
         run: |
-          echo'DIFF<<EOF' >> $GITHUB_OUTPUT
+          echo 'DIFF<<EOF' >> $GITHUB_OUTPUT
           diff=$(git log --pretty='%h; author: %cn;  subject:%s'  $LAST_TAG..$CURRENT_TAG)
           echo "$diff" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
