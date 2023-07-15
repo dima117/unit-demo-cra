@@ -18,9 +18,10 @@ jobs:
       - name: Prepare release info
         id: release_info
         run: |
-          echo "version=$(echo "${{ github.ref }}" | sed 's/v//')" >> $GITHUB_OUTPUT
+          echo "### Release Information" > release_issue.md
+          echo "- Version: $(echo "${{ github.ref }}" | sed 's/v//')" >> release_issue.md
           current_date=$(date +"%Y-%m-%d")
-          echo "date=$current_date" >> $GITHUB_OUTPUT
+          echo "Date: $current_date" >> release_issue.md
 
       - name: Get last release tag
         id: get_last_tag
@@ -29,10 +30,12 @@ jobs:
           echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
   
       - name: Generate changelog
-        id: changelog
+        id: get_changelog
         run: |
-          CHANGELOG=$(git log --pretty=format:"- %s (%h)%n" ${{ steps.get_last_tag.outputs.last_tag }}..HEAD)
-          echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
+          TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" ${{ steps.get_last_tag.outputs.last_tag }}..HEAD)
+          echo "#### Changelog" >> release_issue.md
+          echo -e '$TEXT_CHANGELOG' >> release_issue.md
+          echo "- CI Results: [Link](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> release_issue.md
 
       # Test & build
       
@@ -65,34 +68,34 @@ jobs:
 
       # Create release
 
-      - name: Archive build
-        uses: actions/upload-artifact@v3
-        with:
-          name: build
-          path: build
-          if-no-files-found: error
+      # - name: Archive build
+      #  uses: actions/upload-artifact@v3
+      #  with:
+      #    name: build
+      #    path: build
+      #    if-no-files-found: error
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ steps.release_info.outputs.version }}
-          body: ${{ steps.changelog.outputs.changelog }}
-          draft: false
-          prerelease: false
+      #- name: Create Release
+      #  id: create_release
+      #  uses: actions/create-release@v1
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  with:
+      #    tag_name: ${{ github.ref }}
+      #    release_name: Release ${{ steps.release_info.outputs.version }}
+      #    body: ${{ steps.get_changelog.outputs.changelog }}
+      #    draft: false
+      #    prerelease: false
 
-      - name: Attach build to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build
-          asset_name: build.zip
-          asset_content_type: application/zip
+      #- name: Attach build to Release
+      #  uses: actions/upload-release-asset@v1
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  with:
+      #    upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #    asset_path: ./build
+      #    asset_name: build.zip
+      #    asset_content_type: application/zip
 
       # Generate Release issue
 
@@ -100,8 +103,9 @@ jobs:
         id: create_issue
         uses: peter-evans/create-issue-from-file@v3
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           title: Release ${{ github.ref }}
-          content-filepath: release_issue_temp.md
+          content-filepath: release_issue.md
         if: always()
 
       - name: Close release issue

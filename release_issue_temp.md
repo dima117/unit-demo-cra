@@ -6,7 +6,7 @@
 
 #### Changelog
 
-${{ steps.changelog.outputs.changelog }}
+${{ env.CHANGELOG }}
 
 #### CI Results
 
