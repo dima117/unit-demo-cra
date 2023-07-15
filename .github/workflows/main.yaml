@@ -21,6 +21,10 @@ jobs:
           node-version: 18.x
       - run: npm ci
       - run: npm run test-ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npm run e2e-ci
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()

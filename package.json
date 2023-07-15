@@ -31,6 +31,7 @@
         "eject": "react-scripts eject",
         "test": "react-scripts test",
         "e2e": "playwright test --project=chromium && playwright show-report",
+        "e2e-ci": "PLAYWRIGHT_JUNIT_OUTPUT_NAME=test-results/e2e/results.xml npx playwright test --reporter=junit",
         "test-ci": "JEST_JUNIT_OUTPUT_DIR=test-results CI=true npm test -- --reporters=\"default\" --testResultsProcessor=\"jest-junit\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
     },
     "eslintConfig": {
