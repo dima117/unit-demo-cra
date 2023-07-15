@@ -15,24 +15,18 @@ jobs:
 
       # Prepare release info
 
-      - name: Prepare release info
+      - name: Release info
         id: release_info
         run: |
           echo "### Release Information" > release_issue.md
-          echo "- Version: $(echo "${{ github.ref }}" | sed 's/v//')" >> release_issue.md
+          RELEASE_VERSION=$(echo "${{ github.ref }}" | sed 's/v//')
+          echo "- Version: $RELEASE_VERSION" >> release_issue.md
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> GITHUB_OUTPUT
           current_date=$(date +"%Y-%m-%d")
-          echo "Date: $current_date" >> release_issue.md
-
-      - name: Get last release tag
-        id: get_last_tag
-        run: |
+          echo "- Date: $current_date" >> release_issue.md
           LAST_TAG=$(git describe --abbrev=0 --tags --match 'v[0-9]*')
           echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
-  
-      - name: Generate changelog
-        id: get_changelog
-        run: |
-          TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" ${{ steps.get_last_tag.outputs.last_tag }}..HEAD)
+          TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" $LAST_TAG..HEAD)
           echo "#### Changelog" >> release_issue.md
           echo "$TEXT_CHANGELOG" >> release_issue.md
           echo "- CI Results: [Link](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> release_issue.md
@@ -103,7 +97,6 @@ jobs:
         id: create_issue
         uses: peter-evans/create-issue-from-file@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           title: Release ${{ github.ref }}
           content-filepath: release_issue.md
         if: always()
