@@ -3,12 +3,12 @@
 #1. релиз должен запускаться автоматически при появлении в git нового релизного тега.
 # Считаем тег релизным, если он соответствует маске   v<число>   (например,   v12  )
 #2. версия релиза должна соответствовать релизному тегу
-
 #3. должен формироваться changelog по истории коммитов от предыдущего релизного тэга
 #4. должна создаваться запись в реестре релизов — считаем, что это issue на GitHub с пометкой RELEASE.
 # Там должна сохраняться вся важная информация: автор и дата релиза (можно взять из тэга), номер версии, changelog
 #5. предусмотрите корректную работу скрипта при многократном запуске с тем же тэгом
 # (должна обновляться информация в существующей записи реестра релизов, а не создаваться новая)
+
 #6. должны запускаться проверки, аналогичные PR, а ссылка на результат должна добавляться в реестр релизов
 #7. если проверки прошли, приложение должно выкладываться на gh-pages
 # (можете использовать готовый инструмент, например, gh-pages), а запись об этом должна добавляться в реестр релизов
@@ -23,7 +23,7 @@ on:
       - "v[0-9]+"
 
 jobs:
-  create-new-branch:
+  create-new-issue:
     if: contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
@@ -57,9 +57,29 @@ jobs:
       - run: 'echo Created issue number ${{ steps.create-issue.outputs.number }}'
       - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
 
-#      - uses: JasonEtco/create-an-issue@v2
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  add-comment:
+    if: contains(github.ref, 'refs/heads/')
+    runs-on: ubuntu-latest
+    steps:
+    - id: get-version
+      run: |
+        echo $(version=$(echo "${{github.ref}}" | cut -d / -f4)) >> $GITHUB_OUTPUT
+
+    - uses: actions/github-script@v6
+      id: get-issue-id
+      with:
+        script: |
+          github.rest.search.issuesAndPullRequests({
+            q: "RELEASE ${{ steps.get-version.version }}"
+            repo: context.repo.repo,
+            labels: ['release']
+          })
+
+
 #
 #  lint-and-test:
 #    uses: ""
