@@ -27,7 +27,7 @@ module.exports = async ({ github, context, TAG }) => {
   };
 
   let issue;
-  if (TAG) {
+  if (TAG !== "") {
     issue = await getIssue(github, metaData, TAG);
   } else {
     issue = await getLatestReleaseIssue();

@@ -21,7 +21,7 @@ jobs:
           github-token: ${{ secrets.TOKEN }}
           script: |
             const script = require('.github/workflows/scripts/checkForDeployment.js');
-            await script({ github, context, TAG: "${{ github.event.workflow_run.event.ref_name }}" });
+            await script({ github, context, TAG: "${{ github.event.workflow_run.head_branch }}" });
 
       - name: install dependencies
         run: npm ci
@@ -40,4 +40,4 @@ jobs:
           github-token: ${{ secrets.TOKEN }}
           script: |
             const script = require('.github/workflows/scripts/addDeploymentInfo.js');
-            await script({ github, context, TAG: "${{ github.ref_name }}", run: "${{ github.run_id }}" });
+            await script({ github, context, TAG: "${{ github.event.workflow_run.head_branch }}", run: "${{ github.run_id }}" });
