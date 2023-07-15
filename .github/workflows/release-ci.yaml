@@ -22,6 +22,10 @@ jobs:
         id: last_tag
         run: echo "LAST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
+      - name: Get Release Date
+        id: release_date
+        run: echo "RELEASE_DATE=$(git show -s --format=%ci ${{ env.RELEASE_NAME }})" >> $GITHUB_ENV
+
       - name: Install auto-changelog
         run: npm install -g auto-changelog
 
@@ -38,5 +42,19 @@ jobs:
             This is the release ${{ env.RELEASE_NAME }}.
             Changelog:
             $(cat CHANGELOG.md)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create Release Issue
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: "RELEASE: ${{ env.RELEASE_NAME }}"
+          content-filepath: issue_template.md
+          labels: RELEASE
+          replace: |
+            $RELEASE_VERSION=${{ env.RELEASE_NAME }}
+            $RELEASE_DATE=${{ env.RELEASE_DATE }}
+            $AUTHOR=${{ github.actor }}
+            $CHANGELOG_CONTENT=$(cat CHANGELOG.md)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
