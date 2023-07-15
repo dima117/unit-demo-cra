@@ -17,6 +17,7 @@ export const Application: FC = () => {
       </nav>
       <Routes>
         <Route path="/about" element={about} />
+        <Route path="/about" element={about} />
         <Route path="/" element={home} />
         <Route path="/" element={home} />
         <Route path="/" element={home} />
