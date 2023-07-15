@@ -1,4 +1,4 @@
-name: release
+name: 🧾 release
 
 on: # поменять триггер после отладки
   push:
@@ -26,11 +26,11 @@ jobs:
           echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
       #          echo ${GITHUB_REF#refs/*/}
       #          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-      - name: Получить предыдущий релизный тег
+      - name: 🔍 Получить предыдущий релизный тег
         run: |
           echo "PREV_TAG=$(git describe --abbrev=0 --tags HEAD~6)" >> $GITHUB_ENV
           echo ${{ env.PREV_TAG }}
-      - name: Коммиты между релизами
+      - name: ⚒️ Коммиты между релизами
         id: collect-commits
         run: |
           echo "COMMIT_LIST<<EOF" >> $GITHUB_ENV
