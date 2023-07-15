@@ -35,18 +35,16 @@ jobs:
           id=$(echo "${{github.ref}}" | cut -d / -f3)
           branch=releases/$id
           
-          echo $(git for-each-ref --format='%(refname) %(objectname) %(objecttype) %(authorname) %(authoremail) %(authordate) %(subject) %(body)' refs/tags/$id)
-          
           echo "RELEASE=$id" >> $GITHUB_ENV
           echo "RELEASE_BRANCH=$branch" >> $GITHUB_ENV
-          echo "AUTHOR=$(git for-each-ref --format="%(*authorname) %(*authoremail)" refs/tags/$id)" >> $GITHUB_ENV
-          echo "DATE=$(git for-each-ref --format="%(*authordate)" refs/tags/$id)" >> $GITHUB_ENV
+          echo "RELEASE_AUTHOR=$(git for-each-ref --format="%(authorname) %(authoremail)" refs/tags/$id)" >> $GITHUB_ENV
+          echo "RELEASE_DATE=$(git for-each-ref --format="%(authordate)" refs/tags/$id)" >> $GITHUB_ENV
           
           git checkout -b $branch
           git push --set-upstream origin $branch
           
           LOG=$(git log $(git describe --tags --abbrev=0 --exclude=v1)..HEAD --oneline)
-          echo "BODY<<EOF" >> $GITHUB_ENV
+          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
           echo "$LOG" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 

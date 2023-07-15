@@ -4,7 +4,7 @@ labels: release
 ---
 Релиз: {{env.RELEASE}}
 Релизная ветка: {{env.RELEASE_BRANCH}}
-Автор: {{env.AUTHOR}}
-Дата: {{end.DATE}}
+Автор: {{env.RELEASE_AUTHOR}}
+Дата: {{env.RELEASE_DATE}}
 
-{{env.BODY}}
+{{env.RELEASE_BODY}}
