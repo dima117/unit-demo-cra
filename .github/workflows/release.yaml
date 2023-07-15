@@ -33,15 +33,11 @@ jobs:
       - name: Create Issue
         run: |
          git_log=$(git log --pretty=oneline --no-merges "${{ env.prev_tag }}..${{ env.current_tag }}")
+         author_name=$(git log -1 --format='%an')
          # Set the issue title and body
          ISSUE_TITLE="${{ env.current_tag }}"
-         ISSUE_BODY="Author: '$author_name'\n\nDate: ${{ env.commit_date }}\n\nChangelog:\n'$git_log'"
-   
-         # Fetch the repository information
-         REPO_OWNER="${{ github.repository_owner }}"
-         REPO_NAME="${{ github.repository }}"
-         API_URL="https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/issues"
-   
+         ISSUE_BODY="Author: $author_name \n\nDate: ${{ env.commit_date }}\n\nChangelog:\n $git_log"
+         API_URL="https://api.github.com/repos/${{ github.repository_owner }}/${{ github.repository }}/issues"
          # Create the issue using the GitHub REST API
          curl -X POST \
            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
