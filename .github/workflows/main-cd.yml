@@ -51,7 +51,7 @@ jobs:
                   git log --pretty=format:"- hash: %h, name: %s" ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt 
                 fi 
                 echo ::set-output name=changelog::$(cat changelog.txt)
-                echo "hi"
+                echo ${{ steps.get_previous_tag.outputs.previous_tag }}
 
             - name: Create release
               uses: actions/create-release@v1
