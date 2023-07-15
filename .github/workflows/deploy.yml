@@ -13,6 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: check if release is ready for deployment
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const script = require('.github/workflows/scripts/checkForDeployment.js');
+            await script({ github, context, TAG: "${{ github.event.workflow_run.event.ref_name }}" });
+
       - name: install dependencies
         run: npm ci
 
@@ -23,3 +31,11 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: build
+
+      - name: update issue and release
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const script = require('.github/workflows/scripts/addDeploymentInfo.js');
+            await script({ github, context, TAG: "${{ github.ref_name }}", run: "${{ github.run_id }}" });
