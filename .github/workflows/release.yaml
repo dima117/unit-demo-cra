@@ -15,9 +15,13 @@ jobs:
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+
       - name: Get previous tag
         id: previoustag
-        run: echo "::set-output name=TAGNAME::$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))"
+        env:
+          CURRENT_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
+        run: echo "::set-output name=TAGNAME::$(git describe --abbrev=0 --tags $CURRENT_TAG)"
+
       - name: Set diff
         id: diff
         env:
