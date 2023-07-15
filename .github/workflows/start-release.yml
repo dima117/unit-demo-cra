@@ -12,7 +12,6 @@ jobs:
       - name: Create Branch
         uses: peterjgrainger/action-create-branch@v2.0.1
         env:
-          GITHUB_TOKEN: ${{ secrets.SECRET_TOKEN }}
+          GITHUB_TOKEN: ${{ GITHUB_TOKEN}}
         with:
-          name: ${{github.ref_name}}
-          path: release
+          branch: "release-notes"
