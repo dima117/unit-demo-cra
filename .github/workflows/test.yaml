@@ -28,7 +28,9 @@ jobs:
           key: node_modules
       
       - name: install dependencies
-        run: pnpm i
+        run: |
+          pnpm run i
+          pnpm run lint
 
   unit-tests:
     needs: setup
