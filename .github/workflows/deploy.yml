@@ -6,8 +6,10 @@ on:
     types: [completed]
 
 permissions:
+  deployments: write
   contents: read
   issues: write
+  packages: write
 
 jobs:
   deploy:
