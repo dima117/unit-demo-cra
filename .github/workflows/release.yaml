@@ -17,13 +17,11 @@ jobs:
         run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
       - name: Get previous tag
         id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        with:
-          fallback: 4b825dc642cb6eb9a060e54bf8d69288fbee4904
+        run: echo "::set-output name=TAGNAME::$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))"
       - name: Set diff
         id: diff
         env:
-          LAST_TAG: ${{ steps.previoustag.outputs.tag }}
+          LAST_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
         run: |
           git_hash=$(git rev-parse --short "$GITHUB_SHA")
           diff=$(git log --pretty='%h; author: %cn;  subject:%s'  $LAST_TAG..$git_hash | cat)
