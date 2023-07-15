@@ -162,6 +162,7 @@ jobs:
     needs:
       - build-and-deploy
       - get-issue-id
+      - write-result-comment
     if: always() && needs.build-and-deploy.result != 'skipped'
     runs-on: ubuntu-latest
     steps:

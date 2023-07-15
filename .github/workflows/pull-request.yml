@@ -2,44 +2,10 @@ name: pull-request
 on:
   pull_request:
     branches: [ "master" ]
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install deps
-        run: npm ci
-      - name: Eslint checks
-        run: npx eslint .
-      - name: Validate PR commits with commitlint
-        run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
-  tests:
-    runs-on: ubuntu-latest
-    needs: lint
-    env:
-      CI: true
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install deps
-        run: npm ci
-      - name: Run unit tests
-        run: npm run test
-      - name: Install Playwright Browsers
-        run: npx playwright install chromium --with-deps
-      - name: Run Playwright tests
-        run: npm run e2e
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+jobs:
+  lint-and-tests:
+    uses: ./.github/workflows/lint-and-test.yml
+    with:
+      commit-from: ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }}
+      commit-to: ${{ github.event.pull_request.head.sha }}
