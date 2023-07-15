@@ -10,6 +10,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v3
     - run: echo CHANGELOG=$(git log --oneline `git tag -l | sort -r | head -n 1`..HEAD) >> $GITHUB_ENV
