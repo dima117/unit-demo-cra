@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  unit-tests:
+  unit-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
@@ -88,7 +88,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [unit-tests, lint-commits-pull-request, lint-commits-push, playwright-e2e-tests]
+    needs: [unit-test, lint-commits-push, playwright-e2e-tests]
 
     steps:
       - name: Checkout Code
@@ -129,8 +129,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    needs: run-tests
-    needs: [unit-test, lint-commits-pull-request, lint-commits-push, playwright-e2e-tests]
+    needs: [unit-test, lint-commits-push, playwright-e2e-tests]
     
     steps:
       - name: Checkout Code

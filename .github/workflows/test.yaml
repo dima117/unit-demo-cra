@@ -9,8 +9,6 @@ on:
   pull_request:
     types: [ opened, reopened ]
     branches: [ master ]
-    tags-ignore:
-      - '**'
 
 jobs:
   unit-tests:
@@ -34,7 +32,6 @@ jobs:
       
       # - name: Save test results to artifacts
       #   uses: actions/upload-artifact@v3
-      #   if: ${{ inputs.save-artifacts }}
       #   with:
       #     name: unit-test-report
       #     path: test-report.html
@@ -69,7 +66,6 @@ jobs:
       
       # - name: Save test results to artifacts
       #   uses: actions/upload-artifact@v3
-      #   if: ${{ inputs.save-artifacts }}
       #   with:
       #     name: playwright-test-report
       #     path: playwright-report/
@@ -97,7 +93,7 @@ jobs:
   
   lint-commits-pull-request:
     runs-on: ubuntu-latest
-    if: ${{ inputs.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
