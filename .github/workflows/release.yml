@@ -33,7 +33,7 @@ jobs:
       - id: new-branch
         run: |
           id=$(echo "${{github.ref}}" | cut -d / -f3)
-          branch = releases/$id
+          branch=releases/$id
           git checkout -b $branch
           git push --set-upstream origin $branch
           echo "RELEASE=$id" >> $GITHUB_ENV
