@@ -2,11 +2,11 @@ const READY_LABEL = "ready for deployment";
 const RELEASE_LABEL = "RELEASE";
 const DEPLOYED_LABEL = "deployed";
 
-const getLatestReleaseIssue = async () => {
+const getLatestReleaseIssue = async (github, metaData, label) => {
   const issues = await github.rest.issues
     .listForRepo({
       ...metaData,
-      labels: [READY_LABEL, RELEASE_LABEL],
+      labels: label,
     })
     .then((res) => res.data)
     .catch(() => {});
@@ -24,7 +24,7 @@ const getLatestReleaseIssue = async () => {
 
 const getIssue = async (github, metaData, tag, label) => {
   if (tag === "" || !tag) {
-    return getLatestReleaseIssue(github, metaData);
+    return getLatestReleaseIssue(github, metaData, label);
   }
 
   const issues = await github.rest.issues
