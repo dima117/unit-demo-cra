@@ -35,6 +35,8 @@ jobs:
           id=$(echo "${{github.ref}}" | cut -d / -f3)
           branch=releases/$id
           
+          echo $(git for-each-ref --format='%(refname) %(objectname) %(objecttype) %(authorname) %(authoremail) %(authordate) %(subject) %(body)' refs/tags/$id)
+          
           echo "RELEASE=$id" >> $GITHUB_ENV
           echo "RELEASE_BRANCH=$branch" >> $GITHUB_ENV
           echo "AUTHOR=$(git for-each-ref --format="%(*authorname) %(*authoremail)" refs/tags/$id)" >> $GITHUB_ENV
