@@ -31,9 +31,9 @@ jobs:
           fetch-depth: 0
       - run: |
           id=$(echo "${{github.ref}}" | cut -d / -f3)
-          if [[$id == v* ]];
+          if [[ $id == v* ]];
           then
-            git checkout releases/$id
+            git checkout -b releases/$id
             git push
           fi
 
