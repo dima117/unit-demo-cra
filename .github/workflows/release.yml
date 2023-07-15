@@ -35,14 +35,13 @@ jobs:
           id=$(echo "${{github.ref}}" | cut -d / -f3)
           git checkout -b releases/$id
           git push --set-upstream origin releases/$id
-          echo "id=$id" >> $GITHUB_OUTPUT
+          echo "RELEASE=$id" >> $GITHUB_ENV
       - uses: JasonEtco/create-an-issue@v2
         with:
           filename: .github/release-issue-template.md
           update_existing: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE: ${{ steps.new-branch.id }}
           RELEASE_BRANCH: release/${{ steps.new-branch.id }}
         id: create-issue
       - run: 'echo Created issue number ${{ steps.create-issue.outputs.number }}'
