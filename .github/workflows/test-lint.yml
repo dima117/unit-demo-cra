@@ -20,9 +20,9 @@ jobs:
         run: |
           npm ci
           npx playwright install
-      - name: Run linting and tests
-        run: |
-          npm start
-          npm run lint
-          npm test
-          npm run e2e
+      - name: Run linting
+        run: npm run lint
+      - name: Run Unit tests
+        run: npm test
+      - name: Run e2e tests
+        run: npm run e2e
