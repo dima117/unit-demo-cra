@@ -1,0 +1,8 @@
+public
+node_modules
+/assets
+build
+dist
+index.jsx
+*.config.js
+*.config.ts
