@@ -33,7 +33,8 @@ jobs:
               id: get_previous_tag
               run: |
                 if [ $(git tag | wc -l) -ge 2 ]; then 
-                  PREVIOUS_TAG=$(git rev-list --tags --max-count=2 --skip=1)              
+                  PREVIOUS_TAG=$(git rev-list --tags --max-count=2 --skip=1)  
+                  echo "hi"            
                 else PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD) 
                 fi 
                 echo ::set-output name=previous_tag::$(git rev-parse $PREVIOUS_TAG) 
@@ -41,14 +42,9 @@ jobs:
             - name: Generate changelog
               id: generate_changelog
               run: |
-                if [[ "${{ steps.get_previous_tag.outputs.previous_tag }}" == "v0" ]]; then 
-                  git log --pretty=format:"- name: %s, hash: %h" > changelog.txt 
-                else 
-                  git log --pretty=format:"- hash: %h, name: %s" ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt 
-                fi 
+                git log --pretty=format:"- hash: %h, name: %s" ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
                 echo ::set-output name=changelog::$(cat changelog.txt)
                 echo ${{ steps.get_previous_tag.outputs.previous_tag }}
-                echo HEAD 
 
             - name: Create release
               uses: actions/create-release@v1
