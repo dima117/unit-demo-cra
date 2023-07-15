@@ -23,7 +23,7 @@ jobs:
           sudo apt install -y git
           
       - name: Install dependencies
-        run: npm i -g commitlint conventional-changelog-conventionalcommits
+        run: npm i -g @commitlint/cli @commitlint/config-conventional conventional-changelog-conventionalcommits
 
       - name: Validate current commit (last commit) with commitlint
         if: github.event_name == 'push'
