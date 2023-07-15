@@ -24,7 +24,7 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npm run e2e-ci
+        run: xvfb-run --auto-servernum -- npm run e2e-ci
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
