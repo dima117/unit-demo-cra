@@ -36,7 +36,7 @@ jobs:
                   PREVIOUS_TAG=$(git rev-list --tags --max-count=2 --skip=1)             
                 else 
                   PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD) 
-                  echo "hi" 
+                  echo "$PREVIOUS_TAG" 
                 fi 
                 echo ::set-output name=previous_tag::$(git rev-parse $PREVIOUS_TAG) 
 
