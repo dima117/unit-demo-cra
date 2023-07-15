@@ -34,7 +34,7 @@ jobs:
           if [[ $id == v* ]];
           then
             git checkout -b releases/$id
-            git push
+            git push --set-upstream origin releases/$id
           fi
 
 #      - uses: JasonEtco/create-an-issue@v2
