@@ -30,6 +30,9 @@ jobs:
         run: |
           git tag --list
 
+      - name: Get commit date
+        run: echo "commit_date=$(git log -1 --format=%cd)">>"$GITHUB_ENV"
+
       - name: Create Issue
         run: |
           author_name=$(git log -1 --format='%an')
@@ -37,8 +40,8 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{
-          "title": "New Issue",
-          "body": "Author: '$author_name'\n\nDate: $(date +%Y-%m-%d-%H%M%S)\n\nChangelog:\n'${{ env.git_log }}'",
+          "title": "${{ env.current_tag }}",
+          "body": "Author: '$author_name'\n\nDate: ${{ env.commit_date }}\n\nChangelog:\n'${{ env.git_log }}'",
           "labels": ["RELEASE"]
           }' \
           "https://api.github.com/repos/${{ github.repository }}/issues")
