@@ -24,15 +24,20 @@ jobs:
           echo "- Version: $RELEASE_VERSION" >> release_issue.md
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
           
-          current_date=$(date +"%Y-%m-%d")
-          echo "- Date: $current_date" >> release_issue.md
+          TAG_NAME=${{ github.ref }}
+          TAG_AUTHOR=$(git show --format='%an' $TAG_NAME)
+          echo "- Author: $TAG_NAME"
+
+          TAG_DATE=$(date +"%Y-%m-%d")
+          # TAG_DATE=$(git show --format='%ad' --date=format:'%Y-%m-%d %H:%M:%S' $TAG_NAME)
+          echo "- Date: $CURRENT_DATE" >> release_issue.md
           
           echo "#### Changelog" >> release_issue.md
           LAST_TAG=$(git describe --abbrev=0 --tags --match 'v[0-9]*')
           TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" $LAST_TAG..HEAD)
           echo "$TEXT_CHANGELOG" >> release_issue.md
 
-          echo "- CI Results: [Link](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> release_issue.md
+          echo "- CI Build & Tests Results: [Link](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> release_issue.md
 
       # Test & build
       
@@ -49,11 +54,8 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
+      - name: Deploy for gh-pages
+        run: npm run deploy
         if: success()
 
       
@@ -99,8 +101,13 @@ jobs:
       - name: Create release issue
         id: create_issue
         run:
-          issue_response=$(gh issue create --title "${{ env.RELEASE_VERSION }}" --body "$(cat release_issue.md)" --json)
-          issue_number=$(echo "$issue_response" | jq -r '.number')
-          echo $issue_number
-          gh issue close --comment "Auto-closing issue" $issue_number
+          issue_title="Release ${{ env.RELEASE_VERSION }}"
+          issue_number=$(gh issue list --state all --search "$issue_title" --json number | jq -r '.[].number')
+          if [ -n "$issue_number" ]; then
+            gh issue edit $issue_number --body "$(cat release_issue.md)"
+          else
+            gh issue create --title "$issue_title" --body "$(cat release_issue.md)"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
         if: always()
