@@ -9,29 +9,10 @@ module.exports = async ({ github, context, TAG }) => {
     repo: context.repo.repo,
   };
 
-  const getLatestReleaseIssue = async () => {
-    const issues = await github.rest.issues.listForRepo({
-      ...metaData,
-      labels: [READY_LABEL, RELEASE_LABEL],
-    });
-
-    const latest = issues?.[0];
-
-    for (const label of latest.labels) {
-      if (label.name === DEPLOYED_LABEL) {
-        return;
-      }
-    }
-
-    return latest;
-  };
-
-  let issue;
-  if (TAG !== "") {
-    issue = await getIssue(github, metaData, TAG);
-  } else {
-    issue = await getLatestReleaseIssue();
-  }
+  const issue = await getIssue(github, metaData, TAG, [
+    READY_LABEL,
+    RELEASE_LABEL,
+  ]);
 
   const hasLabel = (issue) => {
     for (const label of issue.labels) {
