@@ -28,10 +28,11 @@ jobs:
         run: |
           git_log=$(git log --pretty=oneline --no-merges "${{ steps.get_tag.outputs.prev_tag }}..${{ steps.get_tag.outputs.current_tag }}")
           echo "::set-output name=git_log::$git_log"
-
       - name: Get commit date
         run: echo "commit_date=$(git log -1 --format=%cd)">>"$GITHUB_ENV"
-
+      - name: Create Branch
+        run: |
+          git checkout release-${{ env.current_tag }}
       - name: Create Issue
         run: |
           author_name=$(git log -1 --format='%an')
