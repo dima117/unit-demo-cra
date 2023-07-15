@@ -29,7 +29,7 @@ jobs:
     - name: Install Playwright Chromium
       run: npx playwright install --with-deps chromium
     - name: Run e2e
-      run: npm run e2e
+      run: npm run ci:e2e
     - uses: actions/upload-artifact@v3
       if: always()
       with:
