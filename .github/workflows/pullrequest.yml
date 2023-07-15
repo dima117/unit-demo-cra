@@ -1,4 +1,4 @@
-name: Pull Request Verification
+name: Pull-Request-Verification
 on:
   workflow_dispatch:
   pull_request:
