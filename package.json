@@ -31,7 +31,8 @@
         "eject": "react-scripts eject",
         "test:unit": "react-scripts test",
         "test:e2e": "playwright test --project=chromium && playwright show-report",
-        "test:ci": "CI=true pnpm run test:unit -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
+        "test:unit:ci": "CI=true pnpm run test:unit -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\"",
+        "test:e2e:ci": "CI=true playwright test --project-chromium"
     },
     "eslintConfig": {
         "extends": [

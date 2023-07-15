@@ -16,22 +16,27 @@ jobs:
     strategy:
       matrix:
         node-version: [ 18.x ]
+
     steps:
       - name: checkout
         uses: actions/checkout@v3
+
       - name: use node ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: install dependencies
         run: |
           npm i pnpm -g
           pnpm i
           pnpx playwright install --with-deps chromium
+
       - name: build
         run: pnpm run build
-      - name: unit tests
-        run: pnpm run test:unit
-      - name: e2e tests
-        run: pnpm run test:e2e
 
+      - name: unit tests
+        run: pnpm run test:unit:ci
+
+      - name: e2e tests
+        run: pnpm run test:e2e:ci
