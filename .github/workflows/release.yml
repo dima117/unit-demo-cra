@@ -29,7 +29,7 @@ jobs:
           echo "RELEASE_AUTHOR=$(git for-each-ref --format="%(authorname) %(authoremail)" refs/tags/$id)" >> $GITHUB_ENV
           echo "RELEASE_DATE=$(git for-each-ref --format="%(authordate)" refs/tags/$id)" >> $GITHUB_ENV
           
-          LOG=$(git log $(git describe --tags --abbrev=0 --exclude=v1)..HEAD --oneline)
+          LOG=$(git log $(git describe --tags --abbrev=0 --exclude=$id)..HEAD --oneline)
           echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
           echo "$LOG" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -74,6 +74,7 @@ jobs:
             console.log(result)
             throw new Error("Issue не найдена")
 
+
   write-changelog-comment:
     runs-on: ubuntu-latest
     if: always() && contains(github.ref, 'refs/heads/')
@@ -99,10 +100,13 @@ jobs:
               body: `Добавлены изменения в релиз:\n\n${CHANGELOG}`
             })
 
+
   lint-and-test:
+    needs: get-issue-id
+    if: always()
     uses: ./.github/workflows/lint-and-test.yml
     with:
-      commit-from: ${{ startsWith(github.ref, 'refs/heads/') && github.event.before || '$(git describe --tags --abbrev=0 --exclude=v1)' }}
+      commit-from: ${{ startsWith(github.ref, 'refs/heads/') && github.event.before || '$(git describe --tags --abbrev=0 --exclude=$(echo "${{github.ref}}" | cut -d / -f4))' }}
       commit-to: ${{ startsWith(github.ref, 'refs/heads/') && github.event.after || github.ref }}
 
   write-result-comment:
@@ -130,6 +134,7 @@ jobs:
               repo: context.repo.repo,
               body,
             })
+
 
   build-and-deploy:
     needs: lint-and-test
