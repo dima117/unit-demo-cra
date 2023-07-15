@@ -79,7 +79,7 @@ module.exports = async ({ github, context, exec, TAG }) => {
   const issueData = {
     ...metaData,
     title: TAG,
-    labels: [LABEL],
+    labels: issue?.number ? null: [LABEL],
     issue_number: issue?.number ?? null,
     body: await buildInitBody(issue?.body),
   };
