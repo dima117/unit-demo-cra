@@ -3,8 +3,8 @@ name: commitlint
 on: [push, pull_request]
 
 jobs:
-  commitlint:
-    runs-on: ubuntu-22.04
+  setup:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -22,6 +22,10 @@ jobs:
           node --version
           npm --version
           npx commitlint --version
+  commitlint:
+    needs: setup
+    runs on: ubuntu-latest
+    steps:
       - name: Install commitlint
         run: |
           npm install conventional-changelog-conventionalcommits
