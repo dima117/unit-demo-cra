@@ -3,6 +3,8 @@ name: Node.js CI
 on:
   push:
     branches: [master]
+    tags:
+      'v\d+'
   pull_request:
     branches: [master]
 
@@ -21,14 +23,39 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: Install dependencies
         run: npm ci
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
-      - name: Build
+
+      - name: Run build
         run: npm run build --if-present
+
       - name: Run unit tests
         run: npm run test
+
       - name: Run e2e tests
         run: npm run e2e
+  
+  release:
+    needs: build
+    runs-on: ubuntu-latest
 
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this release:
+              - Something
+              - Something 2
+          draft: false
+          prerelease: false
