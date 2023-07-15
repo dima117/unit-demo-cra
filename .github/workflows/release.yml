@@ -1,0 +1,206 @@
+name: Release workflow
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+'
+  workflow_dispatch:
+
+# _WORKFLOW
+# CHECK_STATUS
+#   1. GET PUSHED TAG VALUE
+#   2. GET TAG FROM LATEST RELEASE
+#   3. COMPARE WITH TWO OPTIONS POSSIBLE
+#
+# NEW_RELEASE
+#
+# EDIT_OLD_RELEASE
+
+jobs:
+  check_status:
+    runs-on: ubuntu-latest
+    outputs:
+      NEW_VERSION: ${{ steps.get_tag.outputs.new_tag }}
+      LAST_VERSION: ${{ steps.latest_release.outputs.tag_name }}
+      STATUS: ${{ steps.check_new_tag.outputs.status }}
+      CHANGLELOG: ${{steps.changelog.outputs.changes}}
+      CURR_DATE: ${{ steps.get_date.outputs.date }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get new tag name
+        id: get_tag
+        run: echo "new_tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+
+      - name: Logging tag name
+        run: echo ${{ steps.get_tag.outputs.new_tag }}
+
+      - name: Get latest release version
+        id: latest_release
+        uses: InsonusK/get-latest-release@v1.0.1
+        with:
+          myToken: ${{ secrets.GH_TOKEN }}
+          exclude_types: "draft|prerelease"
+          view_top: 1
+
+      - name: "Print last release data"
+        run: |
+          echo "id: ${{ steps.latest_release.outputs.id }}"
+          echo "name: ${{ steps.latest_release.outputs.name }}"
+          echo "tag_name: ${{ steps.latest_release.outputs.tag_name }}"
+      
+      - name: Update CHANGELOG
+        if: ${{ needs.check_status.outputs.LAST_VERSION != '' }}
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}   
+   
+      - name: "Get current date"
+        id: get_date
+        run: |
+          echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: "Define new tag status"
+        id: check_new_tag
+        run: |
+          new_tag_num=$(echo "${{ steps.get_tag.outputs.new_tag }}" | sed 's/v//')
+          latest_tag_num=$(echo "${{ steps.latest_release.outputs.tag_name }}" | sed 's/v//')
+          
+          if [[ $latest_tag_num == '' || $new_tag_num -gt $latest_tag_num ]]; then
+            echo "::set-output name=status::New release"  
+          else
+            echo "::set-output name=status::Edit old release"
+          fi
+
+  run_tests:
+    runs-on: ubuntu-latest
+    outputs:
+      TEST_RESULTS: ${{steps.get_artifact_url.outputs.test_results_url}}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # - name: Set up Node.js
+    #   uses: actions/setup-node@v2
+    #   with:
+    #     node-version: '14'
+
+    - name: Install dependencies
+      run: npm i
+
+    - name: Run tests
+      run: npm run test > test_results.txt
+
+    - name: Run lint
+      run: npm run lint > lint_results.txt
+  
+    - name: Upload test and lint artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Test and Lint Results
+        path: |
+          test_results.txt
+          lint_results.txt
+
+    - name: Get Artifact URL
+      id: get_artifact_url
+      run: |
+        echo "::set-output name=test_results_url::$(echo "${{ github.run_id }}" | awk '{print "https://github.com/${{ github.repository }}/actions/runs/" $1}')"
+           
+  new_release:
+    needs: [check_status, run_tests]
+    if: ${{ needs.check_status.outputs.STATUS == 'New release' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create an issue
+        id: create_issue
+        uses: dacbd/create-issue-action@main
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          title: ${{ needs.check_status.outputs.NEW_VERSION }}
+          body: |
+            Author: ${{ github.actor }}
+            Date: ${{ needs.check_status.outputs.CURR_DATE }}
+            Test result: ${{needs.run_tests.outputs.TEST_RESULTS}}
+            Changelog:
+            ${{ needs.check_status.outputs.LAST_VERSION != '' && needs.check_status.outputs.CHANGLELOG || 'First release'}}
+          labels: 'Release'
+          assignees: 'Iluxmas'
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          tag_name: ${{ needs.check_status.outputs.NEW_VERSION  }}
+          release_name: Release ${{ needs.check_status.outputs.NEW_VERSION }}
+          body: |
+            Author: ${{ github.actor }}
+            Date: ${{ steps.get_date.outputs.date }}
+            Test result: ${{needs.run_tests.outputs.TEST_RESULTS}}
+            Changelog:
+            ${{ needs.check_status.outputs.LAST_VERSION != '' && needs.check_status.outputs.CHANGLELOG || 'First release'}}
+          draft: false
+          prerelease: false
+
+  edit_release:  
+    needs: [check_status, run_tests]
+    if: ${{ needs.check_status.outputs.STATUS == 'Edit old release' }}
+    runs-on: ubuntu-latest
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get Issue Number
+        id: get_issue_num
+        run: |
+          response=$(curl -s -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues?q=${{needs.check_status.outputs.NEW_VERSION}}")
+          issue_number=$(echo "$response" | jq -r '.[0].number')
+
+          echo "Issue Number: $issue_number" >> $GITHUB_OUTPUT
+
+      - name: Edit Issue Body
+        run: |
+          new_body=$(cat <<EOF
+          Author: ${{ github.actor }}
+          Date: ${{ needs.check_status.outputs.CURR_DATE }}
+          Test result: ${{needs.run_tests.outputs.TEST_RESULTS}}
+          Changelog:
+          ${{ needs.check_status.outputs.LAST_VERSION != '' && needs.check_status.outputs.CHANGLELOG || 'First release'}}
+          EOF
+          )
+      
+          response=$(curl -s -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{ "body": "'"${new_body}"'" }' \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.get_issue_num.outputs.issue_number }}")
+      
+          echo "$response"
+      # - uses: actions/checkout@v3
+      # - name: Create an issue
+      #   id: create_issue
+      #   uses: dacbd/create-issue-action@main
+      #   with:
+      #     token: ${{ secrets.GH_TOKEN }}
+      #     title: ${{ steps.get_tag.outputs.new_tag }}
+      #     body: |
+      #       ### Context
+      #       [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+      #       [Codebase](https://github.com/${{ github.repository }}/tree/${{ github.sha }})
+      #       Author: `${{ github.actor }}`
+      #     labels: 'Release'
+      #     assignees: 'Iluxmas'
+
