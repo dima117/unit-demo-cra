@@ -28,7 +28,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always() #${{ github.event_name == 'pull_request' }}
         with:
-          name: test-report
+          name: unit-test-report
           path: test-report.html
           retention-days: 10
 
@@ -53,14 +53,14 @@ jobs:
         run: npm run build
       
       - name: Run e2e tests
-        run: npm run e2e
+        run: npm run e2e-ci
         env:
           CI: true
       
       - uses: actions/upload-artifact@v3
-        if: ${{ github.event_name == 'pull_request' }}
+        if: always() # ${{ github.event_name == 'pull_request' }}
         with:
-          name: playwright-report
+          name: playwright-test-report
           path: playwright-report/
           retention-days: 10
   
