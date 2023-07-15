@@ -3,26 +3,26 @@ name: commitlint
 on: [push, pull_request]
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Install required dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y
-          sudo apt install -y git curl
-          curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-          sudo DEBIAN_FRONTEND=noninteractive apt install -y nodejs
-      - name: Print versions
-        run: |
-          git --version
-          node --version
-          npm --version
+  # setup:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Install required dependencies
+  #       run: |
+  #         sudo apt update
+  #         sudo apt install -y
+  #         sudo apt install -y git curl
+  #         curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+  #         sudo DEBIAN_FRONTEND=noninteractive apt install -y nodejs
+  #     - name: Print versions
+  #       run: |
+  #         git --version
+  #         node --version
+  #         npm --version
   commitlint:
-    needs: setup
+    # needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -35,10 +35,6 @@ jobs:
         run: |
           npm ci
           npx commitlint --version
-      #     npm install conventional-changelog-conventionalcommits
-      #     npm install commitlint@latest
-      #     npm install @commitlint/config-conventional
-
       - name: Validate current commit (last commit) with commitlint
         if: github.event_name == 'push'
         run: npx commitlint --from HEAD~1 --to HEAD --verbose
