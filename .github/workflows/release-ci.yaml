@@ -64,7 +64,7 @@ jobs:
         with:
           token: ${{ secrets.MAKE_PR_PAT }}
           title: "RELEASE: ${{ env.RELEASE_NAME }}"
-          content-filepath: issue_template.md
+          content-filepath: .github/issue_template.md
           labels: RELEASE
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
