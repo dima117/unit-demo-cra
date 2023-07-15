@@ -29,21 +29,11 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "eject": "react-scripts eject",
+        "lint": "eslint",
         "test:unit": "react-scripts test",
         "test:unit:ci": "CI=true npm run test:unit -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-junit\"",
         "test:e2e": "playwright test --project=chromium && playwright show-report",
         "test:e2e:ci": "playwright test --project=chromium"
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
-        ],
-        "rules": {
-            "testing-library/prefer-screen-queries": "off",
-            "testing-library/no-debugging-utils": "off",
-            "@typescript-eslint/no-unused-vars": "off"
-        }
     },
     "browserslist": {
         "production": [
@@ -61,6 +51,7 @@
         "@jest/globals": "^29.6.1",
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
+        "eslint": "^8.45.0",
         "git-commit-msg-linter": "^5.0.4",
         "jest-html-reporter": "^3.7.0",
         "jest-junit": "^16.0.0"
