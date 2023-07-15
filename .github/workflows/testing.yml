@@ -1,5 +1,5 @@
 name: Test app
-on: push
+on: pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -10,3 +10,5 @@ jobs:
         run: npm ci
       - name: Test application
         run: npm run test
+      - name: Test e2e
+        run: npm run e2e
