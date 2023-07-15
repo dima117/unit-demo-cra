@@ -1,14 +1,14 @@
+name: Create Release
 on:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
       - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
-name: Create Release
 
 jobs:
   create-branch:
     runs-on: ubuntu-latest
-    steps:  
+    steps: 
       - name: Create Branch
       uses: peterjgrainger/action-create-branch@v2.0.1
       with:
