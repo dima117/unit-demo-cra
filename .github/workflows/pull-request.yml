@@ -1,0 +1,21 @@
+name: On Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - name: Install deps
+        run: npm ci
+      - name: Run lint
+        run: npm run lint
+      - name: Run unit tests
+        run: npm test

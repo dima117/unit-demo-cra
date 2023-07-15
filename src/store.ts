@@ -1,9 +1,9 @@
 import { createStore } from "redux";
 
 export interface ApplicationState {
-  text: string;
-  items: string[];
-  done: Record<number, boolean>;
+  text: string
+  items: string[]
+  done: Record<number, boolean>
 }
 
 const items = ["Позавтракать", "Сходить в магазин", "Покормить кота"];
@@ -53,7 +53,8 @@ const rootReducer = (
 
 // epics
 
-export function initStore() {
+export function initStore () {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   const store = createStore<ApplicationState, Action, {}, {}>(rootReducer);
 
   return store;
