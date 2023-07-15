@@ -57,7 +57,7 @@ module.exports = async ({ github, context, exec, TAG }) => {
     );
     body = body.replace(SUCCESS_URL, IN_PROGRESS_URL);
     body = body.replace(FAILURE_URL, IN_PROGRESS_URL);
-    return body + output;
+    return body + output + "\n";
   };
 
   const buildInitBody = async (body) => {
@@ -70,7 +70,7 @@ module.exports = async ({ github, context, exec, TAG }) => {
             Author: [${metaData.owner}](${GH_URL}${metaData.owner})\n \
             Release Time: ${COMMIT_TIME}\n \
             Changelog: \n \
-            ${changelog}`;
+            ${changelog} \n`;
   };
 
   const issue = await getIssue(github, metaData, TAG, LABEL);
