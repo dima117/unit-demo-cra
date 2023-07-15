@@ -4,10 +4,21 @@ on:
   push:
     tags:
       - v[0-9]+
+    branches: [ master ]
 
 jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Run unit and e2e tests
+        uses: ./.github/workflows/checks.yaml
+        with:
+          save-artifacts: true
+
   release:
     runs-on: ubuntu-latest
+    needs: run-tests
 
     steps:
       - name: Checkout Code
@@ -22,6 +33,9 @@ jobs:
           echo "previousTag: $name"
           echo "previousTag=$name" >> $GITHUB_ENV
 
+      - name: Set current date as env variable
+        run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+
       - name: Update CHANGELOG
         id: changelog
         uses: requarks/changelog-action@v1
@@ -29,21 +43,24 @@ jobs:
           token: ${{ github.token }}
           fromTag: ${{ github.ref_name }}
           toTag: ${{ env.previousTag }}
-          writeToFile: false
+          includeInvalidCommits: true # to add the full referencing of conventional commits (e.g. ci: is skipped by the action)
+          writeToFile: false # just add the references in the release
 
       - name: Create Release
         uses: ncipollo/release-action@v1.12.0
         with:
-          allowUpdates: true
-          draft: true
+          allowUpdates: true # allow to update already existing release
+          draft: false # automatically resolve
           makeLatest: true
-          name: "RELEASE: ${{ github.ref_name }}"
+          name: "RELEASE: ${{ github.ref_name }} on ${{ env.NOW }}"
           body: ${{ steps.changelog.outputs.changes }}
           token: ${{ secrets.GITHUB_TOKEN }} 
+          artifacts: "playwright-test-report,unit-test-report" # add the tests results
 
   publish:
     runs-on: ubuntu-latest
-
+    needs: run-tests
+    
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
