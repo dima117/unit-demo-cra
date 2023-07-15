@@ -72,8 +72,6 @@ jobs:
     needs: [build, build-and-deploy]
     steps:
       - name: Close Issue
-        uses: peter-evans/close-issue@v3
-        with:
-          issue-number: ${{needs.build.outputs.output1}}
-          comment: |
-            Tests passed and build successfully uploaded to gh-pages
+        run: gh issue close --comment " Tests passed and build successfully uploaded to gh-pages" "${{needs.build.outputs.output1}}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
