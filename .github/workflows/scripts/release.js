@@ -79,7 +79,6 @@ module.exports = async ({ github, context, exec, TAG }) => {
   const issueData = {
     ...metaData,
     title: TAG,
-    labels: issue?.number ? null: [LABEL],
     issue_number: issue?.number ?? null,
     body: await buildInitBody(issue?.body),
   };
@@ -93,7 +92,7 @@ module.exports = async ({ github, context, exec, TAG }) => {
   };
 
   if (issue) {
-    github.rest.issues.update(issueData);
+    github.rest.issues.update({...issueData, labels: [LABEL]});
   } else {
     github.rest.issues.create(issueData);
   }
