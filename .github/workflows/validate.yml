@@ -1,6 +1,8 @@
-name: test
+name: validate
 
-on: [pull_request]
+on:
+  workflow_call:
+
 jobs:
   unit-test:
     runs-on: ubuntu-latest
