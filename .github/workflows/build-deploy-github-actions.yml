@@ -19,6 +19,8 @@ jobs:
       
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
@@ -43,4 +45,4 @@ jobs:
         run: |
           npm i gh-pages
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-          npx gh-pages -d build -u "github-actions-bot <support+actions@github.com>"
+          npx gh-pages -d build -u "sr480 <sr480@live.ru>"
