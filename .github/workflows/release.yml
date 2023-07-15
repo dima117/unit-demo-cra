@@ -1,0 +1,19 @@
+name: release
+on:
+  push:
+    tags:
+      - v[0-9]+
+
+env: 
+  CHANGELOG: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - run: echo CHANGELOG=$(git log --oneline `git tag -l | sort -r | head -n 1`..HEAD) >> $GITHUB_ENV
+    - uses: ncipollo/release-action@v1
+      with:
+        tag: ${{github.ref_name}}
+        body: ${{ env.CHANGELOG }}
