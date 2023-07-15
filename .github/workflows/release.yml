@@ -17,20 +17,21 @@ jobs:
       - name: Prepare release info
         id: release_info
         run: |
-          echo "::set-output name=version::$(echo "${{ github.ref }}" | sed 's/v//')"
-          echo "::set-output name=date::${date +"%Y-%m-%d"}"
+          echo "version=$(echo "${{ github.ref }}" | sed 's/v//')" >> $GITHUB_OUTPUT
+          current_date=$(date +"%Y-%m-%d")
+          echo "date=$current_date" >> $GITHUB_OUTPUT
 
       - name: Get last release tag
         id: get_last_tag
         run: |
           LAST_TAG=$(git describe --abbrev=0 --tags --match 'v[0-9]*')
-          echo "::set-output name=last_tag::$LAST_TAG"
+          echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
   
       - name: Generate changelog
         id: changelog
         run: |
           CHANGELOG=$(git log --pretty=format:"- %s (%h)%n" ${{ steps.get_last_tag.outputs.last_tag }}..HEAD)
-          echo "::set-output name=changelog::$CHANGELOG"
+          echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
 
       # Test & build
       
