@@ -23,6 +23,3 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: build
-
-      - name: upload artifacts
-        uses: actions/upload-pages-artifact@v2
