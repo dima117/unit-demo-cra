@@ -3,11 +3,23 @@ name: Release CI
 on:
   push:
     tags:
-      - 'v\d+'
+      - 'v[0–9]+'
 
 jobs:
   make-changelog:
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v3
-      - run: echo "make changelog!"
+      
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          name: ${{ github.ref }}
+          body: |
+            This is the release ${{ github.ref }}.
+            Add more description here if needed.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
