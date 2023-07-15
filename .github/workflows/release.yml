@@ -68,7 +68,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GH_TOKEN_ACTION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create new branch
         run: |
