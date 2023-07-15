@@ -18,14 +18,17 @@ jobs:
         with:
           fetch-depth: 0
       - name: 🏷️ Получить имя тега
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        run: |
+          echo ${GITHUB_REF#refs/*/}
+          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Получить предыдущий релизный тег
         run: |
-          echo "PREV_TAG=$(git describe --abbrev=0 --tags ${{ github.sha }})" >> $GITHUB_ENV
+          echo "PREV_TAG=$(git describe --abbrev=0 --tags HEAD~1)" >> $GITHUB_ENV
+          echo ${{ env.PREV_TAG }}
       - name: Коммиты между релизами
         id: collect-commits
         run: |
-          commits=$(git log --pretty=format:"%s" ${GITHUB_REF} ^${{ env.DECREASED_VERSION }})
+          commits=$(git log --pretty=format:"%s" ${GITHUB_REF} ^${{ env.PREV_TAG }})
           echo "COMMIT_LIST=$commits" >> $GITHUB_ENV
       - name: Display commit list
         run: echo $COMMIT_LIST
