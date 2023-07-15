@@ -16,13 +16,11 @@ jobs:
           sudo apt install -y git curl
           curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
           sudo DEBIAN_FRONTEND=noninteractive apt install -y nodejs
-          npm ci
       - name: Print versions
         run: |
           git --version
           node --version
           npm --version
-          npx commitlint --version
   commitlint:
     needs: setup
     runs-on: ubuntu-latest
@@ -30,8 +28,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      # - name: Install commitlint
-      #   run: |
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install commitlint
+        run: |
+          npm ci
+          npx commitlint --version
       #     npm install conventional-changelog-conventionalcommits
       #     npm install commitlint@latest
       #     npm install @commitlint/config-conventional
