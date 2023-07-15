@@ -8,7 +8,6 @@ on:
 jobs:
   release:
     runs-on: ubuntu-22.04
-
     steps:
       - uses: actions/checkout@v3
       - run: git fetch --prune --unshallow
@@ -63,44 +62,6 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
         if: success()
 
-      
-      #- name: Add gh-pages deployment info to release issue
-      #  run: |
-      #    DEPLOYMENT_URL="https://${{ github.repository_owner }}.github.io/${{ github.repository }}"
-      #    echo "Deployment URL: $DEPLOYMENT_URL" >> release_issue.md
-      #    gh issue comment ${{ steps.create_issue.outputs.issue_number }} --body "$(cat release_issue.md)"
-
-      # Create release
-
-      # - name: Archive build
-      #  uses: actions/upload-artifact@v3
-      #  with:
-      #    name: build
-      #    path: build
-      #    if-no-files-found: error
-
-      #- name: Create Release
-      #  id: create_release
-      #  uses: actions/create-release@v1
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #  with:
-      #    tag_name: ${{ github.ref }}
-      #    release_name: Release ${{ steps.release_info.outputs.version }}
-      #    body: ${{ steps.get_changelog.outputs.changelog }}
-      #    draft: false
-      #    prerelease: false
-
-      #- name: Attach build to Release
-      #  uses: actions/upload-release-asset@v1
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #  with:
-      #    upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #    asset_path: ./build
-      #    asset_name: build.zip
-      #    asset_content_type: application/zip
-
       # Generate Release issue
 
       - name: Get issue number
@@ -109,29 +70,30 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const title = "Release ${{ env.RELEASE_VERSION }}";
-            const { data } = await github.search.issuesAndPullRequests({
-              q: `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open in:title "${title}"`,
+            const { data } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'release_${{ env.RELEASE_VERSION }}',
               per_page: 1
             });
-            const issueNumber = data.items[0]?.number;
-            console.log("Found issue: " + issueNumber);
-            core.setOutput('issue_number', issueNumber);
+            console.log(data);
+            if (data) {
+              const issueNumber = data[0]?.number;
+              console.log("Found issue: " + issueNumber);
+              core.setOutput('issue_number', issueNumber);
+            }
 
       - name: Create release issue
         id: create_issue
-        uses: peter-evans/create-issue-from-file@v3
+        uses: peter-evans/create-issue-from-file@v4
         with:
           title: Release ${{ env.RELEASE_VERSION }}
           issue-number: ${{ steps.get_issue_number.outputs.issue_number }}
           content-filepath: release_issue.md
-        if: always()
+          labels: release_${{ env.RELEASE_VERSION }}
 
-      - name: Close issue
-        uses: peter-evans/close-issue@v3
-        with:
-          issue-number: ${{ steps.create_issue.outputs.issue_number }}
-          comment: Auto-closing issue
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: always()
+      #- name: Close issue
+      #  uses: peter-evans/close-issue@v3
+      #  with:
+      #    issue-number: ${{ steps.create_issue.outputs.issue_number }}
+      #    comment: Auto-closing issue
