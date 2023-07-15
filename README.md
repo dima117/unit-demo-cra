@@ -1,6 +1,6 @@
 ДЗ "Инфраструктура"
 
-1) экшон [commitlint.yml](https://github.com/Memesaurus/SHRI_Infrastructure/blob/master/.github/workflows/commitlint.yml) чекает при пушах и пулах
+1) экшон [commitlint.yml](https://github.com/Memesaurus/SHRI_Infrastructure/blob/master/.github/workflows/commitlint.yml) чекает при пушах и пулах (помимо того, что это настроено локально)
 2) [пример PR, который чекает коммиты и тесты](https://github.com/Memesaurus/SHRI_Infrastructure/pull/31). Без пройденных тестов мердж сделать нельзя
 ![image](https://github.com/Memesaurus/SHRI_Infrastructure/assets/105174367/6365d6a2-3457-4d7e-bd6e-ca45f8a2f0df)
 3) при пуше с тегом с релизным тегом запускается экшон [релиза](https://github.com/Memesaurus/SHRI_Infrastructure/blob/master/.github/workflows/release.yml) и [тестов](https://github.com/Memesaurus/SHRI_Infrastructure/blob/master/.github/workflows/tests.yml)
