@@ -33,13 +33,11 @@ jobs:
       - name: Коммиты между релизами
         id: collect-commits
         run: |
-          commits=$(git log --pretty=format:"%s" ${{env.RELEASE_VERSION}} ^${{ env.PREV_TAG }})
-          echo "COMMIT_LIST=$commits" >> $GITHUB_ENV
-      - name: Display commit list
-        run: echo $COMMIT_LIST
+          echo "COMMIT_LIST=$(git log --pretty=format:"%s" ${{env.RELEASE_VERSION}} ^${{ env.PREV_TAG }})" >> $GITHUB_ENV
       - uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_DATE: ${{ github.event.head_commit.timestamp }}
+          COMMITS: ${{ env.COMMIT_LIST }}
         with:
           update_existing: true

@@ -7,4 +7,4 @@ title: RELEASE version {{env.RELEASE_VERSION}}
 Запуск процесса релиза: {{env.TAG_DATE}}
 
 Список коммитов
-{{ env.COMMIT_LIST }}
+{{ env.COMMITS }}
