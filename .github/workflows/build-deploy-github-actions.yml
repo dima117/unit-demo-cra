@@ -56,7 +56,7 @@ jobs:
           BRANCH=${{ github.ref_name }}
           ISSUE_TITLE="Release ${BRANCH#*-}"
           ISSUE_ID=$(gh issue list --json number,title,labels -q \
-            ".[] | select(.title == \"${issue}\" and .labels[].name == \"RELEASE\") | .number")
+            ".[] | select(.title == \"${ISSUE_TITLE}\" and .labels[].name == \"RELEASE\") | .number")
           if [ ! -z "$ISSUE_ID" ]; then
             gh issue close $ISSUE_ID -c "Deployment done" -r "completed"
           fi
