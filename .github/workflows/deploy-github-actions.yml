@@ -23,7 +23,12 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: github-pages
+          name: build
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+            path: build/
+        
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
