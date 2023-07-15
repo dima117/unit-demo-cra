@@ -1,0 +1,51 @@
+# Настройте релизный процесс
+#
+#1. релиз должен запускаться автоматически при появлении в git нового релизного тега.
+# Считаем тег релизным, если он соответствует маске   v<число>   (например,   v12  )
+#2. версия релиза должна соответствовать релизному тегу
+#3. должен формироваться changelog по истории коммитов от предыдущего релизного тэга
+#4. должна создаваться запись в реестре релизов — считаем, что это issue на GitHub с пометкой RELEASE.
+# Там должна сохраняться вся важная информация: автор и дата релиза (можно взять из тэга), номер версии, changelog
+#5. предусмотрите корректную работу скрипта при многократном запуске с тем же тэгом
+# (должна обновляться информация в существующей записи реестра релизов, а не создаваться новая)
+#6. должны запускаться проверки, аналогичные PR, а ссылка на результат должна добавляться в реестр релизов
+#7. если проверки прошли, приложение должно выкладываться на gh-pages
+# (можете использовать готовый инструмент, например, gh-pages), а запись об этом должна добавляться в реестр релизов
+#8. после этого релизный issue можно автоматом закрывать
+
+name: release
+on:
+  push:
+    branches:
+      - "releases/v[0-9]+"
+    tags:
+      - "v[0-9]+"
+
+jobs:
+  create-issue:
+    if: contains(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - id: get-name
+        run: id=$(echo "${{github.event.client_payload.value}}" | cut -d / -f3) && echo $id >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+        with:
+          path: ${{ startsWith(steps.get-name.id, 'releases/') && steps.get-name.id || 'releases/' + steps.get-name.id }}
+      - run: git push
+#      - uses: JasonEtco/create-an-issue@v2
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#
+#  lint-and-test:
+#    uses: ""
+#
+#  add-result-comment:
+#    needs: lint-and-test
+#    runs-on: ubuntu-latest
+#
+#  publish-on-gh-pages:
+#    runs-on: ubuntu-latest
+#
+#  close-issue:
+#    runs-on: ubuntu-latest
+#
