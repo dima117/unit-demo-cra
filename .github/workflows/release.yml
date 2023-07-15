@@ -34,7 +34,7 @@ jobs:
         run: |
           TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" ${{ steps.get_last_tag.outputs.last_tag }}..HEAD)
           echo "#### Changelog" >> release_issue.md
-          echo -e '$TEXT_CHANGELOG' >> release_issue.md
+          echo "$TEXT_CHANGELOG" >> release_issue.md
           echo "- CI Results: [Link](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> release_issue.md
 
       # Test & build
