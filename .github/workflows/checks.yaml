@@ -24,7 +24,14 @@ jobs:
       
       - name: Run unit tests
         run: npm run test-ci
-  
+      
+      - uses: actions/upload-artifact@v3
+        if: always() #${{ github.event_name == 'pull_request' }}
+        with:
+          name: test-report
+          path: test-report.html
+          retention-days: 10
+
   playwright-e2e-tests:
     runs-on: ubuntu-latest
     steps:
@@ -46,9 +53,16 @@ jobs:
         run: npm run build
       
       - name: Run e2e tests
-        run: npm run e2e-ci
+        run: npm run e2e
         env:
           CI: true
+      
+      - uses: actions/upload-artifact@v3
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 10
   
   lint-commits-push:
     runs-on: ubuntu-latest
