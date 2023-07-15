@@ -6,7 +6,6 @@ import { initStore } from "./store";
 
 import "./index.css";
 
-
 const container = document.getElementById("root");
 
 if (container) {
