@@ -44,21 +44,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Extract Tag Version
-        id: extract_version
-        run: echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
-
       - name: Create Release Issue
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const version = '${{ steps.extract_version.outputs.version }}';
             const issueTitle = `Release ${process.env.GITHUB_REF_NAME}`;
             const issueBody = `
               **Author**: ${process.env.GITHUB_ACTOR}
               **Date**: ${new Date().toISOString()}
-              **Version**: ${version}
+              **Version**: ${{ github.ref_name }}
               
               Changelog:
             `;
