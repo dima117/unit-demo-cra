@@ -1,0 +1,19 @@
+name: run unit tests
+on:
+  pull_request:
+jobs:
+    tests_unit:
+        name: Run unit tests
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v3
+        - uses: actions/setup-node@v3
+        - name: Install dependencies
+          run: npm ci
+        - name: Run tests
+          run: npm run test:unit
+        - name: Upload report artifact
+          uses: actions/upload-artifact@v2
+          with:
+        - name: unit-report
+          path: unit-report
