@@ -26,15 +26,14 @@ jobs:
     if: contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
-      - id: get-name
-        run: id=$(echo "${{github.ref}}" | cut -d / -f3) && echo "id=$id" >> $GITHUB_OUTPUT
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - run: |
-          if [["${{ steps.get-name.id }}" == v* ]];
+          id=$(echo "${{github.ref}}" | cut -d / -f3)
+          if [[$id == v* ]];
           then
-            git checkout releases/${{steps.get-name.id}}
+            git checkout releases/$id
             git push
           fi
 
