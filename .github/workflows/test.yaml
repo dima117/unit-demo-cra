@@ -89,7 +89,7 @@ jobs:
           key: node_modules
 
       - name: install-playwright
-        run: pnpx playwright install --with-deps
+        run: npx playwright install --with-deps chromium
 
       - name: test
         run: pnpm run test:e2e:ci
