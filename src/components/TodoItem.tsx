@@ -1,6 +1,6 @@
-import { FC, useCallback } from "react";
+import { type FC, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ApplicationState, setDone } from "../store";
+import { type ApplicationState, setDone } from "../store";
 
 export const TodoItem: FC<{ index: number }> = (props) => {
   const { index } = props;

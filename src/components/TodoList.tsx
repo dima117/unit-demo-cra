@@ -1,6 +1,6 @@
-import { ChangeEvent, FC, useCallback } from "react";
+import { type ChangeEvent, type FC, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { ApplicationState, addItem, setText } from "../store";
+import { type ApplicationState, addItem, setText } from "../store";
 import { TodoItem } from "./TodoItem";
 
 export const TodoList: FC = () => {
