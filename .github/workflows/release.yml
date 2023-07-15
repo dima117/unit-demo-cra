@@ -103,16 +103,35 @@ jobs:
 
       # Generate Release issue
 
+      - name: Get issue number
+        id: get_issue_number
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const title = "Release ${{ env.RELEASE_VERSION }}";
+            const { data } = await github.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open in:title "${title}"`,
+              per_page: 1
+            });
+            const issueNumber = data.items[0]?.number;
+            console.log("Found issue: " + issueNumber);
+            core.setOutput('issue_number', issueNumber);
+
       - name: Create release issue
         id: create_issue
-        run:
-          issue_title="Release ${{ env.RELEASE_VERSION }}"
-          issue_number=$(gh issue list --state all --search "$issue_title" --json number | jq -r '.[].number')
-          if [ -n "$issue_number" ]; then
-            gh issue edit $issue_number --body "$(cat release_issue.md)"
-          else
-            gh issue create --title "$issue_title" --body "$(cat release_issue.md)"
-          fi
+        uses: peter-evans/create-issue-from-file@v3
+        with:
+          title: Release ${{ env.RELEASE_VERSION }}
+          issue-number: ${{ steps.get_issue_number.outputs.issue_number }}
+          content-filepath: release_issue.md
+        if: always()
+
+      - name: Close issue
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{ steps.create_issue.outputs.issue_number }}
+          comment: Auto-closing issue
         env:
-          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: always()
