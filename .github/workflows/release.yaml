@@ -25,26 +25,26 @@ jobs:
           echo "prev_tag=$prev_tag">>"$GITHUB_ENV"
       - name: Get commit date
         run: echo "commit_date=$(git log -1 --format=%cd)">>"$GITHUB_ENV"
+      - name: Git log
+        run: |
+          git_log=$(git log --pretty=format:"- %s" "${{ env.prev_tag }}..${{ env.current_tag }}")
+          echo "git_log=$git_log">>"$GITHUB_ENV"
       - name: Create Branch
         run: |
-         BRANCH_NAME=release-${{ env.current_tag }}
-         git checkout -b $BRANCH_NAME
-         git push -u origin $BRANCH_NAME
-      - name: Create Issue
-        run: |
-         git_log=$(git log --pretty=oneline --no-merges "${{ env.prev_tag }}..${{ env.current_tag }}")
-         author_name=$(git log -1 --format='%an')
-         # Set the issue title and body
-         ISSUE_TITLE="${{ env.current_tag }}"
-         ISSUE_BODY="Author: $author_name \n\nDate: ${{ env.commit_date }}\n\nChangelog:\n $git_log"
-         API_URL="https://api.github.com/repos/${{ github.repository }}/issues"
-         # Create the issue using the GitHub REST API
-         curl -X POST \
-           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-           -H "Accept: application/vnd.github.v3+json" \
-           "$API_URL" \
-           -d '{
-             "title": "'"$ISSUE_TITLE"'",
-             "body": "'"$ISSUE_BODY"'",
-             "labels": ["RELEASE"]
-           }'
+          BRANCH_NAME=release-${{ env.current_tag }}
+          git checkout -b $BRANCH_NAME
+          git push -u origin $BRANCH_NAME
+      - name: Create issue
+        uses: imjohnbo/issue-bot@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          labels: 'RELEASE'
+          title: ${{ env.current_tag }}
+          body: |
+            Author: ${{ github.actor }}
+            Date: ${{ env.commit_date }}
+            Changelog:
+            ${{ env.git_log }}
+          pinned: false
+          close-previous: false
