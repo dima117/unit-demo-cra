@@ -102,5 +102,7 @@ jobs:
         if: always()
 
       - name: Close release issue
-        run: gh issue close --comment "Auto-closing issue" ${{ steps.create_issue.outputs.issue_number }}
+        run: |
+          echo "Issue number: $(echo "${{ steps.create_issue.outputs.response }}" | jq -r '.number')"
+          gh issue close --comment "Auto-closing issue" ${{ steps.create_issue.outputs.issue_number }}
         if: always()
