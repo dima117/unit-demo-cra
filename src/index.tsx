@@ -13,7 +13,6 @@ if (container) {
   const root = createRoot(container);
   const store = initStore();
 
-  
   root.render(
     <BrowserRouter>
       <Provider store={store}>
