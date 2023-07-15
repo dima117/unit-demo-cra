@@ -23,11 +23,6 @@ jobs:
           prev_tag="v$prev_tag"
           echo "current_tag=$current_tag">>"$GITHUB_ENV"
           echo "prev_tag=$prev_tag">>"$GITHUB_ENV"
-      - name: Get Git Log
-        id: git_log
-        run: |
-          git_log=$(git log --pretty=oneline --no-merges "${{ env.prev_tag }}..${{ env.current_tag }}")
-          echo "git_log=$git_log">>"$GITHUB_ENV"
       - name: Get commit date
         run: echo "commit_date=$(git log -1 --format=%cd)">>"$GITHUB_ENV"
       - name: Create Branch
@@ -35,13 +30,14 @@ jobs:
           git checkout release-${{ env.current_tag }}
       - name: Create Issue
         run: |
+          git_log=$(git log --pretty=oneline --no-merges "${{ env.prev_tag }}..${{ env.current_tag }}")
           author_name=$(git log -1 --format='%an')
           response=$(curl -X POST \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{
           "title": "${{ env.current_tag }}",
-          "body": "Author: '$author_name'\n\nDate: ${{ env.commit_date }}\n\nChangelog:\n'${{ env.git_log }}'",
+          "body": "Author: '$author_name'\n\nDate: ${{ env.commit_date }}\n\nChangelog:\n'$git_log'",
           "labels": ["RELEASE"]
           }' \
           "https://api.github.com/repos/${{ github.repository }}/issues")
