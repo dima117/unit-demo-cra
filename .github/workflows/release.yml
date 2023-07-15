@@ -14,6 +14,7 @@ env:
 
 jobs:
   changelog:
+    name: 🏂 Начат релиз
     runs-on: ubuntu-latest
     # if: ${{ github.ref_type  == 'tag' }}
 
