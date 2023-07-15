@@ -30,3 +30,6 @@ npm run e2e
 ```sh
 npm test
 ```
+
+## Workflows
+Every workflow was implemented in .github directory. The settings are stated to resolve only pull requests. 
