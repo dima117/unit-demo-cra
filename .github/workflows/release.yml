@@ -30,9 +30,14 @@ jobs:
         run: id=$(echo "${{github.ref}}" | cut -d / -f3) && echo "id=$id" >> $GITHUB_OUTPUT
       - uses: actions/checkout@v3
         with:
-          ref: refs/heads/releases/v1
-#          ref: ${{ startsWith(steps.get-name.id, 'releases/') && steps.get-name.id || format('releases/${0}', steps.get-name.id) }}
-      - run: git push
+          fetch-depth: 0
+      - run: |
+          if [[${steps.get-name.id} == v* ]];
+          then
+            git checkout releases/${{steps.get-name.id}}
+            git push
+          fi
+
 #      - uses: JasonEtco/create-an-issue@v2
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
