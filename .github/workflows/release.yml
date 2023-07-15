@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: get-name
-        run: id=$(echo "${{github.ref}}" | cut -d / -f3) && echo $id >> $GITHUB_OUTPUT
+        run: id=$(echo "${{github.ref}}" | cut -d / -f3) && echo "id=$(($id))" >> $GITHUB_OUTPUT
       - uses: actions/checkout@v3
         with:
           ref: ${{ startsWith(steps.get-name.id, 'releases/') && steps.get-name.id || format('releases/${0}', steps.get-name.id) }}
