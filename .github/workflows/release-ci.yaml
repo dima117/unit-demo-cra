@@ -45,6 +45,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: tests for output
+        run: echo "${{ env.RELEASE_DATE }}"echo RELEASE_DATE
+      
       - name: Find Existing Issue
         id: find_existing_issue
         run: |
