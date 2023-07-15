@@ -5,12 +5,6 @@ on:
     workflows: ["Node.js CI"]
     types: [completed]
 
-permissions:
-  deployments: write
-  contents: read
-  issues: write
-  packages: write
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
