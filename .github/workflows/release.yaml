@@ -11,7 +11,9 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Get Current Tag
         id: get_tag
         run: |
@@ -21,14 +23,13 @@ jobs:
           prev_tag="v$prev_tag"
           echo "current_tag=$current_tag">>"$GITHUB_ENV"
           echo "prev_tag=$prev_tag">>"$GITHUB_ENV"
-
-      - name: List branches
+      - name: Get Git Log
+        id: git_log
         run: |
-          git branch --list
-
-      - name: List tags
-        run: |
-          git tag --list
+          echo $(git branch --list)
+          echo $(git tag --list)
+          git_log=$(git log --pretty=oneline --no-merges ${{ steps.get_tag.outputs.prev_tag }}..${{ steps.get_tag.outputs.current_tag }})
+          echo "::set-output name=git_log::$git_log"
 
       - name: Get commit date
         run: echo "commit_date=$(git log -1 --format=%cd)">>"$GITHUB_ENV"
