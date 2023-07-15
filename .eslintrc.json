@@ -8,7 +8,7 @@
 		"testing-library/no-debugging-utils": "off",
 		"@typescript-eslint/no-unused-vars": "off"
 	},
-	"ignore-patterns": [
+	"ignorePatterns": [
 		"e2e/**/*.spec.ts",
 		"src/**/*.test.ts",
 		"src/**/*.test.tsx"
