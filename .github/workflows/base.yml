@@ -4,6 +4,7 @@ on:
   push:
     branches: [master]
     tags: 'v\d+'
+    
   pull_request:
     branches: [master]
 
