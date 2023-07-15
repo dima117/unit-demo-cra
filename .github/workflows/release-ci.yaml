@@ -4,10 +4,14 @@ on:
   push:
     tags:
       - 'v[0-9]+'
-      
+
 jobs:
   make-changelog:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v3
       
