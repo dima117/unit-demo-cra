@@ -1,0 +1,38 @@
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - v[0-9]+
+permissions:
+  contents: read
+  issues: write
+jobs:
+  release:
+    name: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set output
+        id: vars
+        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+      - name: Get previous tag
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 4b825dc642cb6eb9a060e54bf8d69288fbee4904
+      - name: Set diff
+        id: diff
+        env:
+          LAST_TAG: ${{ steps.previoustag.outputs.tag }}
+        run: |
+          git_hash=$(git rev-parse --short "$GITHUB_SHA")
+          diff=$(git log --pretty='%h; author: %cn;  subject:%s'  $LAST_TAG..$git_hash | cat)
+          echo "DIFF=$diff" >> $GITHUB_OUTPUT
+      - uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_TITLE: ${{ steps.vars.outputs.tag }}
+          HISTORY: ${{ steps.diff.outputs.diff}}
+        with:
+          update_existing: true
+          search_existing: open
