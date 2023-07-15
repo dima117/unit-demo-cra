@@ -4,3 +4,4 @@ echo "Идёи проверка прекоммит хуком"
 npx commitlint --edit ${1}
 npm run commitlint ${1}
 
+npx --no-install commitlint --edit "$1"
