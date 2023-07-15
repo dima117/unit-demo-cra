@@ -101,7 +101,6 @@ jobs:
         with:
           title: Release ${{ github.ref }}
           content-filepath: release_issue_temp.md
-          replace: true
         if: always()
 
       - name: Close release issue
