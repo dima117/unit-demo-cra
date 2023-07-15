@@ -9,7 +9,7 @@ const getLatestReleaseIssue = async (github, metaData, label) => {
     .then((res) => res.data)
     .catch(() => {});
 
-  if (!issues && !issues.length) {
+  if (!issues && !issues?.length) {
     return;
   }
 
@@ -50,6 +50,10 @@ const getRelease = async (github, metaData, tag) => {
     .listReleases(metaData)
     .then((res) => res.data)
     .catch(() => {});
+
+  if (!releases || !releases?.length) {
+    return;
+  }
 
   for (const release of releases) {
     if (release.tag_name === tag) {
