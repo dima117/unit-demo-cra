@@ -5,6 +5,9 @@ on:
   push:
     branches: [ master, release-v\d+ ]
 
+permissions: 
+  contents: write
+
 jobs:
   test-workflow:
     uses: ./.github/workflows/test.yaml
