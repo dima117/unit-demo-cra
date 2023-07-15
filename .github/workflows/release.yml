@@ -6,8 +6,58 @@ on:
       - 'v[0-9]+'
 
 jobs:
+
+  commitlint:
+    name: Test commit message with commitlint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Set up GitHub Actions
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Use Node.js ${{matrix.node-version}}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{matrix.node-version}}
+      - name: Install dependencies
+        run: npm ci
+      - name: Install commitlint
+        run: |
+          npm install conventional-changelog-conventionalcommits
+          npm install commitlint@latest
+      - name: Validate commit message with commitlint
+        run: npx commitlint --from HEAD~1 --to HEAD --verbose
+
+  tests:
+    name: Unit and e2e tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+    - name: Set up GitHub Actions
+      uses: actions/checkout@v3
+    - name: Use Node.js ${{matrix.node-version}}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{matrix.node-version}}
+    - name: Install dependencies
+      run: npm ci
+    - name: Install playwright
+      run: npx playwright install
+    - name: Build project
+      run: npm run build
+    - name: unit tests
+      run: npm run test
+    - name: e2e tests
+      run: npm run e2e
+
   release:
     name: Create release
+    needs: [commitlint, tests]
     permissions:
       contents: read
       issues: write
