@@ -37,10 +37,10 @@ jobs:
           allowUpdates: true
           draft: true
           makeLatest: true
-          name: ${{ github.ref_name }}
+          name: "RELEASE: ${{ github.ref_name }}"
           body: ${{ steps.changelog.outputs.changes }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-      
+          token: ${{ secrets.GITHUB_TOKEN }} 
+ 
       - name: Deploy to GitHub Pages
         if: success()
         uses: crazy-max/ghaction-github-pages@v3
