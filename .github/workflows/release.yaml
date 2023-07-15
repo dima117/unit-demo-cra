@@ -18,8 +18,7 @@ jobs:
         id: get_tag
         run: |
           current_tag=$(echo "${{ github.ref }}" | awk -F/ '{print $3}')
-          tag_number=$(echo $current_tag | sed 's/\/(v\d+)$//g')
-          prev_tag=$(git describe --tags --abbrev=0 ${CURRENT_TAG}^)
+          prev_tag=$(git describe --tags --abbrev=0 ${current_tag}^)
           echo "current_tag=$current_tag">>"$GITHUB_ENV"
           echo "prev_tag=$prev_tag">>"$GITHUB_ENV"
       - name: Get commit date
