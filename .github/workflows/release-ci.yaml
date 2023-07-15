@@ -50,7 +50,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Find Existing Issue
-        id: find_existing_issue
+        id: find_existing_issue_init
         run: |
           response=$(curl -s -X GET -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=open&labels=RELEASE&creator=${GITHUB_ACTOR}")
           issue_number=$(echo "$response" | jq '.[] | select(.title == "RELEASE: $RELEASE_NAME") | .number')
