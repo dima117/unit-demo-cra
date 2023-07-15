@@ -1,0 +1,43 @@
+name: build
+run-name: ${{ github.actor }} is running build
+
+on:
+  push:
+    branches: [ master, release-v\d+ ]
+
+jobs:
+  test-workflow:
+    uses: ./.github/workflows/test.yaml
+
+  build:
+    name: build
+    needs: test-workflow
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.6.3
+
+      - name: node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'pnpm'
+
+      - name: install dependencies
+        run: pnpm i
+
+      - name: build
+        run: pnpm run build
+
+        if: success()
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build/
+          retention-days: 10
