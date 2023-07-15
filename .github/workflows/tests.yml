@@ -1,9 +1,11 @@
 name: Start Tests
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
-    branches: [ "master" ]
+    branches:
+      - '*'
+  push:
+    branches:
+      - 'master'
 jobs:
   test:
     runs-on: ubuntu-latest
