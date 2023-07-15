@@ -1,0 +1,13 @@
+name: Release CI
+
+on:
+  push:
+    tags:
+      - 'v\d+'
+
+jobs:
+  make-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: echo "make changelog!"
