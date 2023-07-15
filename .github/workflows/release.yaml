@@ -26,8 +26,10 @@ jobs:
       - name: Get commit date
         run: echo "commit_date=$(git log -1 --format=%cd)">>"$GITHUB_ENV"
       - name: Git log
+        id: git-log
         run: |
-          git log --pretty=format:"- %s" "${{ env.prev_tag }}..${{ env.current_tag }}">git_log.txt
+          git_log=$(git log --pretty=format:"- %s" "${{ env.prev_tag }}..${{ env.current_tag }}")
+          echo "::set-output name=git-log::$git_log"
       - name: Create Branch
         run: |
           BRANCH_NAME=release-${{ env.current_tag }}
@@ -44,6 +46,6 @@ jobs:
             Author: ${{ github.actor }}
             Date: ${{ env.commit_date }}
             Changelog:
-              $(cat git-log.txt)
+              ${{ steps.git-log.outputs.git-log }}
           pinned: false
           close-previous: false
