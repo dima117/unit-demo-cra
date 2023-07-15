@@ -26,9 +26,7 @@ jobs:
       - name: Get Git Log
         id: git_log
         run: |
-          echo $(git branch --list)
-          echo $(git tag --list)
-          git_log=$(git log --pretty=oneline --no-merges ${{ steps.get_tag.outputs.prev_tag }}..${{ steps.get_tag.outputs.current_tag }})
+          git_log=$(git log --pretty=oneline --no-merges "${{ steps.get_tag.outputs.prev_tag }}..${{ steps.get_tag.outputs.current_tag }}")
           echo "::set-output name=git_log::$git_log"
 
       - name: Get commit date
