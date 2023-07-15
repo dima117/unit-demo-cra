@@ -19,12 +19,13 @@ jobs:
           tag_number=$(echo $current_tag | sed 's/[^0-9]*//g')
           prev_tag=$((tag_number - 1))
           prev_tag="v$prev_tag"
+          echo "::set-output name=current_tag::$current_tag"
           echo "::set-output name=prev_tag::$prev_tag"
 
       - name: Get Git Log
         id: git_log
         run: |
-          git_log=$(git log --pretty=oneline --no-merges "${{ steps.get_tag.outputs.prev_tag }}..${{ env.GITHUB_REF }}")
+          git_log=$(git log --pretty=oneline --no-merges "${{ steps.get_tag.outputs.prev_tag }}..${{ steps.get_tag.outputs.current_tag }}")
           echo "::set-output name=git_log::$git_log"
 
       - name: Create Issue
