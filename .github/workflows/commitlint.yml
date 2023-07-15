@@ -22,11 +22,6 @@ jobs:
           node --version
           npm --version
           npx commitlint --version
-  commitlint:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
       - name: Install commitlint
         run: |
           npm install conventional-changelog-conventionalcommits
