@@ -30,3 +30,12 @@ npm run e2e
 ```sh
 npm test
 ```
+
+Перед созданием коммина необходимо вызвать:
+
+```sh
+npm run husky-install
+```
+
+
+TEST
