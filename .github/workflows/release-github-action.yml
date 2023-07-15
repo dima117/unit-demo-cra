@@ -2,8 +2,6 @@ name: release-github-actions
 run-name: 🚀 ${{ github.actor }} is running release
 on:
    push:
-     branches:
-       - main
      tags:
        - 'v\d+'
 
@@ -52,9 +50,11 @@ jobs:
           CHANGELOG=$(git log --pretty=format:"- %s" "${{ steps.get_tags.outputs.previous }}...${{ steps.get_tags.outputs.current }}")
           echo "Display changelog:"
           echo $CHANGELOG
-          echo "log='${CHANGELOG}'" >> "$GITHUB_OUTPUT"
+          cat << EOF >> "$GITHUB_OUTPUT"
+          log="${CHANGELOG}"
+          EOF
 
-      - name: ✍️ Create team sync issue
+      - name: ✍️ Create release issue
         uses: imjohnbo/issue-bot@3d96848fb5e9a4a473bb81ae62b4b4866a56e93a
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
