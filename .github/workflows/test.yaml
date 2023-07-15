@@ -30,6 +30,10 @@ jobs:
         run: |
           npm i pnpm -g
           pnpm i
+
+      - name: install playwright
+        run: |
+          pnpx playwright install
           pnpx playwright install --with-deps chromium
 
       - name: build
