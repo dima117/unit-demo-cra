@@ -28,8 +28,11 @@ jobs:
           LAST_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
           CURRENT_TAG: ${{ steps.get_version.outputs.VERSION }}
         run: |
+          echo'DIFF<<EOF' >> $GITHUB_OUTPUT
           diff=$(git log --pretty='%h; author: %cn;  subject:%s'  $LAST_TAG..$CURRENT_TAG)
-          echo "DIFF=$diff" >> $GITHUB_OUTPUT
+          echo "$diff" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+
       - uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
