@@ -9,7 +9,7 @@ test('по адресу /about открывается страница "о пр�
 test("если добавить элемент, он появляется в списке", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByTestId("input-add").type("Сделать домашку");
+  await page.getByTestId("input-add-1").type("Сделать домашку");
   await page.getByTestId("button-add").click();
 
   const items = page.getByTestId("list-item");
