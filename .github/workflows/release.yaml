@@ -27,7 +27,9 @@ jobs:
         run: echo "commit_date=$(git log -1 --format=%cd)">>"$GITHUB_ENV"
       - name: Create Branch
         run: |
-          git checkout release-${{ env.current_tag }}
+         BRANCH_NAME=release-${{ env.current_tag }}
+         git checkout -b $BRANCH_NAME
+         git push -u origin $BRANCH_NAME
       - name: Create Issue
         run: |
           git_log=$(git log --pretty=oneline --no-merges "${{ env.prev_tag }}..${{ env.current_tag }}")
