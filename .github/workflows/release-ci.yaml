@@ -14,15 +14,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Set Release Name
+        run: echo "RELEASE_NAME=$(echo ${{ github.ref }} | sed 's#refs/tags/##')" >> $GITHUB_ENV
       
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          name: ${{ github.ref }}
+          tag_name: ${{ $RELEASE_NAME }}
+          name: ${{ $RELEASE_NAME }}
           body: |
-            This is the release ${{ github.ref }}.
-            Add more description here if needed.
+            This is the release ${{ $RELEASE_NAME }}.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
