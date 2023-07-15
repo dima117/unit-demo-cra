@@ -45,16 +45,47 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Find Existing Issue
+        id: find_existing_issue
+        run: |
+          response=$(curl -s -X GET -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=open&labels=RELEASE&creator=${GITHUB_ACTOR}")
+          issue_number=$(echo "$response" | jq '.[] | select(.title == "RELEASE: $RELEASE_NAME") | .number')
+          echo "::set-output name=issue_number::$issue_number"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          RELEASE_NAME: ${{ env.RELEASE_NAME }}
+
       - name: Create Release Issue
+        id: create_or_update_issue
+        if: steps.find_existing_issue.outputs.issue_number == ''
         uses: peter-evans/create-issue-from-file@v4
         with:
           title: "RELEASE: ${{ env.RELEASE_NAME }}"
           content-filepath: issue_template.md
           labels: RELEASE
-          replace: |
-            $RELEASE_VERSION=${{ env.RELEASE_NAME }}
-            $RELEASE_DATE=${{ env.RELEASE_DATE }}
-            $AUTHOR=${{ github.actor }}
-            $CHANGELOG_CONTENT=$(cat CHANGELOG.md)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_NAME: ${{ env.RELEASE_NAME }}
+          RELEASE_DATE: ${{ env.RELEASE_DATE }}
+      
+      - name: Update Release Issue
+        if: steps.find_existing_issue.outputs.issue_number != ''
+        uses: peter-evans/update-issue-comment-action@v1
+        with:
+          issue-number: ${{ steps.find_existing_issue.outputs.issue_number }}
+          body: |
+            ## Release Information
+
+            **Tag:** ${{ env.RELEASE_NAME }}
+            **Version:** ${{ env.RELEASE_NAME }}
+            **Release Date:** ${{ env.RELEASE_DATE }}
+            **Author:** ${{ github.actor }}
+            **Changelog:**
+
+            $(cat CHANGELOG.md)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_NAME: ${{ env.RELEASE_NAME }}
+          RELEASE_DATE: ${{ env.RELEASE_DATE }}
