@@ -89,7 +89,7 @@ jobs:
         uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.MAKE_PR_PAT }}
-          comment-id: ${{ steps.find_existing_issue.outputs.issue_number }}
+          issue-number: ${{ steps.find_existing_issue.outputs.issue_number }}
           body: |
             ## Release Information
 
