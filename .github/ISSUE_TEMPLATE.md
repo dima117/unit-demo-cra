@@ -1,5 +1,5 @@
 ---
-title: {{env.ISSUE_TITLE}}
+title: Release {{env.ISSUE_TITLE}}
 labels: RELEASE
 ---
 Author:  {{ payload.sender.login }}.
