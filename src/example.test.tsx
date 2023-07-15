@@ -21,7 +21,7 @@ it('по адресу /about должна открываться страниц�
 
   const { getByTestId } = render(application);
 
-  expect(getByTestId("page-title").textContent).toEqual("About");
+  expect(getByTestId("page-title").textContent).toEqual("Cbout");
 });
 
 it("если добавить элемент, он появляется в списке", async () => {
