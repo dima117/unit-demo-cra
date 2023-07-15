@@ -1,19 +1,26 @@
-# it is a reusable part of code, because it is needed for releases and commits
+name: CI - Test
 
-name: Unit and e2e tests
-
+# on simple pull requests and pushes just run the tests
 on:
-  workflow_call:
-    inputs:
-      save-artifacts:
-        required: false
-        default: false
-        type: boolean
+  push:
+    branches: [ master ]
+    tags-ignore:
+      - '**'
+  pull_request:
+    types: [ opened, reopened ]
+    branches: [ master ]
+    tags-ignore:
+      - '**'
 
 jobs:
-  unit-test:
+  unit-tests:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
@@ -25,17 +32,22 @@ jobs:
       - name: Run unit tests
         run: npm run test-ci
       
-      - name: Save test results to artifacts
-        uses: actions/upload-artifact@v3
-        if: ${{ inputs.save-artifacts }}
-        with:
-          name: unit-test-report
-          path: test-report.html
-          retention-days: 10
+      # - name: Save test results to artifacts
+      #   uses: actions/upload-artifact@v3
+      #   if: ${{ inputs.save-artifacts }}
+      #   with:
+      #     name: unit-test-report
+      #     path: test-report.html
+      #     retention-days: 10
 
   playwright-e2e-tests:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
@@ -55,18 +67,23 @@ jobs:
         env:
           CI: true
       
-      - name: Save test results to artifacts
-        uses: actions/upload-artifact@v3
-        if: ${{ inputs.save-artifacts }}
-        with:
-          name: playwright-test-report
-          path: playwright-report/
-          retention-days: 10
+      # - name: Save test results to artifacts
+      #   uses: actions/upload-artifact@v3
+      #   if: ${{ inputs.save-artifacts }}
+      #   with:
+      #     name: playwright-test-report
+      #     path: playwright-report/
+      #     retention-days: 10
   
   lint-commits-push:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
     steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
@@ -80,8 +97,13 @@ jobs:
   
   lint-commits-pull-request:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ inputs.event_name == 'pull_request' }}
     steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
