@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -18,9 +18,7 @@ jobs:
         id: get_tag
         run: |
           current_tag=$(echo "${{ github.ref }}" | awk -F/ '{print $3}')
-          tag_number=$(echo $current_tag | sed 's/[^0-9]*//g')
-          prev_tag=$((tag_number - 1))
-          prev_tag="v$prev_tag"
+          prev_tag=$(git describe --tags --abbrev=0 ${CURRENT_TAG}^)
           echo "current_tag=$current_tag">>"$GITHUB_ENV"
           echo "prev_tag=$prev_tag">>"$GITHUB_ENV"
       - name: Get commit date
@@ -49,3 +47,21 @@ jobs:
               ${{ steps.git-log.outputs.git-log }}
           pinned: false
           close-previous: false
+  test-workflow:
+    uses: ./.github/workflows/pr-test.yaml
+  build-and-deploy:
+    needs: test-workflow
+    concurrency: ci-${{ github.ref }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install and Build
+        run: |
+          npm ci
+          npm run build
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build
