@@ -92,9 +92,9 @@ module.exports = async ({ github, context, exec, TAG }) => {
   };
 
   if (issue) {
-    github.rest.issues.update({...issueData, labels: [LABEL]});
+    github.rest.issues.update(issueData);
   } else {
-    github.rest.issues.create(issueData);
+    github.rest.issues.create({...issueData, labels: [LABEL]});
   }
 
   if (release) {
