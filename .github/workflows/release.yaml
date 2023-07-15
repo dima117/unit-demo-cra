@@ -26,9 +26,9 @@ jobs:
         id: diff
         env:
           LAST_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
+          CURRENT_TAG: ${{ steps.get_version.outputs.VERSION }}
         run: |
-          git_hash=$(git rev-parse --short "$GITHUB_SHA")
-          diff=$(git log --pretty='%h; author: %cn;  subject:%s'  $LAST_TAG..$git_hash | cat)
+          diff=$(git log --pretty='%h; author: %cn;  subject:%s'  $LAST_TAG..$CURRENT_TAG | cat)
           echo "DIFF=$diff" >> $GITHUB_OUTPUT
       - uses: JasonEtco/create-an-issue@v2
         env:
