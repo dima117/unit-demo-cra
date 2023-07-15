@@ -35,7 +35,7 @@ jobs:
         run: |
           echo "COMMIT_LIST<<EOF" >> $GITHUB_ENV
           COMMIT_LIST=$(git log --pretty=format:"%s" ${{ env.RELEASE_VERSION }} ^${{ env.PREV_TAG }})
-          echo "COMMIT_LIST='$COMMIT_LIST'" >> $GITHUB_ENV
+          echo "$COMMIT_LIST" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
       - uses: JasonEtco/create-an-issue@v2
         env:
