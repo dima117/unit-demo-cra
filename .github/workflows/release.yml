@@ -3,6 +3,7 @@
 #1. релиз должен запускаться автоматически при появлении в git нового релизного тега.
 # Считаем тег релизным, если он соответствует маске   v<число>   (например,   v12  )
 #2. версия релиза должна соответствовать релизному тегу
+
 #3. должен формироваться changelog по истории коммитов от предыдущего релизного тэга
 #4. должна создаваться запись в реестре релизов — считаем, что это issue на GitHub с пометкой RELEASE.
 # Там должна сохраняться вся важная информация: автор и дата релиза (можно взять из тэга), номер версии, changelog
@@ -22,20 +23,30 @@ on:
       - "v[0-9]+"
 
 jobs:
-  create-issue:
+  create-new-branch:
     if: contains(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - run: |
+      - id: new-branch
+        run: |
           id=$(echo "${{github.ref}}" | cut -d / -f3)
-          if [[ $id == v* ]];
-          then
-            git checkout -b releases/$id
-            git push --set-upstream origin releases/$id
-          fi
+          git checkout -b releases/$id
+          git push --set-upstream origin releases/$id
+          echo "id=$id" >> $GITHUB_OUTPUT
+      - uses: JasonEtco/create-an-issue@v2
+        with:
+          filename: .github/release-issue-template.md
+          update_existing: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE: ${{ steps.new-branch.id }}
+          RELEASE_BRANCH: release/${{ steps.new-branch.id }}
+        id: create-issue
+      - run: 'echo Created issue number ${{ steps.create-issue.outputs.number }}'
+      - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
 
 #      - uses: JasonEtco/create-an-issue@v2
 #        env:
