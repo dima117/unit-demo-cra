@@ -34,7 +34,7 @@ jobs:
         with:
           folder: build
 
-      - name: update issue and release
+      - name: update issue
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.TOKEN }}

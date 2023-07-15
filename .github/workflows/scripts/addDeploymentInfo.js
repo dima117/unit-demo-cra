@@ -14,9 +14,9 @@ module.exports = async ({ github, context, TAG, run }) => {
 
   const issue = await getIssue(github, metaData, TAG, [RELEASE_LABEL, READY_LABEL]);
 
-  const body = `pushed data to deployment branch\n \
-                  [workflow run](${WORKFLOW_LINK}) \n
-                  [deployment address](${DEPLOY_LINK})`;
+  const body = `pushed data to deployment branch\n\
+[workflow run](${WORKFLOW_LINK})\n\
+[deployment address](${DEPLOY_LINK})`;
 
   await github.rest.issues.createComment({
     ...metaData,
