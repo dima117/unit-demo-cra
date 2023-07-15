@@ -52,5 +52,6 @@ jobs:
                   tag_name: ${{ github.ref_name }}
                   release_name: ${{ github.ref_name }}
                   body: ${{ steps.generate_changelog.outputs.changelog }}
-                  token: ${{ secrets.REPO_SECRET }}
+                  draft: false
+                  prerelease: false
 
