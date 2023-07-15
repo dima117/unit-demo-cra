@@ -21,7 +21,7 @@ jobs:
           echo "### Release Information" > release_issue.md
           RELEASE_VERSION=$(echo "${{ github.ref }}" | sed 's/v//')
           echo "- Version: $RELEASE_VERSION" >> release_issue.md
-          echo "RELEASE_VERSION=$RELEASE_VERSION" >> GITHUB_OUTPUT
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> GITHUB_ENV
           current_date=$(date +"%Y-%m-%d")
           echo "- Date: $current_date" >> release_issue.md
           LAST_TAG=$(git describe --abbrev=0 --tags --match 'v[0-9]*')
@@ -97,10 +97,10 @@ jobs:
         id: create_issue
         uses: peter-evans/create-issue-from-file@v3
         with:
-          title: Release ${{ github.ref }}
+          title: Release ${{ env.RELEASE_VERSION }}
           content-filepath: release_issue.md
         if: always()
 
       - name: Close release issue
-        run: gh issue close ${{ steps.create_issue.outputs.issue_number }}
+        run: gh issue close --comment "Auto-closing issue" ${{ steps.create_issue.outputs.issue_number }}
         if: always()
