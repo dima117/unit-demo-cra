@@ -19,16 +19,19 @@ jobs:
         id: release_info
         run: |
           echo "### Release Information" > release_issue.md
+          
           RELEASE_VERSION=$(echo "${{ github.ref }}" | sed 's/v//')
           echo "- Version: $RELEASE_VERSION" >> release_issue.md
-          echo "RELEASE_VERSION=$RELEASE_VERSION" >> GITHUB_ENV
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
+          
           current_date=$(date +"%Y-%m-%d")
           echo "- Date: $current_date" >> release_issue.md
-          LAST_TAG=$(git describe --abbrev=0 --tags --match 'v[0-9]*')
-          echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
-          TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" $LAST_TAG..HEAD)
+          
           echo "#### Changelog" >> release_issue.md
+          LAST_TAG=$(git describe --abbrev=0 --tags --match 'v[0-9]*')
+          TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" $LAST_TAG..HEAD)
           echo "$TEXT_CHANGELOG" >> release_issue.md
+
           echo "- CI Results: [Link](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> release_issue.md
 
       # Test & build
@@ -95,7 +98,7 @@ jobs:
 
       - name: Create release issue
         id: create_issue
-        uses: peter-evans/create-issue-from-file@v3
+        uses: peter-evans/create-issue-from-file@v4
         with:
           title: Release ${{ env.RELEASE_VERSION }}
           content-filepath: release_issue.md
@@ -103,6 +106,5 @@ jobs:
 
       - name: Close release issue
         run: |
-          echo "Issue number: $(echo "${{ steps.create_issue.outputs.response }}" | jq -r '.number')"
           gh issue close --comment "Auto-closing issue" ${{ steps.create_issue.outputs.issue_number }}
         if: always()
