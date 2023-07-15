@@ -1,0 +1,108 @@
+name: Release Process
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+'
+
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Prepare release info
+
+      - name: Prepare release info
+        id: release_info
+        run: |
+          echo "::set-output name=version::$(echo "${{ github.ref }}" | sed 's/v//')"
+          echo "::set-output name=date::${date +"%Y-%m-%d"}"
+
+      - name: Get last release tag
+        id: get_last_tag
+        run: |
+          LAST_TAG=$(git describe --abbrev=0 --tags --match 'v[0-9]*')
+          echo "::set-output name=last_tag::$LAST_TAG"
+  
+      - name: Generate changelog
+        id: changelog
+        run: |
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)%n" ${{ steps.get_last_tag.outputs.last_tag }}..HEAD)
+          echo "::set-output name=changelog::$CHANGELOG"
+
+      # Test & build
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run autotests
+        run: npm run test-ci      
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+        if: success()
+
+      
+      #- name: Add gh-pages deployment info to release issue
+      #  run: |
+      #    DEPLOYMENT_URL="https://${{ github.repository_owner }}.github.io/${{ github.repository }}"
+      #    echo "Deployment URL: $DEPLOYMENT_URL" >> release_issue.md
+      #    gh issue comment ${{ steps.create_issue.outputs.issue_number }} --body "$(cat release_issue.md)"
+
+      # Create release
+
+      - name: Archive build
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build
+          if-no-files-found: error
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ steps.release_info.outputs.version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+
+      - name: Attach build to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build
+          asset_name: build.zip
+          asset_content_type: application/zip
+
+      # Generate Release issue
+
+      - name: Create release issue
+        id: create_issue
+        uses: peter-evans/create-issue-from-file@v3
+        with:
+          title: Release ${{ github.ref }}
+          content-filepath: release_issue_temp.md
+          replace: true
+        if: always()
+
+      - name: Close release issue
+        run: gh issue close ${{ steps.create_issue.outputs.issue_number }}
+        if: always()
