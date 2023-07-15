@@ -31,6 +31,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_TITLE: ${{ steps.get_version.outputs.VERSION }}
           HISTORY: ${{ steps.diff.outputs.diff}}
+          PREVIOUS_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
         with:
           update_existing: true
           search_existing: open
