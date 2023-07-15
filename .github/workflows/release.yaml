@@ -22,12 +22,13 @@ jobs:
           echo "current_tag=$current_tag">>"$GITHUB_ENV"
           echo "prev_tag=$prev_tag">>"$GITHUB_ENV"
 
-      - name: Get Git Log
-        id: git_log
+      - name: List branches
         run: |
-          echo $(git branch --list)
-          echo $(git tag --list)
+          git branch --list
 
+      - name: List tags
+        run: |
+          git tag --list
 
       - name: Create Issue
         run: |
