@@ -11,7 +11,7 @@ jobs:
     - name: Install Deps
       run: npm ci
     - name: Run ESLint
-      run: eslint . --ext .js,.jsx,.ts,.tsx
+      run: npx eslint . --ext .js,.jsx,.ts,.tsx
 
   tests:
     runs-on: ubuntu-latest
