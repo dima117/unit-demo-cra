@@ -4,9 +4,8 @@ on: [push, pull_request]
 
 jobs:
   setup:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install required dependencies
@@ -24,8 +23,9 @@ jobs:
           npx commitlint --version
   commitlint:
     needs: setup
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Install commitlint
         run: |
           npm install conventional-changelog-conventionalcommits
