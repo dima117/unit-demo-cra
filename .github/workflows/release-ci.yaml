@@ -18,6 +18,16 @@ jobs:
       - name: Set Release Name
         run: echo "RELEASE_NAME=$(echo ${{ github.ref }} | sed 's#refs/tags/##')" >> $GITHUB_ENV
       
+      - name: Get Last Release Tag
+        id: last_tag
+        run: echo "LAST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Install auto-changelog
+        run: npm install -g auto-changelog
+
+      - name: Generate Changelog
+        run: auto-changelog --output CHANGELOG.md --starting-version ${{ env.LAST_TAG }}
+      
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -26,5 +36,7 @@ jobs:
           name: ${{ env.RELEASE_NAME }}
           body: |
             This is the release ${{ env.RELEASE_NAME }}.
+            Changelog:
+            $(cat CHANGELOG.md)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
