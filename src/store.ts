@@ -9,7 +9,6 @@ export interface ApplicationState {
 const items = ["Позавтракать", "Сходить в магазин", "Покормить кота"];
 
 const DEFAULT_STATE = { items, done: {}, text: "" };
-
 // actions
 export const addItem = (text: string) => ({ type: "ADD_ITEM", text } as const);
 export const setText = (text: string) => ({ type: "SET_TEXT", text } as const);
