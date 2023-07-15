@@ -4,11 +4,13 @@ on:
   workflow_run:
     workflows: ["Node.js CI"]
     types: [completed]
+  schedule:
+    - cron: "*/10 * * * *"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'schedule' || github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - uses: actions/checkout@v3
