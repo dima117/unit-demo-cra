@@ -36,6 +36,7 @@ jobs:
           git push -u origin $BRANCH_NAME
       - name: Create issue
         uses: imjohnbo/issue-bot@v3
+        id: issue-bot
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -51,7 +52,7 @@ jobs:
       - name: Output issue number
         id: issue
         run: |
-          echo "issue=${{ steps.git-log.outputs.issue-number }}">>"$GITHUB_OUTPUT"
+          echo "issue=${{ steps.issue-bot.outputs.issue-number }}">>"$GITHUB_OUTPUT"
   test-workflow:
     uses: ./.github/workflows/pr-test.yaml
   build-and-deploy:
