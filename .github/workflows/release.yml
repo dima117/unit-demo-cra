@@ -30,7 +30,7 @@ jobs:
         run: id=$(echo "${{github.event.client_payload.value}}" | cut -d / -f3) && echo $id >> $GITHUB_OUTPUT
       - uses: actions/checkout@v3
         with:
-          path: ${{ startsWith(steps.get-name.id, 'releases/') && steps.get-name.id || format("releases/${0}", steps.get-name.id) }}
+          path: ${{ startsWith(steps.get-name.id, 'releases/') && steps.get-name.id || format('releases/${0}', steps.get-name.id) }}
       - run: git push
 #      - uses: JasonEtco/create-an-issue@v2
 #        env:
