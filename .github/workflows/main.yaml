@@ -5,9 +5,13 @@ on:
       - master
 env:
   CI: true
+  JEST_JUNIT_OUTPUT_DIR: test-results
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js 18.x
@@ -15,4 +19,10 @@ jobs:
         with:
           node-version: 18.x
       - run: npm ci
-      - run: npm test
+      - run: npm run test-ci
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            test-results/**/*.xml
