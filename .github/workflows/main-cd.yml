@@ -3,7 +3,7 @@ name: CD
 on:
     push:
         tags:
-        - v\d+
+        - 'v[0-9]+'
 
 jobs:
     build:
