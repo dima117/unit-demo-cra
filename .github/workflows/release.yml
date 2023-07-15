@@ -32,7 +32,7 @@ jobs:
         with:
           fetch-depth: 0
       - run: |
-          if [[${{steps.get-name.id}} == v* ]];
+          if [["${{ steps.get-name.id }}" == v* ]];
           then
             git checkout releases/${{steps.get-name.id}}
             git push
