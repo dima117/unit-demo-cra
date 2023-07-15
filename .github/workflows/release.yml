@@ -57,10 +57,6 @@ jobs:
       - run: 'echo Created issue number ${{ steps.create-issue.outputs.number }}'
       - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
 
-      - uses: JasonEtco/create-an-issue@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   add-comment:
     if: contains(github.ref, 'refs/heads/')
     runs-on: ubuntu-latest
