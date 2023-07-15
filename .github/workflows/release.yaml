@@ -19,16 +19,15 @@ jobs:
           tag_number=$(echo $current_tag | sed 's/[^0-9]*//g')
           prev_tag=$((tag_number - 1))
           prev_tag="v$prev_tag"
-          echo "::set-output name=current_tag::$current_tag"
-          echo "::set-output name=prev_tag::$prev_tag"
+          echo "current_tag=$current_tag">>"$GITHUB_ENV"
+          echo "prev_tag=$prev_tag">>"$GITHUB_ENV"
 
       - name: Get Git Log
         id: git_log
         run: |
           echo $(git branch --list)
           echo $(git tag --list)
-          git_log=$(git log --pretty=oneline --no-merges ${{ steps.get_tag.outputs.prev_tag }}..${{ steps.get_tag.outputs.current_tag }})
-          echo "::set-output name=git_log::$git_log"
+
 
       - name: Create Issue
         run: |
@@ -38,7 +37,7 @@ jobs:
           -H "Content-Type: application/json" \
           -d '{
           "title": "New Issue",
-          "body": "Author: '$author_name'\n\nDate: $(date +%Y-%m-%d-%H%M%S)\n\nChangelog:\n'${{ steps.get_tag.outputs.git_log }}'",
+          "body": "Author: '$author_name'\n\nDate: $(date +%Y-%m-%d-%H%M%S)\n\nChangelog:\n'${{ env.git_log }}'",
           "labels": ["RELEASE"]
           }' \
           "https://api.github.com/repos/${{ github.repository }}/issues")
