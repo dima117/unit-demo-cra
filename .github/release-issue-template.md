@@ -1,5 +1,5 @@
 ---
-title: release {{env.RELEASE}}
+title: RELEASE {{env.RELEASE}}
 labels: release
 ---
 Релиз: {{env.RELEASE}}
