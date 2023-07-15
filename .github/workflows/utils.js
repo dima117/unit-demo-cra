@@ -34,6 +34,10 @@ const getIssue = async (github, metaData, tag, label) => {
     .then((res) => res.data)
     .catch(() => {});
 
+  if (!issues || !issues.length) {
+    return;
+  }
+
   for (const issue of issues) {
     if (issue.title === tag) {
       return issue;
