@@ -47,3 +47,15 @@ jobs:
           npm i gh-pages
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           npx gh-pages -d build -u "github-actions-bot <support+actions@github.com>"
+      
+        if: success()
+      - name: Close Issue
+        run: |
+          BRANCH=${{ github.ref_name }}
+          ISSUE_TITLE="Release ${BRANCH#*-}"
+          ISSUE_ID=$(gh issue list --json number,title,labels -q \
+            ".[] | select(.title == \"${issue}\" and .labels[].name == \"RELEASE\") | .number")
+          if [ -z $ISSUE_ID ]; then
+            gh issue close $ISSUE_ID -c "Deployment done" -r "completed"
+          fi
+          
