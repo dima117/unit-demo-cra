@@ -98,13 +98,9 @@ jobs:
 
       - name: Create release issue
         id: create_issue
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          title: Release ${{ env.RELEASE_VERSION }}
-          content-filepath: release_issue.md
-        if: always()
-
-      - name: Close release issue
-        run: |
-          gh issue close --comment "Auto-closing issue" ${{ steps.create_issue.outputs.issue_number }}
+        run:
+          issue_response=$(gh issue create --title "${{ env.RELEASE_VERSION }}" --body "$(cat release_issue.md)" --json)
+          issue_number=$(echo "$issue_response" | jq -r '.number')
+          echo $issue_number
+          gh issue close --comment "Auto-closing issue" $issue_number
         if: always()
