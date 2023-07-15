@@ -41,3 +41,10 @@ jobs:
           name: build
           path: build/
           retention-days: 10
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.4.2
+        with:
+          branch: gh-pages
+          folder: build
+          clean: true
