@@ -21,6 +21,11 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'pnpm'
+
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node_modules
       
       - name: install dependencies
         run: pnpm i
