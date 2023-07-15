@@ -13,17 +13,7 @@ module.exports = async ({ github, context, TAG }) => {
     RELEASE_LABEL,
   ]);
 
-  const hasLabel = (issue) => {
-    for (const label of issue?.labels) {
-      if (label.name === READY_LABEL) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-
-  if (!hasLabel(issue)) {
+  if (!issue) {
     console.log("Release is not labeled as ready for deployment");
     console.log("exiting...");
     process.exit(1);

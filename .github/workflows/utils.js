@@ -9,11 +9,11 @@ const getLatestReleaseIssue = async (github, metaData, label) => {
     .then((res) => res.data)
     .catch(() => {});
 
-  const latest = issues?.[0];
-
-  if (!latest?.labels) {
+  if (!issues && !issues.length) {
     return;
   }
+
+  const latest = issues?.[0];
 
   for (const label of latest?.labels) {
     if (label.name === DEPLOYED_LABEL) {
