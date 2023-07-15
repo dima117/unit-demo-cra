@@ -33,10 +33,12 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "lint": "eslint src",
+        "deploy": "gh-pages -d dist",
         "eject": "react-scripts eject",
         "test": "react-scripts test",
         "e2e": "playwright test --project=chromium && playwright show-report",
-        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
+        "test-ci": "export CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\"",
+        "prepare": "husky install"
     },
     "eslintConfig": {
         "extends": [
@@ -70,6 +72,9 @@
         "eslint-import-resolver-typescript": "^3.5.5",
         "eslint-plugin-import": "^2.27.5",
         "eslint-plugin-prettier": "^5.0.0",
-        "jest-html-reporter": "^3.7.0"
+        "gh-pages": "^5.0.0",
+        "husky": "^8.0.3",
+        "jest-html-reporter": "^3.7.0",
+        "prettier": "^3.0.0"
     }
 }
