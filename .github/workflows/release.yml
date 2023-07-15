@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.*'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2 
+      - name: Create Issue
+        run: |
+          author_name=$(git log -1 --format='%an')
+          response=$(curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+          "title": "New Issue",
+          "body": "Author: '$author_name'\n\nChangelog:\n'$changelog'",
+          "labels": ["release"]
+          }' \
+          "https://api.github.com/repos/${{ github.repository }}/issues")
+          echo "$response"
+
+ 
