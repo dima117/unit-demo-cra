@@ -1,0 +1,38 @@
+name: CI
+
+on: [pull_request]
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Deps
+      run: npm ci
+    - name: Run ESLint
+      run: npx eslint .
+
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js 18 
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18 
+    - name: Install Deps
+      run: npm ci
+    - name: Run Unit Tests
+      run: npm test
+    - name: Install Playwright Chromium
+      run: npx playwright install --with-deps chromium
+    - name: Run e2e
+      run: npm run ci:e2e
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
