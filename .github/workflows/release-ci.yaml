@@ -62,6 +62,7 @@ jobs:
         if: steps.find_existing_issue.outputs.issue_number == ''
         uses: peter-evans/create-issue-from-file@v4
         with:
+          token: ${{ secrets.MAKE_RP_PAT }}
           title: "RELEASE: ${{ env.RELEASE_NAME }}"
           content-filepath: issue_template.md
           labels: RELEASE
@@ -74,6 +75,7 @@ jobs:
         if: steps.find_existing_issue.outputs.issue_number != ''
         uses: peter-evans/create-or-update-comment@v3
         with:
+          token: ${{ secrets.MAKE_RP_PAT }}
           issue-number: ${{ steps.find_existing_issue.outputs.issue_number }}
           body: |
             ## Release Information
