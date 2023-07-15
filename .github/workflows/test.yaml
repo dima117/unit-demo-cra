@@ -22,7 +22,7 @@ jobs:
           node-version: '18.x'
           cache: 'pnpm'
       
-      - install dependencies
+      - name: install dependencies
         run: pnpm i
 
 unit-tests:
