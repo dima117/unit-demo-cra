@@ -3,8 +3,7 @@ name: Node.js CI
 on:
   push:
     branches: [master]
-    tags:
-      'v\d+'
+    tags: 'v\d+'
   pull_request:
     branches: [master]
 
@@ -38,24 +37,29 @@ jobs:
 
       - name: Run e2e tests
         run: npm run e2e
-  
+
   release:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release Issue
+        uses: actions/github-script@v4
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this release:
-              - Something
-              - Something 2
-          draft: false
-          prerelease: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueTitle = `Release ${process.env.GITHUB_REF}`;
+            const issueBody = `
+              **Author**: ${process.env.GITHUB_ACTOR}
+              **Date**: ${new Date().toISOString()}
+              **Version**: ${process.env.GITHUB_REF}
+              
+              Changelog:
+              Add your changelog here
+            `;
+            const { data: newIssue } = await github.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: issueTitle,
+              body: issueBody
+            });
