@@ -1,3 +1,5 @@
+const { getIssue } = require("../utils");
+
 module.exports = async ({ github, context, TAG, run }) => {
     const DEPLOY_LINK = "https://memesaurus.github.io/SHRI_Infrastructure/"
     const WORKFLOW_LINK = `https://github.com/Memesaurus/SHRI_Infrastructure/actions/runs/${run}`
