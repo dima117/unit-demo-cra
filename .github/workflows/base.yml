@@ -4,7 +4,7 @@ on:
   push:
     branches: [master]
     tags: 'v\d+'
-    
+
   pull_request:
     branches: [master]
 
@@ -44,19 +44,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Extract Tag Version
+        id: extract_version
+        run: echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
+
       - name: Create Release Issue
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const issueTitle = `Release ${process.env.GITHUB_REF}`;
+            const version = '${{ steps.extract_version.outputs.version }}';
+            const issueTitle = `Release ${process.env.GITHUB_REF_NAME}`;
             const issueBody = `
               **Author**: ${process.env.GITHUB_ACTOR}
               **Date**: ${new Date().toISOString()}
-              **Version**: ${process.env.GITHUB_REF}
+              **Version**: ${version}
               
               Changelog:
-              Add your changelog here
             `;
             const { data: newIssue } = await github.issues.create({
               owner: context.repo.owner,
