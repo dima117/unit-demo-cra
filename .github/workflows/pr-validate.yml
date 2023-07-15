@@ -1,0 +1,7 @@
+name: pr validate
+
+on: [pull_request]
+
+jobs:
+  validate:
+    uses: ./.github/workflows/validate.yml
