@@ -8,7 +8,8 @@ jobs:
   build:
     name: Release
     runs-on: ubuntu-latest
-
+    outputs:
+      output1: ${{ steps.issue.outputs.issue }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -48,8 +49,9 @@ jobs:
           pinned: false
           close-previous: false
       - name: Output issue number
+        id: issue
         run: |
-          echo "issue-number=${{ steps.git-log.outputs.git-log }}">>"$GITHUB_OUTPUT"
+          echo "issue=${{ steps.git-log.outputs.issue-number }}">>"$GITHUB_OUTPUT"
   test-workflow:
     uses: ./.github/workflows/pr-test.yaml
   build-and-deploy:
@@ -67,13 +69,11 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: build
-  titlePrefixCheck:
+  close-issue:
     runs-on: ubuntu-latest
     needs: [build, build-and-deploy]
     steps:
       - name: Close Issue
-        uses: peter-evans/close-issue@v3
-        with:
-          issue-number: ${{needs.build.outputs.issue-number}}
-          comment: |
-            Tests passed and build successfully uploaded to gh-pages
+        run: gh issue close --comment " Tests passed and build successfully uploaded to gh-pages" "${{needs.build.outputs.output1}}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
