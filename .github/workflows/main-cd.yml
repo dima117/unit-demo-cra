@@ -52,6 +52,7 @@ jobs:
                 fi 
                 echo ::set-output name=changelog::$(cat changelog.txt)
                 echo ${{ steps.get_previous_tag.outputs.previous_tag }}
+                echo HEAD 
 
             - name: Create release
               uses: actions/create-release@v1
