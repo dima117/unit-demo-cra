@@ -18,13 +18,14 @@ jobs:
           fetch-depth: 0
 
       - name: Write info to output
-        id: tags
+        id: tags_info
         run: |
-          curTag=${{ github.ref_name }}
           prevTag=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
-          echo "Version switched from ${prevTag} to ${curTag}" >> $GITHUB_OUTPUT
-          echo "Release date is $(date +'%d.%m.%Y %H:%M:%S')" >> $GITHUB_OUTPUT
-          echo "Author is ${{ github.actor }}" >> $GITHUB_OUTPUT
+          curTag=${{ github.ref_name }}
+          echo "prevTag=${previousTag}" >> $GITHUB_OUTPUT
+          echo "curTag=${currentTag}" >> $GITHUB_OUTPUT
+          echo "author=${{ github.actor }}" >> $GITHUB_OUTPUT
+          echo "date=$(date +'%d.%m.%Y %H:%M:%S')" >> $GITHUB_OUTPUT
 
       - name: Create changelog
         id: create_changelog
@@ -37,10 +38,10 @@ jobs:
         id: create_issue
         uses: JasonEtco/create-an-issue@v2
         env:
-          VERSION: ${{ steps.tags.outputs.currentTag}}
-          AUTHOR: ${{ steps.tags.outputs.author }}
-          DATE: ${{ steps.tags.outputs.date }}
-          CHANGELOG: ${{ steps.build_changelog.outputs.changelog }}
+          VERSION: ${{ steps.tags_info.outputs.curTag}}
+          AUTHOR: ${{ steps.tags_info.outputs.author }}
+          DATE: ${{ steps.tags_info.outputs.date }}
+          CHANGELOG: ${{ steps.create_changelog.outputs.changelog }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           update_existing: true
