@@ -24,7 +24,7 @@ jobs:
           npx commitlint --version
   commitlint:
     needs: setup
-    runs on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Install commitlint
         run: |
