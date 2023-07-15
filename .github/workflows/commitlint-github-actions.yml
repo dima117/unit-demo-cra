@@ -1,8 +1,9 @@
 name: commitlint-github-actions
-run-name: ${{ github.actor }} is running commit lint
+run-name: 🧅 ${{ github.actor }} is running commit lint
 on: [push, pull_request, workflow_call]
 jobs:
   commitlint:
+    name: 🧅 Verify commit message
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +23,7 @@ jobs:
           sudo apt install -y git
           
       - name: Install dependencies
-        run: npm ci
+        run: npm i -g @commitlint/cli @commitlint/config-conventional conventional-changelog-conventionalcommits
 
       - name: Validate current commit (last commit) with commitlint
         if: github.event_name == 'push'

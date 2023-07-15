@@ -1,16 +1,34 @@
 name: release-github-actions
-run-name: ${{ github.actor }} is running release
+run-name: 🚀 ${{ github.actor }} is running release
 on:
    push:
+     branches:
+       - main
      tags:
        - 'v\d+'
 
 jobs:
-  # call-build-workflow:
-  #   uses: ./.github/workflows/build-github-actions.yml
-  create_issue:
-    name: Create Release issue
+  call-build-workflow:
+    uses: ./.github/workflows/build-github-actions.yml
+  create_release_branch:
+    name: 🥳 Create release branch
     runs-on: ubuntu-latest
+    needs: call-build-workflow
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
+
+      - name: Create release branch
+        run: |
+          BRANCH_NAME=release-${{ github.ref_name }}
+          git checkout -b $BRANCH_NAME
+          git push -u origin $BRANCH_NAME
+
+  create_issue:
+    name: 📃 Create Release issue
+    runs-on: ubuntu-latest
+    needs: create_release_branch
     permissions:
       issues: write
     steps:
@@ -18,31 +36,36 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Generate change log
+      - name: 🌈 Define tags
+        id: get_tags
         run: |
-          CURRENT_TAG=$${GITHUB_REF#refs/*/}
-          PREVIOUS_TAG=$(git describe --abbrev=0 ${CURRENT_TAG}^)
-          echo ::set-output name=current::${CURRENT_TAG}
-          echo ::set-output name=previous::${PREVIOUS_TAG}
+          CURRENT_TAG=${{ github.ref_name }} 
+          TIMESTAMP=$(git show -s --format=%ai ${CURRENT_TAG})
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${CURRENT_TAG}^)
+          echo "current=${CURRENT_TAG}" >> "$GITHUB_OUTPUT"
+          echo "previous=${PREVIOUS_TAG}" >> "$GITHUB_OUTPUT"
+          echo "timestamp=${TIMESTAMP}" >> "$GITHUB_OUTPUT"
 
-      - name: Generate changelog
+      - name: 📃 Generate changelog
         id: generate_log
         run: |
-          CHANGELOG=$(git log --pretty=format:"- %s" "${{ steps.get_tags.outputs.previous }}..${{ steps.get_tags.outputs.current }}")
-          echo ::set-output name=log::"${CHANGELOG}"
+          CHANGELOG=$(git log --pretty=format:"- %s" "${{ steps.get_tags.outputs.previous }}...${{ steps.get_tags.outputs.current }}")
+          echo "log=${CHANGELOG}" >> "$GITHUB_OUTPUT"
 
-      - name: Create team sync issue
+      - name: ✍️ Create team sync issue
         uses: imjohnbo/issue-bot@3d96848fb5e9a4a473bb81ae62b4b4866a56e93a
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           assignees: "sr480"
           labels: "RELEASE"
-          title: Release ${{ github.ref_name }}
+          title: Release ${{ github.ref_name }} 
           body: |
             ### Это релиз приложения версии ${{ github.ref_name }}
 
             Авто релиза: ${{ github.actor }}
 
-            Время: ${{ steps.date.outputs.date }}
+            Время: ${{ steps.get_tags.outputs.timestamp }}
             
             Changelog:
 
@@ -50,5 +73,3 @@ jobs:
             
           pinned: false
           close-previous: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

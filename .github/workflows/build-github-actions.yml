@@ -1,9 +1,12 @@
 name: build-github-actions
-run-name: ${{ github.actor }} is running build
+run-name: 🏋️‍♂️ ${{ github.actor }} is running build
 
 on:
   push:
-    branches: [ master, workflow_call ]
+    branches: 
+    - master
+    - release-v\d+
+  workflow_call:
 
 jobs:
   call-commitlint-workflow:
@@ -13,6 +16,7 @@ jobs:
     uses: ./.github/workflows/test-github-actions.yml
 
   build:
+    name: 🎬 Build application
     needs: call-test-workflow
     runs-on: ubuntu-latest
 
@@ -22,10 +26,10 @@ jobs:
         with:
           node-version: '18'
       
-      - name: Install deps
+      - name: ⚙️ Install deps
         run: npm ci
     
-      - name: Build App
+      - name: 🧳 Build App
         run: npm run build
       
         if: success()

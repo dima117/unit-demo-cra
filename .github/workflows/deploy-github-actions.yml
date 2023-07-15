@@ -1,0 +1,31 @@
+name: deploy-github-actions
+run-name: 🌍 ${{ github.actor }} is running deploy to PRODUCTION
+on: 
+  workflow_dispatch
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  call-build-workflow:
+    uses: ./.github/workflows/build-github-actions.yml
+
+  deploy:
+    name: 🌍🚀🌖 Get build Artifcts and deploy
+    needs: call-build-workflow
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: build
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action
