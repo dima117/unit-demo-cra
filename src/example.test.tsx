@@ -27,11 +27,11 @@ it('по адресу /about должна открываться страниц�
 it("если добавить элемент, он появляется в списке", async () => {
   const store = initStore();
   const application = (
-    <BrowserRouter>
+    <MemoryRouter initialEntries={["/unit-demo-cra"]}>
       <Provider store={store}>
         <Application />
       </Provider>
-    </BrowserRouter>
+    </MemoryRouter>
   );
 
   const { getByTestId, getAllByTestId } = render(application);
