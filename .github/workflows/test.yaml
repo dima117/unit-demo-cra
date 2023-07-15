@@ -44,6 +44,11 @@ jobs:
           node-version: '18.x'
           cache: 'pnpm'
 
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node_modules
+
       - name: test
         run: pnpm run test:unit:ci
       
@@ -72,6 +77,11 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'pnpm'
+
+      - uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node_modules
 
       - name: install-playwright
         run: pnpx playwright install --with-deps
