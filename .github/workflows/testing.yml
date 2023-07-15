@@ -10,5 +10,5 @@ jobs:
         run: npm ci
       - name: Test application
         run: npm run test
-      - name: Test e2e
+      - name: Test e2e app
         run: npm run e2e
