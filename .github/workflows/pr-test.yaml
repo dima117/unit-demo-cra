@@ -45,7 +45,7 @@ jobs:
 
             const status = hasFailingChecks ? 'failure' : 'success';
 
-            await github.repos.createStatus({
+            await github.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: pullRequest.head.sha,
