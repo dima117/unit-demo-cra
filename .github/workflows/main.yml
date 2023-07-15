@@ -22,13 +22,12 @@ jobs:
       - name: build production project
         run: npm run build
         if: always()
+      - name: last commit name
+        run: npm run commitlint
       - name: unit testing
         run: npm run test-ci
-        if: always()
       - name: install chromium for e2e
         run: npx playwright install --with-deps chromium
-        if: always()
       - name: e2e testing
         run: npm run e2e-ci
-        if: always()
 
