@@ -27,3 +27,4 @@ test-report.html
 /playwright-report/
 /playwright/.cache/
 **/.idea
+test.ci
