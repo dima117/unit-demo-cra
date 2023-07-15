@@ -1,9 +1,9 @@
 ## Release Information
 
-**Tag:** $TAG_NAME
-**Version:** $RELEASE_VERSION
-**Release Date:** $RELEASE_DATE
-**Author:** $AUTHOR
+**Tag:** ${{ env.TAG_NAME }}
+**Version:** ${{ env.RELEASE_VERSION }}
+**Release Date:** ${{ env.RELEASE_DATE }}
+**Author:** ${{ env.AUTHOR }}
 **Changelog:**
 
-$CHANGELOG_CONTENT
+${{ env.CHANGELOG_CONTENT }}
