@@ -32,9 +32,7 @@ jobs:
           pnpm i
 
       - name: install playwright
-        run: |
-          pnpx playwright install
-          pnpx playwright install chromium
+        run: pnpx playwright install --with-deps chromium
 
       - name: build
         run: pnpm run build
