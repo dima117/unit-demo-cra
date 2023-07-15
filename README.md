@@ -10,6 +10,7 @@
 ```sh
 # установить зависимости
 npm ci
+npm run prepare # для husky
 
 # запустить приложение
 npm start
