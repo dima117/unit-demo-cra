@@ -1,0 +1,20 @@
+name: Pull Request Verification
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, edited, reopened]
+jobs:
+  testing-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the repo code
+        uses: actions/checkout@v3
+      - name: Cache deps
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Echo
+        run: echo 'This job is done'
