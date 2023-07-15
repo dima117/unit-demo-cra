@@ -34,12 +34,14 @@ jobs:
         run: |
           id=$(echo "${{github.ref}}" | cut -d / -f3)
           branch=releases/$id
-          git checkout -b $branch
-          git push --set-upstream origin $branch
+          
           echo "RELEASE=$id" >> $GITHUB_ENV
           echo "RELEASE_BRANCH=$branch" >> $GITHUB_ENV
           echo "AUTHOR=$(git for-each-ref --format="%(taggername) %(taggeremail)" refs/tags/$id)" >> $GITHUB_ENV
           echo "DATE=$(git for-each-ref --format="%(creatordate)" refs/tags/$id)" >> $GITHUB_ENV
+          
+          git checkout -b $branch
+          git push --set-upstream origin $branch
           
           LOG=$(git log $(git describe --tags --abbrev=0 --exclude=v1)..HEAD --oneline)
           echo "BODY<<EOF" >> $GITHUB_ENV
@@ -52,7 +54,6 @@ jobs:
           update_existing: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_BRANCH: release/${{ steps.new-branch.id }}
         id: create-issue
       - run: 'echo Created issue number ${{ steps.create-issue.outputs.number }}'
       - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
