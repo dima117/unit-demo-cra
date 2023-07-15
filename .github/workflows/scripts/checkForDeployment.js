@@ -3,7 +3,6 @@ const { getIssue } = require("../utils");
 module.exports = async ({ github, context, TAG }) => {
   const READY_LABEL = "ready for deployment";
   const RELEASE_LABEL = "RELEASE";
-  const DEPLOYED_LABEL = "deployed";
   const metaData = {
     owner: context.actor,
     repo: context.repo.repo,
@@ -15,7 +14,7 @@ module.exports = async ({ github, context, TAG }) => {
   ]);
 
   const hasLabel = (issue) => {
-    for (const label of issue.labels) {
+    for (const label of issue?.labels) {
       if (label.name === READY_LABEL) {
         return true;
       }

@@ -1,5 +1,3 @@
-const READY_LABEL = "ready for deployment";
-const RELEASE_LABEL = "RELEASE";
 const DEPLOYED_LABEL = "deployed";
 
 const getLatestReleaseIssue = async (github, metaData, label) => {
@@ -12,6 +10,10 @@ const getLatestReleaseIssue = async (github, metaData, label) => {
     .catch(() => {});
 
   const latest = issues?.[0];
+
+  if (!latest?.labels) {
+    return;
+  }
 
   for (const label of latest?.labels) {
     if (label.name === DEPLOYED_LABEL) {
