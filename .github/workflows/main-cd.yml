@@ -1,0 +1,55 @@
+name: CD
+
+on:
+    push:
+        tags:
+        - 'v\d+'
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                token: ${{ secrets.REPO_SECRET }}
+
+            - uses: actions/setup-node@v1
+              with:
+                node-version: '16.x'
+      
+            - name: Install dependencies and buld app
+              run: |
+                npm ci --force
+                npm run build
+
+            - name: Find previous release tag
+              id: get_previous_tag
+              run: |
+                if [[ $(git tag) != "" ]]; then 
+                  PREVIOUS_TAG=$(git describe --tags --abbrev=0)              
+                else PREVIOUS_TAG="" 
+                fi 
+                if [[ -z "$PREVIOUS_TAG" ]]; then 
+                  echo ::set-output name=previous_tag::"v0" 
+                else 
+                  echo ::set-output name=previous_tag::$(git rev-parse $PREVIOUS_TAG) 
+                fi
+
+            - name: Generate changelog
+              id: generate_changelog
+              run: |
+                if [[ "${{ steps.get_previous_tag.outputs.previous_tag }}" == "v0" ]]; then 
+                  git log --pretty=format:"- name: %s, hash: %h" > changelog.txt 
+                else 
+                  git log --pretty=format:"- hash: %h, name: %s" ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt 
+                fi 
+                echo ::set-output name=changelog::$(cat changelog.txt)
+
+            - name: Create release
+              uses: actions/create-release@v1
+              with:
+                  tag_name: ${{ github.ref_name }}
+                  release_name: ${{ github.ref_name }}
+                  body: ${{ steps.generate_changelog.outputs.changelog }}
+
