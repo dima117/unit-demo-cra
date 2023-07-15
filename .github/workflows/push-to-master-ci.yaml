@@ -1,0 +1,11 @@
+name: Push to master branch CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  base-checks:
+    uses: ./.github/workflows/base-ci.yaml
+  
