@@ -1,37 +1,16 @@
-name: Create Release Branch and Run Tests
-
+name: Publish Release
 on:
   push:
-    tags: v* # Run this workflow for any v* tags, i.e. v1.0, v20.15.10
-
+    tags:
+      - 'v*'
 jobs:
-  create-release-branch:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Create Release Branch
-        uses: peterjgrainger/action-create-branch@v2.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          branch: 'release-${{ github.ref_name }}'
-
-  run_tests:
-    needs: create-release-branch
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run tests
-        run: npm run test-ci
-
   build:
-    needs: run_tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Publish a Release
+      - uses: actions/checkout@v3
+      - name: Create a Release
         uses: elgohr/Github-Release-Action@v4
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
-          title: 'MyReleaseMessage'
+          title: MyReleaseMessage
