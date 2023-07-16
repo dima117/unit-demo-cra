@@ -26,7 +26,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run tests e2e
-        run: xvfb-run e2e/example.spec.ts
+        run: npm run e2e
 
       - name: E2e test report
         uses: actions/upload-artifact@v3
