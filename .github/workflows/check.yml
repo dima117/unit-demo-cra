@@ -195,4 +195,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{needs.release-info.outputs.issue-create}}
           body: |
-            [e2e test results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            [e2e test results](${{ github.server_url }}/${{ github.repository }}/runs/${{ github.run_id }})
