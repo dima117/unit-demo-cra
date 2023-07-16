@@ -41,7 +41,7 @@ jobs:
 
             console.log(issues)
 
-            const lastIssue = issues.pop()
+            const lastIssue = issues.data.pop()
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -79,7 +79,7 @@ jobs:
               labels: 'release'
             })
 
-            const lastIssue = issues.pop()
+            const lastIssue = issues.data.pop()
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -121,7 +121,7 @@ jobs:
               labels: 'release'
             })
 
-            const lastIssue = issues.pop()
+            const lastIssue = issues.data.pop()
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
