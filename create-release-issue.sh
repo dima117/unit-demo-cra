@@ -15,30 +15,25 @@ create_issue_payload() {
   }
 EOF
 }
-echo "first"
+
 ALL_ISSUES=$(curl \
   -H "Authorization: token $GH_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
   -X GET \
   https://api.github.com/repos/$GITHUB_REPOSITORY/issues)
 
-# echo $ALL_ISSUES
 EXISTING_ISSUE_NUMBER=""
-for row in $(echo "${ALL_ISSUES}" | jq -r '.[] | @base64'); do
-    echo "Row data: ${row}"    
-    _jq() {
-     echo ${row} | base64 --decode | jq -r ${1}
-    }
 
-    echo "Original row: ${row}" 
-    DECODED_ROW=$(echo ${row} | base64 --decode)
-    echo "Decoded row: ${DECODED_ROW}" 
+# Convert the JSON array into an array of base64 encoded strings
+ENCODED_ISSUES=$(echo "${ALL_ISSUES}" | jq -c '.[]' | awk '{print $0}' | base64)
 
-    ISSUE_TITLE=$(_jq '.title')
-    ISSUE_NUMBER=$(_jq '.number')
-
-    echo "Issue title: ${ISSUE_TITLE}" 
-    echo "Issue number: ${ISSUE_NUMBER}" 
+for encoded_row in ${ENCODED_ISSUES}
+do
+    # Decode the base64 encoded JSON
+    row=$(echo "${encoded_row}" | base64 --decode)
+    
+    ISSUE_TITLE=$(echo "${row}" | jq -r '.title')
+    ISSUE_NUMBER=$(echo "${row}" | jq -r '.number')
 
     if [ "$ISSUE_TITLE" = "Release $VERSION" ]; then
         EXISTING_ISSUE_NUMBER="$ISSUE_NUMBER"
