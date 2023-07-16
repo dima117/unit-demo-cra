@@ -15,19 +15,28 @@ create_issue_payload() {
   }
 EOF
 }
-VERSION_ENCODED=$(echo -n $VERSION | jq -sRr @uri)
-echo $VERSION_ENCODED
-echo $GITHUB_REPOSITORY
-echo https://api.github.com/search/issues?q=repo:$GITHUB_REPOSITORY+label:RELEASE+title:"Release $VERSION_ENCODED"
-EXISTING_ISSUE=$(curl \
+
+ALL_ISSUES=$(curl \
   -H "Authorization: token $GH_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
   -X GET \
-  https://api.github.com/search/issues?q=repo:$GITHUB_REPOSITORY+label:RELEASE+title:"Release $VERSION_ENCODED")
+  https://api.github.com/repos/$GITHUB_REPOSITORY/issues)
 
-echo $EXISTING_ISSUE_NUMBER
-EXISTING_ISSUE_NUMBER=$(echo $EXISTING_ISSUE | jq '.items[0].number')
-echo $EXISTING_ISSUE_NUMBER
+EXISTING_ISSUE_NUMBER=""
+for row in $(echo "${ALL_ISSUES}" | jq -r '.[] | @base64'); do
+    _jq() {
+     echo ${row} | base64 --decode | jq -r ${1}
+    }
+
+    ISSUE_TITLE=$(_jq '.title')
+    ISSUE_NUMBER=$(_jq '.number')
+
+    if [ "$ISSUE_TITLE" = "Release $VERSION" ]; then
+        EXISTING_ISSUE_NUMBER="$ISSUE_NUMBER"
+        break
+    fi
+done
+
 if [ -n "$EXISTING_ISSUE_NUMBER" ]; then
   curl \
     -X PATCH \
