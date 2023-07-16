@@ -61,6 +61,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const { execSync } = require('child_process');
             const issueTitle = `Release ${process.env.GITHUB_REF_NAME}`;
 
             const currentTag = execSync('git describe --abbrev=0 --tags').toString().trim();
