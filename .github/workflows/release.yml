@@ -61,7 +61,8 @@ jobs:
       - name: 🔎 Проверка наличия ветки
         id: check_branch
         run: |
-          if git show-ref --quiet --heads ; then
+          echo "${{ env.BRANCH_RELEASE }}"
+          if git show-ref --quiet --heads ${{ env.BRANCH_RELEASE }}; then
           echo "branchExists=true" >> $GITHUB_ENV
           else
             echo "branchExists=false" >> $GITHUB_ENV
