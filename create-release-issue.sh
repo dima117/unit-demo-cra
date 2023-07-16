@@ -17,10 +17,26 @@ create_issue_payload() {
 EOF
 }
 
-curl \
-    -X POST \
-    -H "Authorization: token $GH_TOKEN" \
-    -H "Accept: application/vnd.github.v3+json" \
-    https://api.github.com/repos/$GITHUB_REPOSITORY/issues \
-    -d "$(create_issue_payload)"
-    
+get_existing_issue_number() {
+  curl -H "Authorization: token $GH_TOKEN" \
+       -H "Accept: application/vnd.github.v3+json" \
+       "https://api.github.com/search/issues?q=repo:$GITHUB_REPOSITORY+label:RELEASE+in:title+$(echo "Release $VERSION" | sed 's/ /+/g')" | jq '.items[0].number'
+}
+
+issue_number=$(get_existing_issue_number)
+
+if [ "$issue_number" != "null" ]; then
+  echo "Issue already exists, updating existing issue #$issue_number"
+  curl -X PATCH \
+       -H "Authorization: token $GH_TOKEN" \
+       -H "Accept: application/vnd.github.v3+json" \
+       "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$issue_number" \
+       -d "$(create_issue_payload)"
+else
+  echo "No existing issue found, creating a new one"
+  curl -X POST \
+       -H "Authorization: token $GH_TOKEN" \
+       -H "Accept: application/vnd.github.v3+json" \
+       "https://api.github.com/repos/$GITHUB_REPOSITORY/issues" \
+       -d "$(create_issue_payload)"
+fi
