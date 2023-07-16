@@ -10,6 +10,7 @@
 git clone https://github.com/extrapoisonouscake/unit-demo-cra
 cd unit-demo-cra
 npm ci
+npx husky install
 ```
 
 
