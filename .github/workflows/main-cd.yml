@@ -32,9 +32,10 @@ jobs:
             - name: Find previous release tag
               id: get_previous_tag
               run: |
-                PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${{ github.ref_name }}^)
+                CURRENT_TAG=${{github.ref_name}}
+                PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${CURRENT_TAG}^)
                 echo ::set-output name=previous_tag::$(git rev-parse $PREVIOUS_TAG) 
-                echo 
+                echo CURRENT_TAG
 
             - name: Generate changelog
               id: generate_changelog
