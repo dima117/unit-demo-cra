@@ -17,7 +17,7 @@ jobs:
       - name: Install Deps
         run: npm ci
       - name: Run Unit Tests
-        run: npm test -- --verbose=true 2>&1 > unit_report.txt 
+        run: CI=true npm test -- --useStderr 2> unit_report.txt 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
       - name: Run e2e
