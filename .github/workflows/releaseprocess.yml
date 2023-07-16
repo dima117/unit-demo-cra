@@ -25,6 +25,7 @@ jobs:
     outputs:
       unit_test_result: ${{ env.UNIT_TEST_RESULT }}
       e2e_test_result: ${{ env.E2E_TEST_RESULT }}
+      true_result: "PASSED"
 
     steps:
       - name: Get the repo code
@@ -107,11 +108,11 @@ jobs:
       - name: Echo needs.create_issue.outputs.e2e_test_result
         run: echo ${{ needs.create_issue.outputs.e2e_test_result }}
       - name: Echo equality 1
-        run: echo ${{ needs.create_issue.outputs.unit_test_result == 'PASSED' }}
+        run: echo ${{ needs.create_issue.outputs.unit_test_result == needs.create_issue.outputs.true_result }}
       - name: Echo equality 2
-        run: echo ${{ needs.create_issue.outputs.e2e_test_result == 'PASSED' }}
+        run: echo ${{ needs.create_issue.outputs.e2e_test_result == needs.create_issue.outputs.true_result }}
       - name: Echo equality 3
-        run: echo ${{ needs.create_issue.outputs.unit_test_result == needs.create_issue.outputs.e2e_test_result }}
+        run: echo ${{ needs.create_issue.outputs.true_result }}
       - name: Echo equality 5
         run: echo ${{ true && true }}
       - name: Echo summary
