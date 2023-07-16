@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/Rubicones/hw-infra/compare/v1.12.0...v1.13.0) (2023-07-16)
+
+
+### Features
+
+* issue script changelog added ([aa94ef5](https://github.com/Rubicones/hw-infra/commit/aa94ef569728c004aed4012d98dab67d78cf207b))
+
 # [1.12.0](https://github.com/Rubicones/hw-infra/compare/v1.11.0...v1.12.0) (2023-07-16)
 
 
