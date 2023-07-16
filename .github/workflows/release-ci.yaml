@@ -66,7 +66,7 @@ jobs:
           EOM
           )
           if [ -z "${{ steps.find_existing_issue.outputs.issue_number }}" ]; then
-            gh issue create --title "RELEASE: $RELEASE_NAME" --body "$body" --label "RELEASE"
+            gh issue create --title "RELEASE: $RELEASE_NAME" --body "$body" --label "RELEASE" --debug
           else
             gh issue comment "${{ steps.find_existing_issue.outputs.issue_number }}" --body "$body"
           fi
