@@ -78,6 +78,41 @@ jobs:
     permissions: write-all
     uses: ./.github/workflows/test.yml
     
+  testingissue: 
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [18.x]
+    runs-on: ${{ matrix.os }}
+    permissions: write-all
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - run: git fetch --prune --unshallow
+      
+      - name: Download math result for job 1
+        uses: actions/download-artifact@v3
+        with:
+          name: jest-report
+          
+      - name: Read changelog.txt
+        id: report
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: jest-report.md       
+
+      
+      - name: Create comment
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: 'create-comment'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: 27
+          body: ${{ steps.report.outputs.content }}
+#           emoji: '+1' or '+1,heart'
+    
   deploy:
     needs: testing
     strategy:
@@ -94,45 +129,6 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./build
         publish_branch: release-${{steps.get_curent_version.outputs.current_tag}}
-#         secrets: inherit
-          
-#       - uses: actions/setup-node@v3
-#         name: Setup node
-#         with:
-#           node-version: ${{ matrix.node }}
-
-#       - name: Cache necessary modules
-#         id: cache-npm-modules
-#         uses: actions/cache@v3
-#         with:
-#           path: node_modules
-#           key: ${{ runner.os }}-npm-modules
-
-#       - name: "Install necessary modules"
-#         run: npm install
-
-#       - name: "Build project"
-#         run: npm run build
-
-#       - name: Cache playwright
-#         id: cache-playwright
-#         uses: actions/cache@v3
-#         with:
-#           path: |
-#             ~/.cache/ms-playwright
-#           key: ${{ runner.os }}-playwright
-
-#       - name: "Install playwright"
-#         if: steps.cache-playwright.outputs.cache-hit != 'true'
-#         run: npx playwright install --with-deps
-
-#       - name: "Tests"
-#         run: npm run test:ci
-
-#       - name: "Run Playwright tests"
-#         run: npm run test:all:ci
-
-
 
 #       - name: Update release issue with deployment details
 #         uses: actions/github-script@v4
