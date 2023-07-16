@@ -92,6 +92,7 @@ jobs:
     permissions:
       pages: write
       id-token: write
+      issues: write
 
     environment:
       name: github-pages
@@ -126,9 +127,16 @@ jobs:
 
             const lastIssue = issues.data[0]
 
-            github.rest.issues.createComment({
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: lastIssue.number,
               body: "Successfuly deployed"
+            })
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: lastIssue.number,
+              state: 'closed'
             })
