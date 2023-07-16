@@ -1,3 +1,10 @@
+## [1.18.1](https://github.com/Rubicones/hw-infra/compare/v1.18.0...v1.18.1) (2023-07-16)
+
+
+### Bug Fixes
+
+* closing issue after successful deploy fix ([9797648](https://github.com/Rubicones/hw-infra/commit/97976488925e6cf596abcc90f81995c6e38a22cf))
+
 # [1.18.0](https://github.com/Rubicones/hw-infra/compare/v1.17.1...v1.18.0) (2023-07-16)
 
 
