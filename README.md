@@ -7,7 +7,7 @@
 
 Как запустить:
 
-```sh 
+```sh
 # установить зависимости
 npm ci
 
@@ -15,6 +15,20 @@ npm ci
 npm start
 ```
 
+Для линтинга коммитов необходимо установить:
+
+```sh
+npm install @commitlint/cli
+npm install @commitlint/config-conventional
+npm install husky 
+npx husky install
+
+```
+Как запустить все тесты:
+
+```sh
+npm run test-ci
+```
 Как запустить e2e тесты:
 
 ```sh
