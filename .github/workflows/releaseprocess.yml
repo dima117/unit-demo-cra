@@ -21,6 +21,10 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    outputs:
+      unit_test_success: ${{ steps.unit_test.outcome == 'success' }}
+      e2e_test_success: ${{ steps.e2e_test.outcome == 'success' }}
+
     steps:
       - name: Get the repo code
         uses: actions/checkout@v3
