@@ -49,15 +49,6 @@ jobs:
           COMMITS: ${{ env.COMMIT_LIST }}
         with:
           update_existing: true
-  add-branch:
-    name: 🌳 Создание релизной ветки
-    needs: changelog
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - name: 🔎 Проверка наличия ветки
         id: check_branch
         run: |
