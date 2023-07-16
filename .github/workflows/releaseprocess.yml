@@ -85,13 +85,30 @@ jobs:
             body += `E2E tests result: ${process.env.E2E_TEST_RESULT}\n`
             body += `Test results: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.runId}\n\n`
 
-            github.rest.issues.create({
+            const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: title,
-              body: body,
-              labels: ['RELEASE']
+              repo: context.repo.repo
             })
+            const existingIssue = issues.find(issue => issue.title === issueTitle)
+
+            if (!existingIssue) {
+              github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['RELEASE'],
+              })
+            }
+            else {
+              github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: body,
+                state: 'open',
+              })
+            }
 
   deploy:
     name: Deploy
