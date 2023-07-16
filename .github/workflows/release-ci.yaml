@@ -14,7 +14,9 @@ jobs:
 
       - name: Get Last Release Tag
         id: last_tag
-        run: echo "LAST_TAG=$(git describe --abbrev=0 --tags ${{ github.ref_name }}^)" >> $GITHUB_ENV
+        run: |
+          LAST_TAG=$(git describe --abbrev=0 --tags ${{ github.ref_name }}^)
+          echo "${LAST_TAG}" >> $GITHUB_ENV
 
       - name: Install auto-changelog
         run: npm install -g auto-changelog
