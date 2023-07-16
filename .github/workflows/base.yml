@@ -95,7 +95,17 @@ jobs:
 
   deploy:
     needs: release
+
+    permissions:
+      pages: write       
+      id-token: write   
+     
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Get release version
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -110,4 +120,5 @@ jobs:
         run: git checkout release/${GITHUB_REF#refs/*/}
 
       - name: Deploy to GitHub Pages
-        run: npm run deploy
+        id: deployment
+        uses: actions/deploy-pages@v2 #
