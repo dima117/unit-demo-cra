@@ -45,8 +45,6 @@ jobs:
           git add .
           git commit -m"chore: changelog"
           git push
-      - name: get tag date
-        run: echo "date=$(date)" >> $GITHUB_OUTPUT
       - name: create an issue
         uses: dacbd/create-issue-action@main
         with:
@@ -57,6 +55,8 @@ jobs:
             ### Release credentials:
             author -        `${{ github.actor }}`
             version -       `${{ steps.vars.outputs.tag }}`
-            date -          `${{ steps.vars.outputs.date }}`
-            changelog:
-            `${{ steps.changelog.outputs.changelog }}`
+            date -          `$(date)`
+
+            # Changelog:
+
+            ${{ steps.changelog.outputs.changelog }}
