@@ -52,9 +52,20 @@ jobs:
 #     - name: "Tests"
 #       run: npm run test:ci
     - uses: ArtiomTr/jest-coverage-report-action@v2
+      id: jest
       with:
         test-script: npm run test:ci
+        output: report-markdown
+        
+    - name: Wright jest-report.md
+      run: echo ${{ steps.jest.outputs.report }} >> jest-report.md
 
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: jest-report
+        path: jest-report.md
+    
     - name: "Run Playwright tests"
       run: npm run test:all:ci
 
