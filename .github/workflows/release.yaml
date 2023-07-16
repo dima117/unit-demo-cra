@@ -54,8 +54,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_TITLE: ${{ steps.get_version.outputs.VERSION }}
           HISTORY: ${{ steps.diff.outputs.diff}}
+          TEST_RUN: ${{ fromJSON( steps.test-results.outputs.json ).check_url }}
           PREVIOUS_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
-          TEST_RESULTS: ${{ fromJSON( steps.test-results.outputs.json ).check_url }}
         with:
           update_existing: true
           search_existing: open

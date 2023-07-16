@@ -6,4 +6,3 @@ Update: {{env.ISSUE_TITLE}}->{{env.PREVIOUS_TAG}}
 Author:  {{ payload.sender.login }}.
 Date: {{ date | date('dddd, MMMM Do') }}
 CHANGELOG: {{ env.HISTORY }}
-TEST_RUN: {{ env.TEST_RESULTS }}
