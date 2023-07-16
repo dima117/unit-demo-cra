@@ -74,8 +74,26 @@ jobs:
           labels: 'RELEASE'
           issue-number: ${{ steps.issues_number.outputs.issue_number }}
           
-      - name: Testing
-        uses: vehcamut/shri-infrastructure-task/.github/workflows/test.yml@main
+  testing:
+    permissions: write-all
+    uses: vehcamut/shri-infrastructure-task/.github/workflows/test.yml@main
+    
+  deploy:
+    needs: testing
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [18.x]
+    runs-on: ${{ matrix.os }}
+    permissions: write-all
+    
+    steps:
+    - name: Deploy to gh-pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./build
+        publish_branch: release-${{steps.get_curent_version.outputs.current_tag}}
 #         secrets: inherit
           
 #       - uses: actions/setup-node@v3
@@ -114,12 +132,7 @@ jobs:
 #       - name: "Run Playwright tests"
 #         run: npm run test:all:ci
 
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
-          publish_branch: release-${{steps.get_curent_version.outputs.current_tag}}
+
 
 #       - name: Update release issue with deployment details
 #         uses: actions/github-script@v4
