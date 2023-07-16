@@ -105,7 +105,9 @@ jobs:
             npm run test-ci
 
         - name: Deploy to GitHub Pages
-          uses: actions/deploy-pages@v2
+          uses: JamesIves/github-pages-deploy-action@v4
+          with:
+            folder: build
 
         # - name: Upload Pages artifact
         #   uses: actions/upload-pages-artifact@v2
