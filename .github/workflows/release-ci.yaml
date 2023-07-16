@@ -48,29 +48,15 @@ jobs:
           RELEASE_NAME: ${{ env.RELEASE_NAME }}
       
       - name: Create or Update Release Issue
-        id: create_or_update_issue
         run: |
-          if [ -z "$RELEASE_DATE" ]; then
-            RELEASE_DATE=$(date -u +'%Y-%m-%d')
-          fi
-          body=$(cat <<EOM
-          ## Release Information
-
-          **Tag:** $RELEASE_NAME
-          **Version:** $RELEASE_NAME
-          **Release Date:** $RELEASE_DATE
-          **Author:** ${GITHUB_ACTOR}
-          **Changelog:**
-
-          $(cat CHANGELOG.md)
-          EOM
-          )
-          if [ -z "${{ steps.find_existing_issue.outputs.issue_number }}" ]; then
-            gh issue create --title "RELEASE: $RELEASE_NAME" --body "$body" --label "RELEASE" --debug
+          response=$(gh issue list -s open -l RELEASE -A "${GITHUB_ACTOR}" --title "RELEASE: ${RELEASE_NAME}")
+          if [ -z "$response" ]; then
+            gh issue create --title "RELEASE: ${RELEASE_NAME}" --body "$(cat issue_template.md)" --label RELEASE
           else
-            gh issue comment "${{ steps.find_existing_issue.outputs.issue_number }}" --body "$body"
+            issue_number=$(echo "$response" | jq '.[0].number')
+            gh issue comment $issue_number --body "$(cat issue_template.md)"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
           RELEASE_NAME: ${{ env.RELEASE_NAME }}
-          RELEASE_DATE: ${{ env.RELEASE_DATE }}
