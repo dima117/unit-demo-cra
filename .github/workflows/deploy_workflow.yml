@@ -33,7 +33,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const lastIssue = github.rest.issues.list(labels: 'release').pop();
+            const lastIssue = github.rest.issues.list({labels: 'release'}).pop()
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -65,7 +65,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const lastIssue = github.rest.issues.list({labels: 'release'}).pop();
+            const lastIssue = github.rest.issues.list({labels: 'release'}).pop()
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
