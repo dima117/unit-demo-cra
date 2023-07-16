@@ -1,0 +1,126 @@
+name: Release Workflow
+on:
+  push:
+    tags:
+      - 'v*' 
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0)
+          echo ::set-output name=previous_tag::$PREVIOUS_TAG
+          echo ::set-output name=changelog::$(git log --oneline --pretty=format:"- %s" "$PREVIOUS_TAG"..)
+
+       - name: Create or update release issue
+        uses: actions/github-script@v4
+        env:
+          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const github = require('@actions/github');
+
+            async function createOrUpdateReleaseIssue() {
+              const octokit = github.getOctokit(process.env.ACCESS_TOKEN);
+
+              const tag = github.context.payload.ref.split('/')[2];
+              const version = tag.substr(1);
+
+              const response = await octokit.rest.search.issuesAndPullRequests({
+                q: `repo:${github.context.payload.repository.full_name} is:issue is:open label:release tag:${tag}`
+              });
+
+              if (response.data.items.length > 0) {
+                const issueNumber = response.data.items[0].number;
+                await octokit.rest.issues.update({
+                  owner: github.context.payload.repository.owner.login,
+                  repo: github.context.payload.repository.name,
+                  issue_number: issueNumber,
+                  body: `**Version:** ${version}\n\n**Changelog:**\n${github.context.payload.outputs.changelog}`
+                });
+              } else {
+                await octokit.rest.issues.create({
+                  owner: github.context.payload.repository.owner.login,
+                  repo: github.context.payload.repository.name,
+                  title: `Release ${version}`,
+                  body: `**Version:** ${version}\n\n**Changelog:**\n${github.context.payload.outputs.changelog}`,
+                  labels: ['release']
+                });
+              }
+            }
+
+            await createOrUpdateReleaseIssue();
+
+       - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+
+      - name: Add release information to release issue
+        uses: actions/github-script@v4
+        env:
+          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            const github = require('@actions/github');
+
+            async function addReleaseInfoToIssue() {
+              const octokit = github.getOctokit(process.env.ACCESS_TOKEN);
+
+              const tag = github.context.payload.ref.split('/')[2];
+              const version = tag.substr(1);
+
+              const response = await octokit.rest.search.issuesAndPullRequests({
+                q: `repo:${github.context.payload.repository.full_name} is:issue is:open label:release tag:${tag}`
+              });
+
+              if (response.data.items.length > 0) {
+                const issueNumber = response.data.items[0].number;
+                await octokit.rest.issues.createComment({
+                  owner: github.context.payload.repository.owner.login,
+                  repo: github.context.payload.repository.name,
+                  issue_number: issueNumber,
+                  body: `Tests: [Check the test results here](https://github.com/${github.context.payload.repository.full_name}/actions/runs/${github.context.runId})\n\nGitHub Pages: [Open the deployed app here](https://${github.context.payload.repository.owner.login}.github.io/${github.context.payload.repository.name})`
+                });
+              }
+            }
+
+            await addReleaseInfoToIssue();      
+
+      # - name: Check if release tag matches pattern
+      #   id: check_tag
+      #   run: |
+      #     if [[ "${GITHUB_REF}" =~ ^refs/tags/v[0-9]+$ ]]; then
+      #       echo "Release tag matches pattern"
+      #       echo "::set-output name=isValid::true"
+      #       echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+      #     else
+      #       echo "Release tag does not match pattern"
+      #       echo "::set-output name=isValid::false"
+      #     fi
+
+      # - name: Build and Release
+      #   needs: check_tag
+      #   if: needs.check_tag.outputs.isValid == 'true'
+      #   run: |
+      #     # Здесь выполняйте необходимые команды для сборки и релиза вашего проекта React,
+      #     # используя переменную ${{ needs.check_tag.outputs.tag }} для получения номера версии
