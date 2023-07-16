@@ -34,10 +34,10 @@ jobs:
         run: |
           git push
       - name: Generate changelog
-          id: changelog
-          uses: metcalfc/changelog-generator@v4.1.0
-          with:
-            myToken: ${{ secrets.GITHUB_TOKEN }}
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.1.0
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
       - name: Get the changelog
         run: |
           cat << "EOF"
