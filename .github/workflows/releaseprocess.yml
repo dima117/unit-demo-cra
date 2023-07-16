@@ -103,6 +103,7 @@ jobs:
           echo "DIFF_RESULT<<EOF" >> $GITHUB_ENV
           cat diff_result.txt >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
+          echo "PREV_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Create Release Issue
         uses: actions/github-script@v6
@@ -115,7 +116,9 @@ jobs:
             body += `Date: ${new Date().toLocaleString()}\n`
             body += `Version: ${process.env.RELEASE_VER}\n\n`
 
-            body += `Changelog:\n${process.env.DIFF_RESULT}\n\n`
+            body += `Previous release: ${process.env.PREV_VERSION}\n`
+            body += `Changelog:\n`
+            body += `${process.env.DIFF_RESULT}\n\n`
 
             body += `Unit tests result: ${process.env.UNIT_TEST_RESULT}\n`
             body += `E2E tests result: ${process.env.E2E_TEST_RESULT}\n`
