@@ -19,6 +19,9 @@ jobs:
       - name: install dependencies
         run: npm ci
 
+      - name: install playwright deps
+        run: npx playwright install --with-deps
+
       - name: run jest tests
         run: npm run test-ci:unit
 
