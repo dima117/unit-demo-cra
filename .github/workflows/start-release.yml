@@ -10,14 +10,9 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
       - name: Set output
         id: vars
-        run: |
-          TAG=${{ github.ref_name }} 
-          DATE=$(git show -s --format=%ai ${TAG})
-          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
-          echo "date=${DATE}" >> "$GITHUB_OUTPUT"
+        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
       - name: Create Branch
         uses: peterjgrainger/action-create-branch@v2.0.1
         env:
@@ -50,6 +45,10 @@ jobs:
           git add .
           git commit -m"chore: changelog"
           git push
+      - name: get tag date
+        run: |
+          DATE=$(git show -s --format=%ai ${ steps.vars.outputs.tag })
+          echo "date=${DATE}" >> "$GITHUB_OUTPUT"
       - name: create an issue
         uses: dacbd/create-issue-action@main
         with:
