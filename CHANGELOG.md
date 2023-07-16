@@ -1,3 +1,11 @@
+## [1.16.3](https://github.com/Rubicones/hw-infra/compare/v1.16.2...v1.16.3) (2023-07-16)
+
+
+### Bug Fixes
+
+* gh-pages release job fix ([f11cb36](https://github.com/Rubicones/hw-infra/commit/f11cb362b3ddda78327dc56d4908c04ab12034fb))
+* gh-pages release job fix ([249eb72](https://github.com/Rubicones/hw-infra/commit/249eb72f5925b4adf8876574523156f9a738c797))
+
 ## [1.16.2](https://github.com/Rubicones/hw-infra/compare/v1.16.1...v1.16.2) (2023-07-16)
 
 
