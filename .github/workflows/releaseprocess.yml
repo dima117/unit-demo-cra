@@ -47,11 +47,13 @@ jobs:
 
       - name: Get unit test results
         id: unit_test_results
-        run: echo "::set-output name=result::$(cat unit_test_output.txt)"
+        run: |
+          echo "UNIT_TEST_RESULT=$(cat unit_test_output.txt)" >> $GITHUB_ENV
 
       - name: Get e2e test results
         id: e2e_test_results
-        run: echo "::set-output name=result::$(cat e2e_test_output.txt)"
+        run: |
+          echo "E2E_TEST_RESULT=$(cat e2e_test_output.txt)" >> $GITHUB_ENV
 
       - name: Check release version from tag
         run: echo "RELEASE_VER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
@@ -65,8 +67,8 @@ jobs:
             let body = `Author: ${context.payload.sender.login}\n`
             body += `Date: ${new Date().toLocaleString()}\n`
             body += `Version: ${process.env.RELEASE_VER}\n\n`
-            body += `Unit Test Results: \n${{ steps.unit_test_results.outputs.result }}\n\n`
-            body += `E2E Test Results: \n${{ steps.e2e_test_results.outputs.result }}\n\n`      
+            body += `Unit Test Results: \n${process.env.UNIT_TEST_RESULT}\n\n`
+            body += `E2E Test Results: \n${process.env.E2E_TEST_RESULT}\n\n`      
 
             github.rest.issues.create({
               owner: context.repo.owner,
