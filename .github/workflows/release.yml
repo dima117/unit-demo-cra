@@ -20,7 +20,7 @@ jobs:
           echo "### Release Information"
           echo "### Release Information" > release_issue.md
           
-          TAG_NAME = TAG_NAME=$(basename "${{ github.ref }}")
+          TAG_NAME=$(basename "${{ github.ref }}")
           echo "Tag: $TAG_NAME"
 
           RELEASE_VERSION=$(echo "$TAG_NAME" | sed 's/v//')
