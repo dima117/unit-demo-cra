@@ -62,7 +62,7 @@ jobs:
           body: |
             ### Это релиз приложения версии ${{ github.ref_name }}
 
-            Авто релиза: ${{ github.actor }}
+            Автор релиза: ${{ github.actor }}
 
             Время: ${{ steps.get_tags.outputs.timestamp }}
             

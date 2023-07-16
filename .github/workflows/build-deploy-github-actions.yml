@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   call-test-workflow:
+    name: 🧪🐞🪲 Run tests
     uses: ./.github/workflows/test-github-actions.yml
 
 
@@ -30,7 +31,9 @@ jobs:
         run: npm ci
     
       - name: 🎬 Build application
-        run: npm run build
+        run: |
+          PUBLIC_URL="/unit-demo-cra"
+          npm run build
         
         if: success()
       - uses: actions/upload-artifact@v3
@@ -58,6 +61,6 @@ jobs:
           ISSUE_ID=$(gh issue list --json number,title,labels -q \
             ".[] | select(.title == \"${ISSUE_TITLE}\" and .labels[].name == \"RELEASE\") | .number")
           if [ ! -z "$ISSUE_ID" ]; then
-            gh issue close $ISSUE_ID -c "Deployment done" -r "completed"
+            gh issue close $ISSUE_ID -c "[Deployment done](https://sr480.github.io/unit-demo-cra/)" -r "completed"
           fi
           
