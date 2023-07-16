@@ -17,11 +17,11 @@ jobs:
       - name: Install Deps
         run: npm ci
       - name: Run Unit Tests
-        run: bash ./.github/scripts/gen_unit_test.sh
+        run: npm test > unit_report.txt 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
       - name: Run e2e
-        run: bash ./.github/scripts/gen_e2e_test.sh
+        run: npm run ci:e2e > e2e_report.txt 
       - uses: actions/upload-artifact@v3
         if: always()
         with:
@@ -44,10 +44,15 @@ jobs:
 
             const lastIssue = issues.data.find(issue => issue.title.includes(tagName))
 
+            const fs = require('fs')
+
+            const unit = fs.readFileSync('unit_report.txt', 'utf8')
+            const e2e = fs.readFileSync('e2e_report.txt', 'utf8')
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo, issue_number: lastIssue.number,
-              body: `## Tests Report\n\n### Unit Tests Report\n<div>${process.env.UNIT}</div>\n\n### E2E Tests Report\n<div>${process.env.E2E}</div>` 
+              body: `## Tests Report\n\n### Unit Tests Report\n<div>${unit}</div>\n\n### E2E Tests Report\n<div>${e2e}</div>` 
             })
 
   build:
@@ -63,7 +68,7 @@ jobs:
       - name: Install Deps
         run: npm ci
       - name: Build
-        run: bash ./.github/scripts/gen_build.sh
+        run: npm run build > build_report.txt 
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v3
         with:
@@ -85,11 +90,15 @@ jobs:
 
             const lastIssue = issues.data.find(issue => issue.title.includes(tagName))
 
+            const fs = require('fs')
+
+            const build = fs.readFileSync('build_report.txt', 'utf8')
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: lastIssue.number,
-              body: `## Build Report\n<div>${process.env.BUILD}</div>` 
+              body: `## Build Report\n<div>${build}</div>` 
             })
 
   deploy:
