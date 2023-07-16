@@ -116,18 +116,13 @@ jobs:
         with:
           github-token: ${{ secrets.TOKEN }}
           script: |
-            console.log("Close-issue started");
-            console.log(deployURL);
             const issueTitle = `Release ${{ needs.create_issue.outputs.release_title }}`;
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
-            console.log(issues);
-            console.log("IssueTitle:", issueTitle);
             const releaseIssue = issues.find(issue => issue.title === issueTitle);
-            console.log(releaseIssue);
-            let updateBody = `${releaseIssue.body}Released into production succesfully!\n\n`;
+            let updateBody = `${releaseIssue.body}Released into production succesfully\n\n`;
             updateBody += `![ok](https://i.ibb.co/WBBn8Ds/8808b0ef0484cdbf5d5fb15dac5b2774.jpg)`;
             github.rest.issues.update({
               owner: context.repo.owner,
