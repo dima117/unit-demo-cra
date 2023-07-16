@@ -18,7 +18,8 @@ jobs:
         run: |
           BRANCH_NAME=release-${{ github.ref_name }}
           if [ `git branch --list $BRANCH_NAME` ]; then
-            git push origin --delete $BRANCH_NAME
+            git branch -D "$BRANCH_NAME"
+            git push origin --delete --force $BRANCH_NAME
           fi
           git checkout -b $BRANCH_NAME
           git push -u origin $BRANCH_NAME
