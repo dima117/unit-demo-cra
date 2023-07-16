@@ -34,8 +34,8 @@ jobs:
         env:
           BASE_URL: ${{ vars.BASE_URL }}
         run: |
-          PUBLIC_URL="${BASE_URL}"
-          npm run build
+          PUBLIC_URL="${BASE_URL}" npm run build
+          echo "${BASE_URL}"
         
         if: success()
       - uses: actions/upload-artifact@v3
