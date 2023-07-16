@@ -70,6 +70,18 @@ jobs:
       - name: Save release version
         run: echo "RELEASE_VER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
+      - name: Find the last issue
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
+            console.log("Issues:\n", issues);
+            const lastIssue = issues[0];
+
       - name: Create Release Issue
         uses: actions/github-script@v6
         with:
