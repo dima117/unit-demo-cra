@@ -73,11 +73,12 @@ jobs:
           name: changelog
           path: changelog
 
-      - name: Get Changelog Entry
-        id: changelog_reader
-        uses: mindsers/changelog-reader-action@v2
-        with:
-          path: ${{ steps.download.outputs.download-path }}/CHANGELOG.md
+      - name: Read Changelog File
+        id: read_changelog
+        run: |
+          CHANGELOG_CONTENT=$(cat "${{ steps.download.outputs.download-path }}/CHANGELOG.md")
+          ENCODED_CHANGELOG_CONTENT=$(echo "$CHANGELOG_CONTENT" | base64)
+          echo "CHANGELOG_CONTENT=$ENCODED_CHANGELOG_CONTENT" >> $GITHUB_ENV
 
       - name: Create or Update Release Issue
         uses: JasonEtco/create-an-issue@v2
@@ -89,7 +90,7 @@ jobs:
           RELEASE_AUTHOR: ${{ github.actor }}
           RELEASE_NAME: ${{ env.RELEASE_NAME }}
           RELEASE_DATE: ${{ env.RELEASE_DATE }}
-          RELEASE_CHANGELOG: ${{ steps.changelog_reader.outputs.changes }}
+          RELEASE_CHANGELOG: ${{ env.CHANGELOG_CONTENT }}
 
   base-checks:
     uses: ./.github/workflows/base-ci.yaml
