@@ -23,7 +23,7 @@ jobs:
         run: npx playwright install
 
       - name: Run tests e2e
-        run: npm run e2e-ci
+        run: npm run e2e
 
       - name: E2e test report
         uses: actions/upload-artifact@v3
