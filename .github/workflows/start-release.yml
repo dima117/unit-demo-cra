@@ -20,4 +20,5 @@ jobs:
         with:
           branch: release/${{ steps.vars.outputs.tag }}
       - uses: actions/checkout@v3
-        ref: release/${{ steps.vars.outputs.tag }}
+        with:
+          ref: release/${{ steps.vars.outputs.tag }}
