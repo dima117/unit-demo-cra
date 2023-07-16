@@ -33,12 +33,16 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const lastIssue = github.rest.issues.list({labels: 'release'}).pop()
+            const lastIssue = github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'release'
+            }).pop()
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: lastIssue.issue_number,
+              issue_number: lastIssue.number,
               body: "Successfuly ran tests"
             })
 
@@ -65,13 +69,17 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const lastIssue = github.rest.issues.list({labels: 'release'}).pop()
+            const lastIssue = github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'release'
+            }).pop()
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: lastIssue.issue_number,
-              body: "Successfuly built"
+              issue_number: lastIssue.number,
+              body: "Successfuly ran build"
             })
 
   deploy:
@@ -101,12 +109,15 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const lastIssue = github.rest.issues.list({labels: 'release'}).pop();
+            const lastIssue = github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'release'
+            }).pop()
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: lastIssue.issue_number,
+              issue_number: lastIssue.number,
               body: "Successfuly deployed"
             })
-
