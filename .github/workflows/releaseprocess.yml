@@ -75,13 +75,19 @@ jobs:
         with:
           github-token: ${{ secrets.TOKEN }}
           script: |
+            const fs = require('fs');
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'all',
             })
-            console.log("Issues:\n", issues);
-            const lastIssue = issues[0];
+            const lastIssue = issues[0].title.slice(8);
+            fs.writeFileSync('env_vars.txt', `LAST_ISSUE=${lastIssue}`);
+
+      - name: Load environment variables
+        run: |
+          cat env_vars.txt >> $GITHUB_ENV
+          cat env_vars.txt
 
       - name: Create Release Issue
         uses: actions/github-script@v6
@@ -101,6 +107,7 @@ jobs:
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
+              state: 'all',
             })
             const existingIssue = issues.find(issue => issue.title === title)
 
