@@ -89,7 +89,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo
             })
-            const existingIssue = issues.find(issue => issue.title === issueTitle)
+            const existingIssue = issues.find(issue => issue.title === title)
 
             if (!existingIssue) {
               github.rest.issues.create({
