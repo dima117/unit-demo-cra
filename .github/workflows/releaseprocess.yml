@@ -22,8 +22,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     outputs:
-      unit_test_success: ${{ steps.unit_test.outcome == 'success' }}
-      e2e_test_success: ${{ steps.e2e_test.outcome == 'success' }}
+      unit_test_result: ${{ env.UNIT_TEST_RESULT }}
+      e2e_test_result: ${{ env.E2E_TEST_RESULT }}
 
     steps:
       - name: Get the repo code
@@ -42,13 +42,13 @@ jobs:
       - name: "Tests: unit"
         id: unit_test
         run: |
-          npm run test-unit-ci && echo "UNIT_TEST_RESULT='PASSED ✅'" >> $GITHUB_ENV || echo "UNIT_TEST_RESULT='FAILED 🚫'" >> $GITHUB_ENV
+          npm run test-unit-ci && echo "UNIT_TEST_RESULT='PASSED'" >> $GITHUB_ENV || echo "UNIT_TEST_RESULT='FAILED'" >> $GITHUB_ENV
         continue-on-error: true
 
       - name: "Tests: e2e"
         id: e2e_test
         run: |
-          npm run test-e2e-ci && echo "E2E_TEST_RESULT='PASSED ✅'" >> $GITHUB_ENV || echo "E2E_TEST_RESULT='FAILED 🚫'" >> $GITHUB_ENV
+          npm run test-e2e-ci && echo "E2E_TEST_RESULT='PASSED'" >> $GITHUB_ENV || echo "E2E_TEST_RESULT='FAILED'" >> $GITHUB_ENV
         continue-on-error: true
 
       - name: Upload Artifacts (unit tests)
@@ -92,5 +92,5 @@ jobs:
 
   deploy:
     needs: create_issue
-    if: needs.create_issue.outputs.unit_test_success && needs.create_issue.outputs.e2e_test_success
+    if: ${{ needs.create_issue.outputs.unit_test_result == 'PASSED' && needs.create_issue.outputs.e2e_test_result == 'PASSED' }}
     uses: ./.github/workflows/static.yml
