@@ -24,13 +24,17 @@ ALL_ISSUES=$(curl \
 
 EXISTING_ISSUE_NUMBER=""
 for row in $(echo "${ALL_ISSUES}" | jq -r '.[] | @base64'); do
+    echo "parse"
     _jq() {
      echo ${row} | base64 --decode | jq -r ${1}
     }
 
     ISSUE_TITLE=$(_jq '.title')
+    echo "ISSUE_TITLE: $ISSUE_TITLE"
     ISSUE_NUMBER=$(_jq '.number')
+    echo "ISSUE_NUMBER: $ISSUE_NUMBER"
 
+    echo "Release $VERSION"
     if [ "$ISSUE_TITLE" = "Release $VERSION" ]; then
         EXISTING_ISSUE_NUMBER="$ISSUE_NUMBER"
         break
