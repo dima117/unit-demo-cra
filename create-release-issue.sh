@@ -15,7 +15,7 @@ create_issue_payload() {
   }
 EOF
 }
-VERSION_ENCODED=$(echo $VERSION | jq -sRr @uri)
+VERSION_ENCODED=$(echo -n $VERSION | jq -sRr @uri)
 echo $VERSION_ENCODED
 
 EXISTING_ISSUE=$(curl \
