@@ -14,7 +14,7 @@ if (container) {
   const store = initStore();
 
   root.render(
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <Provider store={store}>
         <Application />
       </Provider>
