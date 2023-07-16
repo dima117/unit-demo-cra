@@ -16,23 +16,13 @@ EOF
 }
 
 create_issue_payload() {
-  jq -n \
-    --arg version "$VERSION" \
-    --arg released_by "$RELEASED_BY" \
-    --arg tag_date "$TAG_DATE" \
-    --arg github_repository "$GITHUB_REPOSITORY" \
-    --arg run_id "$RUN_ID" \
-    --arg changes "$CHANGES" \
-    '{
-      title: ("Release " + $version),
-      labels: ["RELEASE"],
-      body: ("**Release version:** " + $version +
-             " \n**Released by:** " + $released_by +
-             " \n**Date:** " + $tag_date +
-             " \n\n[Check tests results link](https://github.com/" + $github_repository +
-             "/actions/runs/" + $run_id +
-             ") \n\n**Changelog:** \n" + $changes)
-    }'
+  cat <<EOF
+  {
+    "title": "Release $VERSION",
+    "labels": ["RELEASE"],
+    "body": "**Release version:** $VERSION \n**Released by:** $RELEASED_BY \n**Date:** $TAG_DATE \n\n[Check tests results link](https://github.com/$GITHUB_REPOSITORY/actions/runs/$RUN_ID) \n\n**Changelog:** \n$CHANGES"
+  }
+EOF
 }
 
 get_existing_issue_number() {
@@ -57,7 +47,7 @@ else
         -H "Authorization: token $GH_TOKEN" \
         -H "Accept: application/vnd.github.v3+json" \
         https://api.github.com/repos/$GITHUB_REPOSITORY/issues \
-        -d "$(create_issue_payload)")
+        -d "$(create_issue_payload)" | tr -d '\n')
     echo $response
     issue_number=$(echo "$response" | jq '.number')
 fi
