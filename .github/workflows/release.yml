@@ -51,8 +51,8 @@ jobs:
           echo "name: ${{ steps.latest_release.outputs.name }}"
           echo "tag_name: ${{ steps.latest_release.outputs.tag_name }}"
       
-      - name: Update CHANGELOG
-        if: ${{ needs.check_status.outputs.LAST_VERSION != '' }}
+      - name: Generate CHANGELOG
+        if: ${{ steps.latest_release.outputs.tag_name != '' }}
         id: changelog
         uses: requarks/changelog-action@v1
         with:
@@ -63,6 +63,7 @@ jobs:
         id: get_date
         run: |
           echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+          echo "${{steps.changelog.outputs.changes}}"
 
       - name: "Define new tag status"
         id: check_new_tag
@@ -84,11 +85,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
-    # - name: Set up Node.js
-    #   uses: actions/setup-node@v2
-    #   with:
-    #     node-version: '14'
 
     - name: Install dependencies
       run: npm i
@@ -112,16 +108,28 @@ jobs:
       run: |
         echo "::set-output name=test_results_url::$(echo "${{ github.run_id }}" | awk '{print "https://github.com/${{ github.repository }}/actions/runs/" $1}')"
            
-  new_release:
+  process_issue:
     needs: [check_status, run_tests]
-    if: ${{ needs.check_status.outputs.STATUS == 'New release' }}
     runs-on: ubuntu-latest
+    outputs:
+      ISSUE_NUM: ${{steps.get_issue_num.outputs.issue_number}}
+      NEW_ISSUE_NUM: ${{steps.create_issue.outputs.number}}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Get Issue Number
+        id: get_issue_num
+        run: |
+          response=$(curl -s -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues?q=${{needs.check_status.outputs.NEW_VERSION}}")
+          issue_number=$(echo "$response" | jq -r '.[0].number')
+
+          echo "issue_number=$issue_number" >> $GITHUB_OUTPUT
+
       - name: Create an issue
+        if: ${{ needs.check_status.outputs.STATUS == 'New release' }}
         id: create_issue
         uses: dacbd/create-issue-action@main
         with:
@@ -136,42 +144,8 @@ jobs:
           labels: 'Release'
           assignees: 'Iluxmas'
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          tag_name: ${{ needs.check_status.outputs.NEW_VERSION  }}
-          release_name: Release ${{ needs.check_status.outputs.NEW_VERSION }}
-          body: |
-            Author: ${{ github.actor }}
-            Date: ${{ steps.get_date.outputs.date }}
-            Test result: ${{needs.run_tests.outputs.TEST_RESULTS}}
-            Changelog:
-            ${{ needs.check_status.outputs.LAST_VERSION != '' && needs.check_status.outputs.CHANGLELOG || 'First release'}}
-          draft: false
-          prerelease: false
-
-  edit_release:  
-    needs: [check_status, run_tests]
-    if: ${{ needs.check_status.outputs.STATUS == 'Edit old release' }}
-    runs-on: ubuntu-latest
-      
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Get Issue Number
-        id: get_issue_num
-        run: |
-          response=$(curl -s -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/issues?q=${{needs.check_status.outputs.NEW_VERSION}}")
-          issue_number=$(echo "$response" | jq -r '.[0].number')
-
-          echo "Issue Number: $issue_number" >> $GITHUB_OUTPUT
-
       - name: Edit Issue Body
+        if: ${{ needs.check_status.outputs.STATUS == 'Edit old release' }}
         run: |
           new_body=$(cat <<EOF
           Author: ${{ github.actor }}
@@ -188,7 +162,72 @@ jobs:
             -d '{ "body": "'"${new_body}"'" }' \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.get_issue_num.outputs.issue_number }}")
       
-          echo "$response"
+          echo "$response"  
+
+  deploy:
+    needs: [process_issue, run_tests]
+    if: ${{ needs.run_tests.result == 'success' }}
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to GH Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: build
+
+      - name: Leave Comment on Issue
+        run: |
+          gh auth login --with-token <<< "${{ secrets.GH_TOKEN }}"
+          gh issue comment ${{ needs.process_issue.outputs.NEW_ISSUE_NUM != '' && needs.process_issue.outputs.NEW_ISSUE_NUM || needs.process_issue.outputs.ISSUE_NUM }} -R ${{ github.repository }} --body "✅ The deployment has completed successfully. https://iluxmas.github.io/infrastructure_hw_shri23/"
+      
+      - name: Close Issue
+        run: |
+          gh auth login --with-token <<< "${{ secrets.GH_TOKEN }}"
+          gh issue close ${{ needs.process_issue.outputs.NEW_ISSUE_NUM != '' && needs.process_issue.outputs.NEW_ISSUE_NUM || needs.process_issue.outputs.ISSUE_NUM }} -R ${{ github.repository }}
+
+
+  create_release:
+    needs: [check_status, run_tests, deploy]
+    if: ${{ needs.deploy.result == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          tag_name: ${{ needs.check_status.outputs.NEW_VERSION  }}
+          release_name: Release ${{ needs.check_status.outputs.NEW_VERSION }}
+          body: |
+            Author: ${{ github.actor }}
+            Date: ${{ needs.check_status.outputs.CURR_DATE }}
+            Test result: ${{needs.run_tests.outputs.TEST_RESULTS}}
+            Changelog:
+            ${{ needs.check_status.outputs.LAST_VERSION != '' && needs.check_status.outputs.CHANGLELOG || 'First release'}}
+          draft: false
+          prerelease: false
+
+    # add comment with link
+    # create release 
+    # fix change log
+
+    
+
+
+
+
       # - uses: actions/checkout@v3
       # - name: Create an issue
       #   id: create_issue
@@ -203,4 +242,3 @@ jobs:
       #       Author: `${{ github.actor }}`
       #     labels: 'Release'
       #     assignees: 'Iluxmas'
-

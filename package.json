@@ -33,7 +33,7 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "lint": "eslint src",
-        "deploy": "gh-pages -d dist",
+        "deploy": "gh-pages -d build",
         "eject": "react-scripts eject",
         "test": "react-scripts test",
         "e2e": "playwright test --project=chromium && playwright show-report",
