@@ -17,7 +17,8 @@ EOF
 }
 VERSION_ENCODED=$(echo -n $VERSION | jq -sRr @uri)
 echo $VERSION_ENCODED
-
+echo $GITHUB_REPOSITORY
+echo "https://api.github.com/search/issues?q=repo:$GITHUB_REPOSITORY+label:RELEASE+title:"Release $VERSION_ENCODED"
 EXISTING_ISSUE=$(curl \
   -H "Authorization: token $GH_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
