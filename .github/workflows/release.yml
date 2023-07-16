@@ -24,6 +24,8 @@ jobs:
       contents: write
       actions: write
       checks: write
+      issues: write
+      packages: write
 
     steps:
       - uses: actions/checkout@v3
