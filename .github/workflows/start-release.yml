@@ -47,7 +47,9 @@ jobs:
           git push
       - name: get tag date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: |
+          now=$(date +'%m/%d/%Y, %T')
+          echo "date=$now" >> $GITHUB_OUTPUT
       - name: create an issue
         uses: dacbd/create-issue-action@main
         with:
