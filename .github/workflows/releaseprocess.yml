@@ -117,19 +117,19 @@ jobs:
           script: |
             const title = `Release ${process.env.RELEASE_VERSION}`
 
-            const { data: issues } = await github.rest.issues.listForRepo({
+            const { data } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
             })
-            const releaseIssue = issues.find(issue => issue.title === title);
+            const current_issue = data.find(issue => issue.title === title);
 
             const deployURL = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/`
-            const updateBody = `${releaseIssue.body}Deploy results: ${deployURL}`;
+            const updateBody = `${current_issue.body}Deploy results: ${deployURL}`;
 
             github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: releaseIssue.number,
+              issue_number: current_issue.number,
               body: updateBody,
               state: 'closed',
             });
