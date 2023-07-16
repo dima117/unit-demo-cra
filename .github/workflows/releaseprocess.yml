@@ -81,13 +81,21 @@ jobs:
               repo: context.repo.repo,
               state: 'all',
             })
-            const lastIssue = issues[0].title.slice(8);
-            fs.writeFileSync('env_vars.txt', `LAST_ISSUE=${lastIssue}`);
+            let lastIssue;
+            if (issues[0]) {
+              lastIssue = issues[0].title.slice(8);
+            }
+            else {
+              lastIssue = '1.0.0';
+            }
+            fs.writeFileSync('env_vars.txt', `${lastIssue}`);
 
       - name: Load environment variables
         run: |
-          cat env_vars.txt >> $GITHUB_ENV
-          cat env_vars.txt
+          VERSION = cat env_vars.txt
+          DIFF_RESULT=$(git diff $VERSION HEAD)
+          echo DIFF_RESULT="$DIFF_RESULT" >> $GITHUB_ENV
+          echo $DIFF_RESULT
 
       - name: Create Release Issue
         uses: actions/github-script@v6
@@ -99,6 +107,8 @@ jobs:
             body += `Author: ${context.payload.sender.login}\n`
             body += `Date: ${new Date().toLocaleString()}\n`
             body += `Version: ${process.env.RELEASE_VER}\n\n`
+
+            body += `Changelog:\n${process.env.DIFF_RESULT}`
 
             body += `Unit tests result: ${process.env.UNIT_TEST_RESULT}\n`
             body += `E2E tests result: ${process.env.E2E_TEST_RESULT}\n`
