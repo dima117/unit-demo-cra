@@ -55,10 +55,6 @@ jobs:
         run: |
           npm run test-ci
 
-      - name: Run linter
-        run: |
-          npm run lint
-
   lint_code:
     runs-on: ubuntu-latest
     needs: run_tests

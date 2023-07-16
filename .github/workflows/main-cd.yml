@@ -12,13 +12,14 @@ permissions:
   pull-requests: write
 
 jobs:
-    build:
+    create_release:
         runs-on: ubuntu-latest
 
         steps:
             - uses: actions/checkout@v3
               with:
                 token: ${{ secrets.REPO_SECRET }}
+                fetch-depth: 0
 
             - uses: actions/setup-node@v1
               with:
@@ -34,19 +35,18 @@ jobs:
                 npm ci --force
                 npm run build
 
-            # - name: Find previous release tag
-            #   id: get_previous_tag
-            #   run: |
-            #     PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${{github.ref_name}}^)
-            #     echo $PREVIOUS_TAG
-            #     echo ::set-output name=previous_tag::$(git rev-parse $PREVIOUS_TAG) 
+            - name: Find previous release tag
+              id: get_previous_tag
+              run: |
+                PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${{github.ref_name}}^)
+                echo $PREVIOUS_TAG
+                echo ::set-output name=previous_tag::$(git rev-parse $PREVIOUS_TAG) 
 
-            # - name: Generate changelog
-            #   id: generate_changelog
-            #   run: |
-            #     git log --pretty=format:"- hash: %h, name: %s" ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
-            #     echo ::set-output name=changelog::$(cat changelog.txt)
-            #     echo ${{ steps.get_previous_tag.outputs.previous_tag }}
+            - name: Generate changelog
+              id: generate_changelog
+              run: |
+                git log --pretty=format:"- hash: %h, name: %s" ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
+                echo ::set-output name=changelog::$(cat changelog.txt)
 
             - name: Create release
               uses: actions/create-release@v1
@@ -55,7 +55,7 @@ jobs:
               with:
                   tag_name: ${{ github.ref_name }}
                   release_name: ${{ github.ref_name }}
-                  # body: ${{ steps.generate_changelog.outputs.changelog }}
+                  body: ${{ steps.generate_changelog.outputs.changelog }}
                   draft: false
                   prerelease: false
 
@@ -64,4 +64,37 @@ jobs:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                 gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ' --label RELEASE
+    
+    upload_to_pages:
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/checkout@v3
+          with:
+            token: ${{ secrets.REPO_SECRET }}
+        - uses: actions/setup-node@v1
+          with:
+            node-version: '16.x'
+
+        - uses: actions/cache@v3
+          with:
+            path: ~/.npm
+            key: node-modules-${{ hashFiles('**/package-lock.json') }}
+
+        - name: Install dependencies and buld app
+          run: |
+            npm ci --force
+            npx playwright install --with-deps chromium
+            npm run build
+
+        - name: Run e2e tests
+          run: |
+            npm run e2e
+
+        - name: Run unit tests
+          run: |
+            npm run test-ci
+
+        - name: Upload Pages artifact
+          uses: actions/upload-pages-artifact@v2
 
