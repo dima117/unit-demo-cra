@@ -1,7 +1,10 @@
+1. Добавил `config` файлы для commitlint и добавил workflows для github [commitlint.yml](https://github.com/AparinAA/unit-demo-cra/blob/dev1/.github/workflows/commitlint.yml) . Делать коммит для проверки через с именем `'refactor: commitText'` , либо в любов виде: соглашаения о коммитах.
+2. Добавил [testpr.yml](https://github.com/AparinAA/unit-demo-cra/blob/dev1/.github/workflows/testpr.yml) для тестирования и проверки линтером pull requests
+
 В этом репозитории находится пример приложения с тестами:
 
-- [e2e тесты](e2e/example.spec.ts)
-- [unit тесты](src/example.test.tsx)
+-   [e2e тесты](e2e/example.spec.ts)
+-   [unit тесты](src/example.test.tsx)
 
 Для запуска примеров необходимо установить [NodeJS](https://nodejs.org/en/download/) 16 или выше.
 
