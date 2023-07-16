@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/Rubicones/hw-infra/compare/v1.9.1...v1.10.0) (2023-07-15)
+
+
+### Features
+
+* readme added ([893e368](https://github.com/Rubicones/hw-infra/commit/893e3680f767a8ef0d016e4aa4aafafefebb08b8))
+
 ## [1.9.1](https://github.com/Rubicones/hw-infra/compare/v1.9.0...v1.9.1) (2023-07-14)
 
 
