@@ -49,9 +49,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  base-checks:
+    uses: ./.github/workflows/base-ci.yaml
+
   create-issue:
     runs-on: ubuntu-latest
-    needs: make_changelog
+    needs: [base-checks, make_changelog]
 
     permissions:
       contents: write
@@ -81,6 +84,12 @@ jobs:
           echo "$CHANGELOG_CONTENT" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+      - name: Get result url
+        id: result_url
+        run: |
+          URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "RESULT_URL=${URL}" >> "$GITHUB_ENV"
+
       - name: Create or Update Release Issue
         uses: JasonEtco/create-an-issue@v2
         with:
@@ -92,6 +101,23 @@ jobs:
           RELEASE_NAME: ${{ env.RELEASE_NAME }}
           RELEASE_DATE: ${{ env.RELEASE_DATE }}
           RELEASE_CHANGELOG: ${{ env.CHANGELOG_CONTENT }}
+          RELEASE_RESULT_URL: ${{ env.RESULT_URL }}
 
-  base-checks:
-    uses: ./.github/workflows/base-ci.yaml
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [create-release, base-checks]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+      - name: Build Application
+        run: npm run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build # The folder the action should deploy.
