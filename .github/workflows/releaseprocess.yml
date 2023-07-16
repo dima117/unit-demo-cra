@@ -125,7 +125,7 @@ jobs:
               repo: context.repo.repo,
             });
             const releaseIssue = issues.find(issue => issue.title === issueTitle);
-            const updateBody = `${current_issue.body}Deploy results: ${deployURL}`;
+            const updateBody = `${releaseIssue.body}Deploy results: ${deployURL}`;
             github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
