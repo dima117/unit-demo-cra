@@ -10,6 +10,7 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Set output
         id: vars
         run: |
@@ -17,6 +18,13 @@ jobs:
           DATE=$(git show -s --format=%ai ${TAG})
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
           echo "date=${DATE}" >> "$GITHUB_OUTPUT"
+        run: |
+          CURRENT_TAG=${{ github.ref_name }} 
+          TIMESTAMP=$(git show -s --format=%ai ${CURRENT_TAG})
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${CURRENT_TAG}^)
+          echo "current=${CURRENT_TAG}" >> "$GITHUB_OUTPUT"
+          echo "previous=${PREVIOUS_TAG}" >> "$GITHUB_OUTPUT"
+          echo "timestamp=${TIMESTAMP}" >> "$GITHUB_OUTPUT"
       - name: Create Branch
         uses: peterjgrainger/action-create-branch@v2.0.1
         env:
