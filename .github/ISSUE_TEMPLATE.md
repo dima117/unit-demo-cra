@@ -1,12 +1,14 @@
 ---
-title: Release {{ env.RELEASE_VERSION }}
+title: Release {{ env.RELEASE_NAME }}
 assignees: ZeraiGR
 labels: RELEASE
 ---
 
-**Version:** {{ env.RELEASE_NAME }}
-**Release Date:** {{ env.RELEASE_DATE }}
+## Release Important Details
+
 **Author:** {{ env.RELEASE_AUTHOR }}
+**Release Date:** {{ env.RELEASE_DATE }}
+**Version:** {{ env.RELEASE_NAME }}
 **Changelog:**
 
 {{ env.RELEASE_CHANGELOG }}
