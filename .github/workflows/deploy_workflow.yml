@@ -33,11 +33,15 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const lastIssue = github.rest.issues.listForRepo({
+            const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               labels: 'release'
-            }).pop()
+            })
+
+            console.log(issues)
+
+            const lastIssue = issues.pop()
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -69,11 +73,13 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const lastIssue = github.rest.issues.listForRepo({
+            const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               labels: 'release'
-            }).pop()
+            })
+
+            const lastIssue = issues.pop()
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -109,11 +115,13 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const lastIssue = github.rest.issues.listForRepo({
+            const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
               labels: 'release'
-            }).pop()
+            })
+
+            const lastIssue = issues.pop()
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
