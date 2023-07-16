@@ -95,3 +95,21 @@ jobs:
               issue_number: newIssue.number,
               labels: [labelToAdd]
             });
+
+  deploy:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get release version
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: "0"
+
+      - name: Checkout to release branch
+        run: git checkout release/${GITHUB_REF#refs/*/}
+
+      - name: Deploy to GitHub Pages
+        run: npm run deploy
