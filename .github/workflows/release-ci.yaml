@@ -49,14 +49,19 @@ jobs:
       
       - name: Create or Update Release Issue
         run: |
-          response=$(gh issue list -s open -l RELEASE -A "${GITHUB_ACTOR}" --title "RELEASE: ${RELEASE_NAME}")
-          if [ -z "$response" ]; then
-            gh issue create --title "RELEASE: ${RELEASE_NAME}" --body "$(cat issue_template.md)" --label RELEASE
+          # Find existing issue by title
+          response=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=open&labels=RELEASE&creator=${GITHUB_ACTOR}")
+          issue_number=$(echo "$response" | jq --arg title "RELEASE: ${RELEASE_NAME}" '.[] | select(.title == $title) | .number')
+
+          if [ -z "$issue_number" ]; then
+            # Issue not found, create a new one
+            curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -d "{\"title\": \"RELEASE: ${RELEASE_NAME}\", \"body\": \"$(cat issue_template.md)\", \"labels\": [\"RELEASE\"]}" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues"
           else
-            issue_number=$(echo "$response" | jq '.[0].number')
-            gh issue comment $issue_number --body "$(cat issue_template.md)"
+            # Issue found, update the existing one
+            curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -d "{\"body\": \"$(cat issue_template.md)\"}" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$issue_number/comments"
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ github.actor }}
           RELEASE_NAME: ${{ env.RELEASE_NAME }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
