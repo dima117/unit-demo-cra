@@ -93,19 +93,11 @@ jobs:
               labels: [labelToAdd]
             });
 
+            core.setOutput('issue_number', newIssue.data.number);
+
   deploy:
     needs: release
-
-    permissions:
-      pages: write       
-      id-token: write   
-     
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     runs-on: ubuntu-latest
-
     steps:
       - name: Get release version
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -119,6 +111,23 @@ jobs:
       - name: Checkout to release branch
         run: git checkout release/${GITHUB_REF#refs/*/}
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2 #
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+          
+      - name: Close Issue
+        if: steps.deploy.outcome == 'success' && steps.create_issue.outputs.issue_number != ''
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = '${{ steps.create_issue.outputs.issue_number }}';
+
+            await github.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              state: 'closed'
+            });
