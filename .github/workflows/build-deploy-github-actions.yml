@@ -32,7 +32,8 @@ jobs:
     
       - name: 🎬 Build application
         run: |
-          PUBLIC_URL="/unit-demo-cra"
+          HOMEPAGE_URL="${{ vars.HOMPAGE_URL }}"
+          jq --arg url "$HOMEPAGE_URL" '. + {homepage: $url}' package.json > temp.json && mv temp.json package.json
           npm run build
         
         if: success()
