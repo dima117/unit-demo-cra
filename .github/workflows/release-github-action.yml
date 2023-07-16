@@ -17,6 +17,9 @@ jobs:
       - name: Create release branch
         run: |
           BRANCH_NAME=release-${{ github.ref_name }}
+          if [ `git branch --list $BRANCH_NAME` ]; then
+            git branch -d $BRANCH_NAME
+          fi
           git checkout -b $BRANCH_NAME
           git push -u origin $BRANCH_NAME
 
@@ -52,27 +55,30 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
           
       - name: ✍️ Create release issue
-        uses: imjohnbo/issue-bot@3d96848fb5e9a4a473bb81ae62b4b4866a56e93a
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          assignees: "sr480"
-          labels: "RELEASE"
-          title: Release ${{ github.ref_name }} 
-          body: |
-            ### Это релиз приложения версии ${{ github.ref_name }}
+          GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+        run: |
+          ISSUE_TITLE="Release ${{ github.ref_name }}"
+          ISSUE_BODY << EOF
+          ### Это релиз приложения версии ${{ github.ref_name }}
 
-            Автор релиза: ${{ github.actor }}
+          Автор релиза: ${{ github.actor }}
 
-            Время: ${{ steps.get_tags.outputs.timestamp }}
-            
-            Changelog:
+          Время: ${{ steps.get_tags.outputs.timestamp }}
+          
+          Changelog:
 
-            ${{ steps.generate_log.outputs.log }}
+          ${{ steps.generate_log.outputs.log }}
 
-            Для запуска развертывания перейдите на страницу экшена и выберите ветку релиза
+          Для запуска развертывания перейдите на страницу экшена и выберите ветку релиза
 
-            [Deploy application](https://github.com/sr480/unit-demo-cra/actions/workflows/build-deploy-github-actions.yml)
-            
-          pinned: false
-          close-previous: false
+          [Deploy application](https://github.com/sr480/unit-demo-cra/actions/workflows/build-deploy-github-actions.yml)
+          EOF
+
+          ISSUE_ID=$(gh issue list --json number,title,labels -q \
+            ".[] | select(.title == \"${ISSUE_TITLE}\" and .labels[].name == \"RELEASE\") | .number")
+          if [ ! -z "$ISSUE_ID" ]; then
+            gh issue edit $ISSUE_ID --body "$ISSUE_BODY"
+          else
+            gh issue create --title "Release ${{ github.ref_name }}" --body "$ISSUE_BODY" --label "RELEASE" --assignee "@me"
+          fi
