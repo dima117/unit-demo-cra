@@ -13,10 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Run ls
-        run: |
-          ls
-          pwd
+      - uses: actions/checkout@v3
       - name: Generate Tag Report
         run: bash ./.github/scripts/generate_report.sh 
       - name: Create issue
