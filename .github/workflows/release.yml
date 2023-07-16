@@ -28,7 +28,7 @@ jobs:
       - name: 🏷️ Получить имя тега
         run: |
           echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
-          echo "BRANCH_RELEASE=release-${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
+          echo "BRANCH_RELEASE=release-$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
       #          echo ${GITHUB_REF#refs/*/}
       #          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: 🔍 Получить предыдущий релизный тег
