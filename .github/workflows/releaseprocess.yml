@@ -78,8 +78,20 @@ jobs:
             body += `Date: ${new Date().toLocaleString()}\n`
             body += `Version: ${process.env.RELEASE_VER}\n\n`
 
-            body += `Unit tests results: ${process.env.UNIT_TEST_RESULT}\n`
-            body += `E2E tests results: ${process.env.E2E_TEST_RESULT}\n`
+            if (${process.env.UNIT_TEST_RESULT} == 'PASSED') {
+              body += `Unit tests result: ✅\n`
+            }
+            else {
+              body += `Unit tests result: 🚫\n`
+            }
+
+            if (${process.env.E2E_TEST_RESULT} == 'PASSED') {
+              body += `E2E tests result: ✅\n`
+            }
+            else {
+              body += `E2E tests result: 🚫\n`
+            }
+
             body += `Test results: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.runId}`
 
             github.rest.issues.create({
