@@ -10,29 +10,76 @@ jobs:
   release:
     name: release
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      issues: write
+      contents: write
     steps:
       - uses: actions/checkout@v3
-      - name: Set output
-        id: vars
-        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+        with:
+          fetch-depth: 0
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+
       - name: Get previous tag
         id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        with:
-          fallback: 4b825dc642cb6eb9a060e54bf8d69288fbee4904
+        run: echo "::set-output name=TAGNAME::$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))"
+
       - name: Set diff
         id: diff
         env:
-          LAST_TAG: ${{ steps.previoustag.outputs.tag }}
+          LAST_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
+          CURRENT_TAG: ${{ steps.get_version.outputs.VERSION }}
         run: |
-          git_hash=$(git rev-parse --short "$GITHUB_SHA")
-          diff=$(git log --pretty='%h; author: %cn;  subject:%s'  $LAST_TAG..$git_hash | cat)
-          echo "DIFF=$diff" >> $GITHUB_OUTPUT
+          echo 'DIFF<<EOF' >> $GITHUB_OUTPUT
+          diff=$(git log --pretty='%h; author: %cn;  subject:%s'  $LAST_TAG..$CURRENT_TAG)
+          echo "$diff" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - run: npm ci
+      - run: npm run test-ci
+      - run: npm run build
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        id: test-results
+        if: always()
+        with:
+          files: |
+            test-results/**/*.xml
+      - name: Set env if all ok
+        run: |
+          echo "DEPLOY_STATUS='Deploy succeeded'" >> $GITHUB_ENV
+        if: ${{ success() }}
+      - name: Set env fail if fail
+        run: |
+          echo "DEPLOY_STATUS='Deploy failed due to job failure, see pipeline'" >> $GITHUB_ENV
+        if: ${{ failure() }}
       - uses: JasonEtco/create-an-issue@v2
+        id: create-issue
+        if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_TITLE: ${{ steps.vars.outputs.tag }}
+          ISSUE_TITLE: ${{ steps.get_version.outputs.VERSION }}
           HISTORY: ${{ steps.diff.outputs.diff}}
+          TEST_RUN: ${{ fromJSON( steps.test-results.outputs.json ).check_url }}
+          PREVIOUS_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
+          DEPLOYED: ${{env.DEPLOY_STATUS}}
         with:
           update_existing: true
           search_existing: open
+      - name: Close Issue
+        if: ${{ success() }}
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{steps.create-issue.outputs.number}}
+          comment: Relase done!
