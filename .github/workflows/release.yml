@@ -148,6 +148,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
+          publish_branch: release-v${{steps.get_curent_version.outputs.current_tag}}
 
 #       - name: Update release issue with deployment details
 #         uses: actions/github-script@v4
