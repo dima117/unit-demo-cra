@@ -33,5 +33,13 @@ jobs:
       - name: Commit version
         run: |
           git push
-      - name: Release Changelog Builder
-        uses: mikepenz/release-changelog-builder-action@v4.0.0-rc03
+      - name: Generate changelog
+          id: changelog
+          uses: metcalfc/changelog-generator@v4.1.0
+          with:
+            myToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get the changelog
+        run: |
+          cat << "EOF"
+          ${{ steps.changelog.outputs.changelog }}
+          EOF
