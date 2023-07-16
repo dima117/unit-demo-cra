@@ -182,7 +182,6 @@ jobs:
 
       - name: Test report
         uses: dorny/test-reporter@v1
-        id: e2e-report
         if: always()
         with:
           name: Report playwright test
@@ -197,4 +196,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ needs.release-info.outputs.issue-create }}
           body: |
-            [e2e test results](${{ github.server_url }}/${{ github.repository }}/runs/${{ steps.e2e-report.id }})
+            [e2e test results](${{ github.server_url }}/${{ github.repository }}/runs/${{ github.run_id }})
