@@ -12,7 +12,9 @@ jobs:
     steps:
       - name: Set output
         id: vars
-        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+        run: |
+          echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+          echo "time=$(git log -s --format=%ai ${steps.vars.outputs.tag})" >> $GITHUB_OUTPUT
       - name: Create Branch
         uses: peterjgrainger/action-create-branch@v2.0.1
         env:
@@ -52,10 +54,7 @@ jobs:
           title: RELEASE ${{ steps.vars.outputs.tag }}
           labels: RELEASE
           body: |
-            cat << EOF
-            ### Context
-            Workflow name - `${{ github.workflow }}`
-            Job -           `${{ github.job }}`
-            status -        `${{ job.status }}`
+            ### Release credentials:
             author -        `${{ github.actor }}`
             date -          `${{ steps.vars.outputs.tag }}`
+            time -          `${{ steps.vars.outputs.time }}`
