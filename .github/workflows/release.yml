@@ -4,6 +4,13 @@ on:
     tags:
       - v*
   workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: write
+  pages: write
+  issues: 'write'
+
 jobs:
   test:
     name: Passing tests
@@ -33,14 +40,14 @@ jobs:
       - name: Get repository code
         uses: actions/checkout@v3
       - name: Show tag
-        run: echo "TAG -> ${{ github.ref }}"
+        run: echo "TAG -> ${{ GITHUB_REF_NAME }}"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ GITHUB_REF_NAME }}
+          release_name: Release ${{ GITHUB_REF_NAME }}
           draft: false
           prerelease: false
