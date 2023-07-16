@@ -12,7 +12,11 @@ jobs:
     steps:
       - name: Set output
         id: vars
-        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+        run: |
+        TAG=${{ github.ref_name }} 
+        DATE=$(git show -s --format=%ai ${TAG})
+        echo "tag=${TAG}" >> $GITHUB_OUTPUT
+        echo "date=${DATE}" >> $GITHUB_OUTPUT
       - name: Create Branch
         uses: peterjgrainger/action-create-branch@v2.0.1
         env:
@@ -55,6 +59,6 @@ jobs:
             ### Release credentials:
             author -        `${{ github.actor }}`
             version -       `${{ steps.vars.outputs.tag }}`
-            time -          `new Date()`
+            time -          `${{ steps.vars.outputs.date }}`
             changelog:
             `${{ steps.changelog.outputs.changelog }}`
