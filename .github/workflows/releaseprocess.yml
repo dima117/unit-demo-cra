@@ -105,7 +105,15 @@ jobs:
       - name: Echo needs.create_issue.outputs.unit_test_result
         run: echo ${{ needs.create_issue.outputs.unit_test_result }}
       - name: Echo needs.create_issue.outputs.e2e_test_result
-        run: echo ${{ needs.create_issue.outputs.unit_test_result }}
+        run: echo ${{ needs.create_issue.outputs.e2e_test_result }}
+      - name: Echo equality 1
+        run: echo ${{ needs.create_issue.outputs.unit_test_result == 'PASSED' }}
+      - name: Echo equality 2
+        run: echo ${{ needs.create_issue.outputs.e2e_test_result == 'PASSED' }}
+      - name: Echo equality 3
+        run: echo ${{ needs.create_issue.outputs.unit_test_result == needs.create_issue.outputs.e2e_test_result }}
+      - name: Echo equality 5
+        run: echo ${{ true && true }}
       - name: Echo summary
         run: echo ${{ needs.create_issue.outputs.unit_test_result == 'PASSED' && needs.create_issue.outputs.e2e_test_result == 'PASSED' }}
 
