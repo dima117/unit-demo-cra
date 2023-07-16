@@ -73,7 +73,7 @@ jobs:
           body: |
             ## App Release, ${{ github.ref_name }}
 
-            Release author: ${{ github.actor }}
+            Author: ${{ github.actor }}
             Timestamp: ${{ steps.tag_id.outputs.timestamp }}
 
             Changelog:
