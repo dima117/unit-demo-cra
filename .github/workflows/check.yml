@@ -22,6 +22,14 @@ jobs:
         run: git show ${{github.ref_name}} | grep Author
       - name: Get date info
         run: git show ${{github.ref_name}} | grep Date
+      - name: Find issues
+          uses: actions-cool/issues-helper@v3
+          with:
+            actions: "find-issues"
+            token: ${{ secrets.GITHUB_TOKEN }}
+            issue-state: "open"
+            title-includes: ${{github.ref_name}}
+            labels: "RELEASE"
 
   commitlint:
     name: CommitLint
