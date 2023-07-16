@@ -22,3 +22,9 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 1
+      - name: create an issue
+        uses: dacbd/create-issue-action@main
+        with:
+          token: ${{ github.token }}
+          title: Simple test issue
+          body: my new issue
