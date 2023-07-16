@@ -33,6 +33,8 @@ jobs:
       - name: Commit version
         run: |
           git push
-      - name: generate-changelog-action
-        uses: ScottBrenner/generate-changelog-action@v1.3.3
-      - run: git push
+      - name: Release Changelog Builder
+         uses: mikepenz/release-changelog-builder-action@v4.0.0-rc03
+      - run: |
+          git commit -m:"chore:add changelog"
+          git push
