@@ -99,7 +99,7 @@ jobs:
       - name: Load environment variables
         run: |
           VERSION=$(cat env_vars.txt)
-          git diff $VERSION..HEAD > diff_result.txt
+          git log --oneline $VERSION..HEAD > diff_result.txt
           echo "DIFF_RESULT<<EOF" >> $GITHUB_ENV
           cat diff_result.txt >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
