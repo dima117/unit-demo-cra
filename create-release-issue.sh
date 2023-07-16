@@ -16,11 +16,12 @@ EOF
 }
 
 create_issue_payload() {
+  escaped_changes=$(printf '%s' "$CHANGES" | jq -Rs .)
   cat <<EOF
   {
     "title": "Release $VERSION",
     "labels": ["RELEASE"],
-    "body": "**Release version:** $VERSION \n**Released by:** $RELEASED_BY \n**Date:** $TAG_DATE \n\n[Check tests results link](https://github.com/$GITHUB_REPOSITORY/actions/runs/$RUN_ID) \n\n**Changelog:** \n$CHANGES"
+    "body": "**Release version:** $VERSION \n**Released by:** $RELEASED_BY \n**Date:** $TAG_DATE \n\n[Check tests results link](https://github.com/$GITHUB_REPOSITORY/actions/runs/$RUN_ID) \n\n**Changelog:** \n$escaped_changes"
   }
 EOF
 }
