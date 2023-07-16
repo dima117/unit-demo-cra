@@ -29,7 +29,7 @@ jobs:
       
       - name: install dependencies
         run: |
-          pnpm run i
+          pnpm i
           pnpm run lint
 
   unit-tests:
