@@ -42,6 +42,10 @@ jobs:
         with:
           node-version: 18.x
       - run: npm ci
+
+      - name: Run ESLint
+        run: npx eslint . --ext .js,.jsx,.ts,.tsx
+
       - run: npm run test-ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
