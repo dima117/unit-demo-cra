@@ -11,7 +11,7 @@ on:
 jobs:
 
   build-workflow:
-    uses: ./.github/workflows/build-&-deploy.yml
+    uses: ./.github/workflows/build-and-deploy.yml
 
   create-release-branch:
     name: release-branch-creation
