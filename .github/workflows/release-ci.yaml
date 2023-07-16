@@ -6,11 +6,8 @@ on:
       - 'v[0-9]+'
 
 jobs:
-  make-changelog:
+  create-release:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
 
     steps:
       - uses: actions/checkout@v3
@@ -18,14 +15,6 @@ jobs:
       - name: Set Release Name
         run: echo "RELEASE_NAME=$(echo ${{ github.ref }} | sed 's#refs/tags/##')" >> $GITHUB_ENV
       
-      - name: Get Last Release Tag
-        id: last_tag
-        run: echo "LAST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
-
-      - name: Get Release Date
-        id: release_date
-        run: echo "RELEASE_DATE=$(git show -s --format=%ci ${{ env.RELEASE_NAME }})" >> $GITHUB_ENV
-
       - name: Install auto-changelog
         run: npm install -g auto-changelog
 
@@ -34,34 +23,23 @@ jobs:
 
       - name: Create Release
         run: |
-          gh release create ${{ env.RELEASE_NAME }} ./CHANGELOG.md
+          gh release create ${{ env.RELEASE_NAME }} ./CHANGELOG.md -F ./CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  create-issue:
+    runs-on: ubuntu-latest
 
-      - name: Find Existing Issue
-        id: find_existing_issue
-        run: |
-          issue_number=$(gh issue list --state open --label "RELEASE" --author "${GITHUB_ACTOR}" --title "RELEASE: $RELEASE_NAME" --json number | jq -r '.[0].number')
-          echo "::set-output name=issue_number::$issue_number"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_NAME: ${{ env.RELEASE_NAME }}
-      
-      - name: Create or Update Release Issue
-        run: |
-          # Find existing issue by title
-          response=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=open&labels=RELEASE&creator=${GITHUB_ACTOR}")
-          issue_number=$(echo "$response" | jq --arg title "RELEASE: ${RELEASE_NAME}" '.[] | select(.title == $title) | .number')
+    permissions:
+      contents: write
+      issues: write
+    
+    steps: 
+      - uses: actions/checkout@v3
 
-          if [ -z "$issue_number" ]; then
-            # Issue not found, create a new one
-            curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -d "{\"title\": \"RELEASE: ${RELEASE_NAME}\", \"body\": \"$(cat issue_template.md)\", \"labels\": [\"RELEASE\"]}" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues"
-          else
-            # Issue found, update the existing one
-            curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -d "{\"body\": \"$(cat issue_template.md)\"}" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$issue_number/comments"
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          RELEASE_NAME: ${{ env.RELEASE_NAME }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
+      - name: Get Last Release Tag
+        id: last_tag
+        run: echo "LAST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Get Release Date
+        id: release_date
+        run: echo "RELEASE_DATE=$(git show -s --format=%ci ${{ env.RELEASE_NAME }})" >> $GITHUB_ENV
