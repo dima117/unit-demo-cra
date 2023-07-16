@@ -11,15 +11,6 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Set Up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 20
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Lint Commit Messages
-        run: npx commitlint --from=HEAD~1 --quiet
+        uses: actions/checkout@v3
+        
+      - uses: wagoid/commitlint-github-action@v5
