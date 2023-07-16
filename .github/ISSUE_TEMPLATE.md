@@ -1,6 +1,6 @@
 ---
-title: {{ env.RELEASE_NAME }}
-assignees: {{ env.RELEASE_AUTHOR }}
+title: {{ env.RELEASE_VERSION }}
+assignees: ZeraiGR
 labels: RELEASE
 ---
 

@@ -27,7 +27,6 @@ jobs:
           name: changelog
           path: CHANGELOG.md
 
-
   create-release:
     runs-on: ubuntu-latest
     needs: make_changelog
@@ -74,11 +73,6 @@ jobs:
           name: changelog
           path: changelog
 
-      - name: Check RELEASE_AUTHOR
-        run: |
-          echo ${{ github.actor }}
-          echo ${{ env.RELEASE_NAME }}
-
       - name: Create or Update Release Issue
         uses: JasonEtco/create-an-issue@v2
         with:
@@ -86,6 +80,7 @@ jobs:
           search_existing: all
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_VERSION: ${{ github.ref_name }}
           RELEASE_AUTHOR: ${{ github.actor }}
           RELEASE_NAME: ${{ env.RELEASE_NAME }}
           RELEASE_DATE: ${{ env.RELEASE_DATE }}
