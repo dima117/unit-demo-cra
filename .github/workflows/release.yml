@@ -4,6 +4,9 @@ on:
     tags:
       - v[0-9]+
 
+env: 
+  CHANGELOG: '0'
+
 jobs:
   build:
     runs-on: ubuntu-latest
