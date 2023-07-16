@@ -3,8 +3,6 @@ run-name: ${{ github.actor }} is running release process
 
 on:
    push:
-     branches:
-       - master
      tags:
        - "v[0-9]+"
 
@@ -12,6 +10,8 @@ permissions:
   contents: write
 
 jobs:
+
+  if: github.ref === "refs/heads/master"
 
   build-workflow:
     uses: ./.github/workflows/build-and-deploy.yaml
