@@ -176,7 +176,9 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run e2e test
-        run: npm run test-ci:e2e
+        run: |
+          npm run test-ci:e2e
+          echo ${{ needs.release-info.outputs.issue-create }}
         env:
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: playwright.xml
 
@@ -194,6 +196,6 @@ jobs:
         with:
           actions: "create-comment"
           token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{needs.release-info.outputs.issue-create}}
+          issue-number: ${{ needs.release-info.outputs.issue-create }}
           body: |
             [e2e test results](${{ github.server_url }}/${{ github.repository }}/runs/${{ github.run_id }})
