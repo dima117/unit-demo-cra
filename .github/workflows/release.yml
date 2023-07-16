@@ -24,17 +24,17 @@ jobs:
         with:
           myToken: ${{ secrets.GITHUB_TOKEN  }}
 
-      - name: Release Issue
-        uses: JasonEtco/create-an-issue@v2
-        with:
-          title: "Release ${{ steps.extract_version.outputs.version }}"
-          body: |
-            ## Release Details
-            - Version: ${{ steps.extract_version.outputs.version }}
-            - Changelog: ${{ steps.changelog.outputs.chlog }}
-            - Author: ${{ github.actor }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Release Issue
+#        uses: JasonEtco/create-an-issue@v2
+#        with:
+#          title: "Release ${{ steps.extract_version.outputs.version }}"
+#          body: |
+#            ## Release Details
+#            - Version: ${{ steps.extract_version.outputs.version }}
+#            - Changelog: ${{ steps.changelog.outputs.chlog }}
+#            - Author: ${{ github.actor }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
         run: npm ci
