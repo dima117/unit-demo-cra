@@ -17,15 +17,11 @@ jobs:
       - name: Install Deps
         run: npm ci
       - name: Run Unit Tests
-        run: |
-          unit=$(npm test)
-          echo "UNIT=$unit" >> $GITHUB_ENV
+        run: bash ./.github/scripts/gen_unit_test.sh
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
       - name: Run e2e
-        run: |
-          e2e=$(npm run ci:e2e)
-          echo "E2E=$e2e" >> $GITHUB_ENV
+        run: bash ./.github/scripts/gen_e2e_test.sh
       - uses: actions/upload-artifact@v3
         if: always()
         with:
