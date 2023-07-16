@@ -49,8 +49,11 @@ jobs:
       if: steps.cache-playwright.outputs.cache-hit != 'true'
       run: npx playwright install --with-deps
 
-    - name: "Tests"
-      run: npm run test:ci
+#     - name: "Tests"
+#       run: npm run test:ci
+    - uses: ArtiomTr/jest-coverage-report-action@v2
+      with:
+        test-script: npm run test:ci
 
     - name: "Run Playwright tests"
       run: npm run test:all:ci
