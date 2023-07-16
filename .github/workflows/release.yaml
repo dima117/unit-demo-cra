@@ -65,6 +65,7 @@ jobs:
           echo "DEPLOY_STATUS='Deploy failed due to job failure, see pipeline'" >> $GITHUB_ENV
         if: ${{ failure() }}
       - uses: JasonEtco/create-an-issue@v2
+        id: create-issue
         if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
