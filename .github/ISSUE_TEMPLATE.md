@@ -10,5 +10,6 @@ labels: RELEASE
 **Release Date:** {{ env.RELEASE_DATE }}
 **Version:** {{ env.RELEASE_NAME }}
 **Result URL:** {{ env.RESULT_URL }}
+**Deploy on GH-pages Status:** {{ env.RELEASE_DEPLOY_STATUS }}
 
 {{ env.RELEASE_CHANGELOG }}

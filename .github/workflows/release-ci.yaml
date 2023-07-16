@@ -12,9 +12,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Get Current Release Tag
+        id: current_tag
+        run: echo "CURRENT_TAG=${{ github.ref_name }}"
+
       - name: Get Last Release Tag
         id: last_tag
-        run: echo "LAST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+        run: echo "LAST_TAG=$(git describe --tags --abbrev=0 ${CURRENT_TAG}^)" >> $GITHUB_ENV
 
       - name: Install auto-changelog
         run: npm install -g auto-changelog
@@ -111,7 +115,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          
+
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
       - name: Build Application
