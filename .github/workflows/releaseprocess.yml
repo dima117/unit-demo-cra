@@ -14,6 +14,7 @@ permissions:
 jobs:
   create_issue:
     name: Create issue
+
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -74,13 +75,14 @@ jobs:
           github-token: ${{ secrets.TOKEN }}
           script: |
             const title = `Release ${process.env.RELEASE_VER}`
-            let body = `Author: ${context.payload.sender.login}\n`
+            let body = '';
+            body += `Author: ${context.payload.sender.login}\n`
             body += `Date: ${new Date().toLocaleString()}\n`
             body += `Version: ${process.env.RELEASE_VER}\n\n`
 
-            body += `Unit tests results: ${process.env.UNIT_TEST_RESULT}\n`
-            body += `E2E tests results: ${process.env.E2E_TEST_RESULT}\n`
-            body += `Test results: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.runId}`
+            body += `Unit tests result: ${process.env.UNIT_TEST_RESULT}\n`
+            body += `E2E tests result: ${process.env.E2E_TEST_RESULT}\n`
+            body += `Test results: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.runId}\n\n`
 
             github.rest.issues.create({
               owner: context.repo.owner,
@@ -91,6 +93,43 @@ jobs:
             })
 
   deploy:
+    name: Deploy
     needs: create_issue
     if: ${{ needs.create_issue.outputs.unit_test_result == 'PASSED' && needs.create_issue.outputs.e2e_test_result == 'PASSED ✅' }}
     uses: ./.github/workflows/static.yml
+
+  close-issue:
+    name: Close issue
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [18.x]
+    runs-on: ${{ matrix.os }}
+
+    needs: deploy
+
+    steps:
+      - name: Close current issue
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const title = `Release ${process.env.RELEASE_VERSION}`
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            const releaseIssue = issues.find(issue => issue.title === title);
+
+            const deployURL = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/`
+            const updateBody = `${releaseIssue.body}Deploy results: ${deployURL}`;
+
+            github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: releaseIssue.number,
+              body: updateBody,
+              state: 'closed',
+            });
