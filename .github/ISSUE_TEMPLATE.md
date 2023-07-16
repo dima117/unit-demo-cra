@@ -1,5 +1,5 @@
 ---
-title: Release issue {{env.TAG}}
+title: Release issue
 assignees: ""
 ---
 
