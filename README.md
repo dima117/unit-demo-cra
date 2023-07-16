@@ -1,7 +1,9 @@
+1. Добавил `config` файлы для commitlint и добавил workflows для github (commitlint.yml)[infrastructure/unit-demo-cra/.github/workflows/commitlint.yml]
+
 В этом репозитории находится пример приложения с тестами:
 
-- [e2e тесты](e2e/example.spec.ts)
-- [unit тесты](src/example.test.tsx)
+-   [e2e тесты](e2e/example.spec.ts)
+-   [unit тесты](src/example.test.tsx)
 
 Для запуска примеров необходимо установить [NodeJS](https://nodejs.org/en/download/) 16 или выше.
 
