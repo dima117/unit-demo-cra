@@ -48,6 +48,13 @@ jobs:
                 git log --pretty=format:$'- hash: %h, name: %s' ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
                 echo ::set-output name=changelog::$(cat changelog.txt)
 
+            - name: Upload changelog artifact
+              id: upload_artifact
+              uses: actions/upload-artifact@v2
+              with:
+                name: changelog
+                path: changelog.txt
+
             - name: Create release
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -58,12 +65,13 @@ jobs:
               env:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                if [$(gh issue list --search "repo:${{ github.repository }} Release ${{ github.ref_name }}") -eq ""]; then
-                  gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ' --label RELEASE
-                else 
-                  num=$(gh issue list --search "Release ${{ github.ref_name }}" --format json | jq -r '.[0].number')
-                  gh issue edit $num --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: '
-                fi
+                gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ${{ steps.upload_artifact.outputs.artifact_url }}' --label RELEASE
+              # if [$(gh issue list --search "repo:${{ github.repository }} Release ${{ github.ref_name }}") -eq ""]; then
+              #   gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ' --label RELEASE
+              # else 
+              #   num=$(gh issue list --search "Release ${{ github.ref_name }}" --format json | jq -r '.[0].number')
+              #   gh issue edit $num --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: '
+              # fi
     
     upload_to_pages:
       runs-on: ubuntu-latest
