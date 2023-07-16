@@ -3,7 +3,7 @@
 # This script generates a tag report
 
 latest_tag=$(git describe --tags --abbrev=0)
-previous_tag=$(git describe --tags --abbrev=0 $latest_tag^)
+previous_tag=$(git describe --tags --abbrev=0 HEAD^)
 
 echo "Latest tag: $latest_tag"
 echo "Previous tag: $previous_tag"
