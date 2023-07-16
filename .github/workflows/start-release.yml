@@ -23,6 +23,4 @@ jobs:
         with:
           ref: release/${{ steps.vars.outputs.tag }}
       - name: package-json-version
-        uses: dmikey/package-json-version@v0.0.2
-        with:
-          version: ${{ steps.vars.outputs.tag }}
+        run: npm version {{ steps.vars.outputs.tag }}
