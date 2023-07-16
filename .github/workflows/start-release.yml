@@ -33,5 +33,5 @@ jobs:
       - name: Commit version
         run: |
           git push
-      - name: Create Changelogs
-        uses: heineiuo/create-changelogs@v0.2.8
+      - name: generate-changelog-action
+        uses: ScottBrenner/generate-changelog-action@v1.3.3
