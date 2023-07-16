@@ -32,7 +32,7 @@ jobs:
             - name: Find previous release tag
               id: get_previous_tag
               run: |
-                PREVIOUS_TAG=$(git describe --tags $(git rev-list --tags --skip=1 --max-count=1) --abbrev=0)
+                PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${{github.ref_name}}^)
                 echo $PREVIOUS_TAG
                 echo ::set-output name=previous_tag::$(git rev-parse $PREVIOUS_TAG) 
 
