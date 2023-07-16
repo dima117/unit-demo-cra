@@ -19,3 +19,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           branch: release/${{ steps.vars.outputs.tag }}
+        - uses: actions/checkout@v3
+          ref: release/${{ steps.vars.outputs.tag }}
