@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/Rubicones/hw-infra/compare/v1.17.1...v1.18.0) (2023-07-16)
+
+
+### Features
+
+* close issue after deploy pass successful ([27cac35](https://github.com/Rubicones/hw-infra/commit/27cac35802cd93d2b220e79ecdb39a1cef213d89))
+
 ## [1.17.1](https://github.com/Rubicones/hw-infra/compare/v1.17.0...v1.17.1) (2023-07-16)
 
 
