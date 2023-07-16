@@ -1,6 +1,6 @@
 name: Tests Release
 on:
-  push:
+  [pull_request, push]:
     branches:
       - "release/**"
 jobs:
