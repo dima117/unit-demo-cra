@@ -65,6 +65,7 @@ jobs:
         with:
           branch: master
           path: './build'
+          enablement: true
 
       - name: GH Pages
         id: deployment
