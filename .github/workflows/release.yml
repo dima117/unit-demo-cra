@@ -74,5 +74,6 @@ jobs:
           git push origin --delete ${{ env.BRANCH_RELEASE }}
       - name: 🌿 Создание ветки
         run: | # git checkout master
+          git checkout ${{ env.RELEASE_COMMIT }}
           git checkout -b ${{ env.BRANCH_RELEASE }} ${{ env.RELEASE_COMMIT }}
           git push origin ${{ env.BRANCH_RELEASE }}
