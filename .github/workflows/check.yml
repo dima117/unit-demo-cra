@@ -2,7 +2,7 @@ name: Check pipeline
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, closed]
+    types: [opened, synchronize, reopened]
 
   push:
     branches:
@@ -107,10 +107,17 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci --prefer-offline
+        run: npm ci --prefer-offline --omit=dev
 
       - name: Build project
         run: npm run build
+
+      - name: Upload deploy artifact (dist)
+        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v3
+        with:
+          name: webpack-bundle
+          path: ./build
 
   test-unit:
     name: Unit test
@@ -212,3 +219,25 @@ jobs:
           body: |
             Status e2e test: ${{ steps.e2e-report.outputs.conclusion }}
             [See more info into 'Report playwright test' job](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+  deploy:
+    name: Deploy
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    needs: [commitlint, eslint, build, test-unit, test-e2e]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download deploy artifact (dist)
+        uses: actions/download-artifact@v3
+        with:
+          name: webpack-bundle
+          path: ./build
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: ./build
