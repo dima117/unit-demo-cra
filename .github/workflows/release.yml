@@ -8,6 +8,10 @@ jobs:
 
   lint-and-test:
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.lint-result.outputs.run-lint }}
+      output2: ${{ steps.unit-test-result.outputs.run-unit-test }}
+      output3: ${{ steps.e2e-test-result.outputs.run-e2e-test }}
 
     steps:
       - name: Checkout Repo
