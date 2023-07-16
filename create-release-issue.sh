@@ -5,7 +5,7 @@ VERSION=$(git describe --tags --abbrev=0)
 TAG_DATE=$(git log -1 --pretty=format:"%ai" $VERSION)
 AUTHOR=$(git show $VERSION --pretty="format:%an" --no-patch)
 RUN_ID=$2
-CHANGES=$(awk -v RS='\n\n' -v version="$VERSION" '$0 ~ version' CHANGELOG.md)
+CHANGES=$(sed -n "/^$VERSION/,/^$(echo "$VERSION - 0.0.1" | bc)/p" CHANGELOG.md)
 
 create_issue_payload() {
   cat <<EOF
@@ -23,4 +23,3 @@ curl \
     -H "Accept: application/vnd.github.v3+json" \
     https://api.github.com/repos/$GITHUB_REPOSITORY/issues \
     -d "$(create_issue_payload)"
-    
