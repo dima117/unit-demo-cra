@@ -42,13 +42,13 @@ if [ "$issue_number" != "null" ]; then
        -d "$(create_comment_payload)"
 else
   echo "No existing issue found, creating a new one"
-    response=$(curl \
-        -X POST \
-        -H "Authorization: token $GH_TOKEN" \
-        -H "Accept: application/vnd.github.v3+json" \
-        https://api.github.com/repos/$GITHUB_REPOSITORY/issues \
-        -d "$(create_issue_payload)")
+    response=$(curl -sS \
+    -X POST \
+    -H "Authorization: token $GH_TOKEN" \
+    -H "Accept: application/vnd.github.v3+json" \
+    https://api.github.com/repos/$GITHUB_REPOSITORY/issues \
+    -d "$(create_issue_payload)")
   issue_number=$(echo "$response" | jq '.number')
 fi
-
+echo $issue_number
 echo "$issue_number" > issue_number.txt
