@@ -63,5 +63,5 @@ jobs:
               env:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                gh issue create --title "Release ${{ github.ref_name }}" --body "Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: " --label RELEASE
+                gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ' --label RELEASE
 
