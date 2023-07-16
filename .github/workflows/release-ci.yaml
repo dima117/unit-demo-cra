@@ -76,7 +76,8 @@ jobs:
       - name: Read Changelog Content
         id: read_changelog
         run: |
-          echo "CHANGELOG_CONTENT=$(cat "${{ steps.download.outputs.download-path }}/CHANGELOG.md")" >> $GITHUB_ENV
+          changelog_content=$(cat "${{ steps.download.outputs.download-path }}/CHANGELOG.md")
+          echo "::set-output name=changelog_content::$changelog_content"
 
       - name: Create or Update Release Issue
         uses: JasonEtco/create-an-issue@v2
