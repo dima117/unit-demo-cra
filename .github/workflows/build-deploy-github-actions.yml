@@ -32,7 +32,7 @@ jobs:
     
       - name: 🎬 Build application
         env:
-          HOMEPAGE_URL: ${{ vars.HOMPAGE_URL }}
+          HOMEPAGE_URL: ${{ vars.HOMEPAGE_URL }}
         run: |
           echo "$HOMEPAGE_URL"
           jq --arg url "$HOMEPAGE_URL" '. + {homepage: $url}' package.json > temp.json && mv temp.json package.json
