@@ -72,3 +72,11 @@ jobs:
               title: issueTitle,
               body: issueBody
             });
+
+            const labelToAdd = 'RELEASE';
+            await github.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: newIssue.number,
+              labels: [labelToAdd]
+            });
