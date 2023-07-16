@@ -2,8 +2,8 @@ name: Release Process
 
 on:
   push:
-  #  tags:
-  #    - 'v[0-9]+'
+    tags:
+      - 'v[0-9]+'
 
 jobs:
   release:
@@ -113,8 +113,3 @@ jobs:
                 state: 'closed'
               });
             }
-      #- name: Close issue
-      #  uses: peter-evans/close-issue@v3
-      #  with:
-      #    issue-number: ${{ steps.create_issue.outputs.issue_number }}
-      #    comment: Auto-closing issue
