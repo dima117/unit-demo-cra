@@ -78,14 +78,14 @@ jobs:
             body += `Date: ${new Date().toLocaleString()}\n`
             body += `Version: ${process.env.RELEASE_VER}\n\n`
 
-            if (${process.env.UNIT_TEST_RESULT} == 'PASSED') {
+            if (`${process.env.UNIT_TEST_RESULT}` == 'PASSED') {
               body += `Unit tests result: ✅\n`
             }
             else {
               body += `Unit tests result: 🚫\n`
             }
 
-            if (${process.env.E2E_TEST_RESULT} == 'PASSED') {
+            if (`${process.env.E2E_TEST_RESULT}` == 'PASSED') {
               body += `E2E tests result: ✅\n`
             }
             else {
