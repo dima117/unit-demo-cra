@@ -55,4 +55,4 @@ jobs:
             ### Release credentials:
             author -        `${{ github.actor }}`
             date -          `${{ steps.vars.outputs.tag }}`
-            time -          `${{ new Date() }}`
+            time -          `new Date()`
