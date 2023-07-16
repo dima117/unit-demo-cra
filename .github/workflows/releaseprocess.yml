@@ -119,7 +119,7 @@ jobs:
             console.log("Close-issue started");
             const deployURL = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/`;
             console.log(deployURL);
-            const issueTitle = `Release ${needs.create_issue.outputs.release_title}`;
+            const issueTitle = `Release ${{ needs.create_issue.outputs.release_title }}`;
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
