@@ -1,38 +1,54 @@
 name: Create Release
 
 on:
-    push:
-        tags:
-            - "v*"
+  push:
+    tags:
+      - "v*"
 
 permissions:
-    contents: write
-    pages: write
-    issues: write
+  contents: write
+  pages: write
+  issues: write
 
 jobs:
-    build:
-        name: Create Release
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v2
-              with:
-                  fetch-depth: 0
-            - name: Changelog
-              uses: Bullrich/generate-release-changelog@master
-              id: Changelog
-              env:
-                  REPO: ${{ github.repository }}
-            - name: Create Release
-              id: create_release
-              uses: actions/create-release@latest
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-              with:
-                  tag_name: ${{ github.ref }}
-                  release_name: Release ${{ github.ref }}
-                  body: |
-                      ${{ steps.Changelog.outputs.changelog }}
-                  draft: false
-                  prerelease: false
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Changelog
+        uses: Bullrich/generate-release-changelog@master
+        id: Changelog
+        env:
+          REPO: ${{ github.repository }}
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: Create issue
+        id: create_issue
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUTHOR: ${{ github.event.pusher.name }}
+          DATE: ${{ steps.date.outputs.date }}
+          VERSION: ${{ github.ref }}
+          CHANGELOG: ${{ steps.Changelog.outputs.changelog }}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ${{ steps.Changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
+      - name: Close Issue
+        run: gh issue close --comment "Auto-closing issue" "${{ steps.create_issue.outputs.number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
