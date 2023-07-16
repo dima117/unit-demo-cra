@@ -25,6 +25,7 @@ ALL_ISSUES=$(curl \
 # echo $ALL_ISSUES
 EXISTING_ISSUE_NUMBER=""
 for row in $(echo "${ALL_ISSUES}" | jq -r '.[] | @base64'); do
+    echo "Row data: ${row}"    
     _jq() {
      echo ${row} | base64 --decode | jq -r ${1}
     }
