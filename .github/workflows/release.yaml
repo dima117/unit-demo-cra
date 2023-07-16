@@ -13,6 +13,7 @@ jobs:
     permissions:
       checks: write
       pull-requests: write
+      issues: write
     steps:
       - uses: actions/checkout@v3
         with:
@@ -35,18 +36,6 @@ jobs:
           diff=$(git log --pretty='%h; author: %cn;  subject:%s'  $LAST_TAG..$CURRENT_TAG)
           echo "$diff" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
-      - uses: JasonEtco/create-an-issue@v2
-        if: always()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_TITLE: ${{ steps.get_version.outputs.VERSION }}
-          HISTORY: ${{ steps.diff.outputs.diff}}
-#          TEST_RUN: ${{ fromJSON( steps.test-results.outputs.json ).check_url }}
-          PREVIOUS_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
-        with:
-          update_existing: true
-          search_existing: open
-
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
         with:
@@ -60,4 +49,14 @@ jobs:
         with:
           files: |
             test-results/**/*.xml
-
+      - uses: JasonEtco/create-an-issue@v2
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_TITLE: ${{ steps.get_version.outputs.VERSION }}
+          HISTORY: ${{ steps.diff.outputs.diff}}
+          TEST_RUN: ${{ fromJSON( steps.test-results.outputs.json ).check_url }}
+          PREVIOUS_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
+        with:
+          update_existing: true
+          search_existing: open
