@@ -1,3 +1,10 @@
+## [1.16.5](https://github.com/Rubicones/hw-infra/compare/v1.16.4...v1.16.5) (2023-07-16)
+
+
+### Bug Fixes
+
+* readme updated ([941c469](https://github.com/Rubicones/hw-infra/commit/941c469aa179342161516367cb4b877c29fde53d))
+
 ## [1.16.4](https://github.com/Rubicones/hw-infra/compare/v1.16.3...v1.16.4) (2023-07-16)
 
 
