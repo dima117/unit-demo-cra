@@ -92,6 +92,21 @@ jobs:
               labels: ['RELEASE']
             })
 
+  debug:
+    name: Debug
+    needs: create_issue
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [18.x]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Echo needs.create_issue.outputs.unit_test_result
+        run: echo ${{ needs.create_issue.outputs.unit_test_result }}
+      - name: Echo needs.create_issue.outputs.e2e_test_result
+        run: echo ${{ needs.create_issue.outputs.unit_test_result }}
+
   deploy:
     name: Deploy
     needs: create_issue
