@@ -27,6 +27,18 @@ jobs:
           name: changelog
           path: CHANGELOG.md
 
+      - name: Check downloaded CHANGELOG.md
+        run: |
+          ls -la CHANGELOG.md
+          cat CHANGELOG.md
+        working-directory: ${{ github.workspace }}
+
+      - name: Check CHANGELOG.md
+        run: |
+          ls -la CHANGELOG.md
+          cat CHANGELOG.md
+        working-directory: ${{ github.workspace }}
+
   create-release:
     runs-on: ubuntu-latest
     needs: make_changelog
@@ -42,6 +54,12 @@ jobs:
         with:
           name: changelog
           path: CHANGELOG.md
+
+      - name: Check downloaded CHANGELOG.md
+        run: |
+          ls -la CHANGELOG.md
+          cat CHANGELOG.md
+        working-directory: ${{ github.workspace }}
 
       - name: Create Release
         run: |
