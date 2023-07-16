@@ -67,7 +67,7 @@ jobs:
             const currentTag = execSync('git describe --abbrev=0 --tags').toString().trim();
             const previousTag = execSync('git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1)').toString().trim();
             const tagRange = `${currentTag}...${previousTag}`
-            const command = `git log --pretty=format:"- %s" ${command}`
+            const command = `git log --pretty=format:"- %s" ${tagRange}`
             const changeLog = execSync(`git log --pretty=format:"- %s" ${command}`).toString()
             const issueBody = `
               **Author**: ${process.env.GITHUB_ACTOR}
