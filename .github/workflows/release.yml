@@ -32,6 +32,7 @@ jobs:
         run: npm test
       - name: Start e2e tests
         run: npm run e2e
+
   release:
     name: Creating release
     needs: test
@@ -51,3 +52,8 @@ jobs:
           release_name: Release ${{ GITHUB_REF_NAME }}
           draft: false
           prerelease: false
+
+  deploy:
+    name: Deploy
+    needs: release
+    uses: ./.github/workflows/deploy.yml
