@@ -1,7 +1,12 @@
-name: Start Tests
-on: [push, pull_request]
+name: Run tests and create release branch
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
 jobs:
   test:
+    name: Passing tests
     runs-on: ubuntu-latest
     steps:
       - name: Get repository code
@@ -20,3 +25,12 @@ jobs:
         run: npm test
       - name: Start e2e tests
         run: npm run e2e
+  release:
+    name: Creating release
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get repository code
+        uses: actions/checkout@v3
+      - name: Test echo
+        run: echo "____test-ECHO____"
