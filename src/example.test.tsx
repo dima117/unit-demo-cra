@@ -1,3 +1,4 @@
+/* eslint-disable react/react-in-jsx-scope */
 import { it, expect } from "@jest/globals";
 import { render } from "@testing-library/react";
 import events from "@testing-library/user-event";
