@@ -41,4 +41,7 @@ jobs:
       - name: Prepend changelog
         run: |
           cat <<< "${{ steps.changelog.outputs.changelog }}
-          $(cat CHANGELOG.md)"
+          $(cat CHANGELOG.md)" > CHANGELOG.md
+          git add .
+          git commit -m"chore: changelog"
+          git push
