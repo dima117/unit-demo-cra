@@ -22,9 +22,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: release/${{ steps.vars.outputs.tag }}
-      - name: "Automated Version Bump"
-        uses: "phips28/gh-action-bump-version@master"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: package-json-version
+        uses: dmikey/package-json-version@v0.0.2
         with:
-          tag-prefix: ${{ steps.vars.outputs.tag }}
+          version: ${{ steps.vars.outputs.tag }}
