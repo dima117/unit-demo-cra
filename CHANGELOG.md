@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/Rubicones/hw-infra/compare/v1.15.0...v1.15.1) (2023-07-16)
+
+
+### Bug Fixes
+
+* exclude semantic-release-bot from possible release users ([5d9fc74](https://github.com/Rubicones/hw-infra/commit/5d9fc742a6a8496d7a79d0e6a5d79cbd61393ad3))
+
 # [1.15.0](https://github.com/Rubicones/hw-infra/compare/v1.14.1...v1.15.0) (2023-07-16)
 
 
