@@ -27,13 +27,16 @@ jobs:
           
           TAG_AUTHOR=$(git log -1 --pretty=format:%an ${{ github.ref.refs.tags }})
           echo "- Author: $TAG_AUTHOR"
+          echo "- Author: $TAG_AUTHOR" >> release_issue.md
 
           TAG_DATE=$(git log -1 --pretty=format:%ci ${{ github.ref.refs.tags }})
+          echo "- Date: $TAG_DATE"
           echo "- Date: $TAG_DATE" >> release_issue.md
           
-          RELEASE_BEFORE=$RELEASE_VERSION-1
-          echo "#### Changelog" >> release_issue.md
+          RELEASE_BEFORE=$((RELEASE_VERSION-1))
           LAST_TAG="v$RELEASE_BEFORE"
+          echo "- Last release tag: $RELEASE_BEFORE"
+          echo "#### Changelog" >> release_issue.md
           TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" $LAST_TAG..HEAD)
           echo "$TEXT_CHANGELOG" >> release_issue.md
 
