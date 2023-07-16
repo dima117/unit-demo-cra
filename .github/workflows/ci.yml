@@ -34,6 +34,13 @@ jobs:
       - name: Run unit tests
         run: npm run test-ci
         
+      - name: Install playwright 
+        run: npx playwright install --with-deps chromium
+        CI=true npx playwright test --project=chromium
+
+      - name: Run e2e tests
+        run: npm run e2e
+          
       - name: Check test result
         run: |
           exit_code=$?
