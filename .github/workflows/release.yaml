@@ -67,7 +67,7 @@ jobs:
         with:
           assignees: "EricRovell"
           title: Release ${{ github.ref_name }}
-          labels: "RELEASE"
+          labels: "release"
           pinned: false
           close-previous: false
           body: |
