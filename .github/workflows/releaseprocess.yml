@@ -90,6 +90,9 @@ jobs:
             }
             fs.writeFileSync('env_vars.txt', `${lastIssue}`);
 
+      - name: List all tags
+        run: git tag
+
       - name: Load environment variables
         run: |
           VERSION=$(cat env_vars.txt)
