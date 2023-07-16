@@ -31,7 +31,8 @@
     "eject": "react-scripts eject",
     "test": "react-scripts test",
     "e2e": "playwright test --project=chromium && playwright show-report",
-    "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\"",
+    "test-ci:unit": "npm test -- --watchAll=false --reporters=\"jest-junit\"",
+    "test-ci:e2e": "playwright test --project=chromium --reporter=\"junit\"",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color --fix"
   },
   "eslintConfig": {
@@ -63,6 +64,7 @@
     "@playwright/test": "^1.28.0",
     "@types/react-helmet": "^6.1.5",
     "husky": "^4.3.8",
-    "jest-html-reporter": "^3.7.0"
+    "jest-html-reporter": "^3.7.0",
+    "jest-junit": "^16.0.0"
   }
 }
