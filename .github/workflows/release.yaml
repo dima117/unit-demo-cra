@@ -43,6 +43,10 @@ jobs:
           node-version: 18.x
       - run: npm ci
       - run: npm run test-ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: xvfb-run --auto-servernum -- npm run e2e-ci
       - run: npm run build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
