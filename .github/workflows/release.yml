@@ -1,25 +1,20 @@
-name: Create Release Branch
-
+name: Release
 on:
   push:
     tags:
       - 'v*'
-
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
 jobs:
   create-release-branch:
     runs-on: ubuntu-latest
-
+    permissions: write-all
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Extract branch name
-        shell: bash
-        run: echo "RELEASE_BRANCH=release-${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-
-      - name: Create Release Branch
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Action"
-          git checkout -b ${{ env.RELEASE_BRANCH }}
-          git push origin ${{ env.RELEASE_BRANCH }}
+      - uses: actions/checkout@v3
+      - uses: peterjgrainger/action-create-branch@v2.0.1
+        env:
+          TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        with:
+          branch: release-${{ github.ref_name }}
