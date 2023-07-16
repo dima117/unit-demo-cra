@@ -19,8 +19,8 @@ jobs:
 #      - name: Get version from tag
 #        run: echo "::set-output name=version::${{ github.ref }}"
 
-      - name: Chlog
-        id: chlog
+      - name: Changelog
+        id: changelog
         uses: metcalfc/changelog-generator@v4.1.0
         with:
           myToken: ${{ secrets.GITHUB_TOKEN  }}
@@ -32,8 +32,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             ## Release Details
-            - Info: ${{ github.ref_name }}
-            - Changelog: ${{ steps.chlog.outputs.changes }}
+            - Version: ${{ github.ref_name }}
+            - Changelog: ${{ steps.changelog.outputs.changelog }}
             - Author: ${{ github.actor }}
             - Date: ${{ github.event.repository.updated_at}}
 
