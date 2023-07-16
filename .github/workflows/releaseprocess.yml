@@ -37,12 +37,14 @@ jobs:
 
       - name: "Tests: unit"
         id: unit_test
-        run: npm run test-unit-ci
+        run: |
+          npm run test-unit-ci && echo "UNIT_TEST_RESULT='PASSED ✅'" >> $GITHUB_ENV || echo "UNIT_TEST_RESULT='FAILED 🚫'" >> $GITHUB_ENV
         continue-on-error: true
 
       - name: "Tests: e2e"
         id: e2e_test
-        run: npm run test-e2e-ci
+        run: |
+          npm run test-e2e-ci && echo "E2E_TEST_RESULT='PASSED ✅'" >> $GITHUB_ENV || echo "E2E_TEST_RESULT='FAILED 🚫'" >> $GITHUB_ENV
         continue-on-error: true
 
       - name: Upload Artifacts (unit tests)
@@ -71,18 +73,9 @@ jobs:
             let body = `Author: ${context.payload.sender.login}\n`
             body += `Date: ${new Date().toLocaleString()}\n`
             body += `Version: ${process.env.RELEASE_VER}\n\n`
-            if (steps.unit_test.outcome == 'success') {
-              body += "Unit tests results: PASSED ✅\n"
-            }
-            else {
-              body += "Unit tests results: FAILED 🚫\n"
-            }
-            if (steps.e2e_test.outcome == 'success') {
-              body += "E2E tests results: PASSED ✅\n"
-            }
-            else {
-              body += "Unit tests results: FAILED 🚫\n"
-            }
+
+            body += `Unit tests results: ${process.env.UNIT_TEST_RESULT}\n`
+            body += `E2E tests results: ${process.env.E2E_TEST_RESULT}\n`
             body += `Test results: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.runId}`
 
             github.rest.issues.create({
