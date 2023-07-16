@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: issue_number
-          path: ${{ steps.create_issue.outputs.issue_number }}
+          path: issue_number.txt
 
   deploy:
     needs: release
@@ -109,10 +109,10 @@ jobs:
           BRANCH: gh-pages
           FOLDER: build
           CLEAN: true
-          
+
       - name: Close Release Issue
         run: |
-          issue_number=$(cat issue_number.txt)
+          issue_number=$(cat issue_number/issue_number.txt)
           curl -X PATCH \
                -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
                -H "Accept: application/vnd.github.v3+json" \
