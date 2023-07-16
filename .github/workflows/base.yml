@@ -47,22 +47,27 @@ jobs:
     steps:
       - name: Get release version
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
       - name: Check out code
         uses: actions/checkout@v2
+
       - name: Create release branch
         run: |
           git checkout -b release/${GITHUB_REF#refs/*/}
           git push origin release/${GITHUB_REF#refs/*/}
+
       - name: Generate changelog
         id: changelog
         uses: metcalfc/changelog-generator@v4.1.0
         with:
-          myToken: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Get the changelog
         run: |
           cat << "EOF"
           ${{ steps.changelog.outputs.changelog }}
           EOF
+
       - name: Create Release Issue
         uses: actions/github-script@v4
         with:
