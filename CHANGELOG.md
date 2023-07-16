@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/Rubicones/hw-infra/compare/v1.16.5...v1.17.0) (2023-07-16)
+
+
+### Features
+
+* new issue creates only with new release version, otherwise it writes comment to existing issue ([c22fb60](https://github.com/Rubicones/hw-infra/commit/c22fb603c51dc550fcd4b28d0323e938c9e39f70))
+
 ## [1.16.5](https://github.com/Rubicones/hw-infra/compare/v1.16.4...v1.16.5) (2023-07-16)
 
 
