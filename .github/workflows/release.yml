@@ -80,3 +80,25 @@ jobs:
           RELEASE_AUTHOR: ${{ github.actor }}
           RELEASE_NO: ${{ github.ref_name }}
           RELEASE_DATE: ${{ github.event.repository.updated_at}}
+
+  deploy:
+    name: Create build and deploy on gh-pages
+    needs: [release]
+    permissions:
+      contents: read
+      issues: write
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+    - name: Set up GitHub Actions
+      uses: actions/checkout@v3
+    - name: Use Node.js ${{matrix.node-version}}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{matrix.node-version}}
+    - name: Install dependencies
+      run: npm ci
+    - name: Deploy project with ph-pages
+      run: npm run deploy

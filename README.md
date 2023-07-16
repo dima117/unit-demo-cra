@@ -1,3 +1,5 @@
+Ссылка на [gh-pages](https://evgenytomson.github.io/ci-hw/)
+
 В этом репозитории находится пример приложения с тестами:
 
 - [e2e тесты](e2e/example.spec.ts)
