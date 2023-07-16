@@ -39,7 +39,7 @@ jobs:
           name: changelog
           path: CHANGELOG.md
 
-  create-release:
+  create_release:
     runs-on: ubuntu-latest
     needs: make_changelog
 
@@ -61,12 +61,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  base-checks:
+  base_checks:
     uses: ./.github/workflows/base-ci.yaml
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [create-release, base-checks]
+    needs: [create_release, base_checks]
 
     outputs:
       deploy_status: ${{ steps.deploy.outcome }}
@@ -88,9 +88,9 @@ jobs:
         with:
           folder: build # The folder the action should deploy.
 
-  create-issue:
+  create_issue:
     runs-on: ubuntu-latest
-    needs: [base-checks, make_changelog, deploy]
+    needs: [base_checks, make_changelog, deploy]
 
     outputs:
       issue_number: ${{ steps.create_or_update_issue.outputs.number }}
