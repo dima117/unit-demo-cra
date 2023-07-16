@@ -14,7 +14,9 @@ jobs:
 
     steps:
       - name: Generate Tag Report
-        run: sh ./.github/scripts/generate_report.sh 
+        run: |
+          chmod +x ./.github/scripts/generate_report.sh
+          ./.github/scripts/generate_report.sh 
       - name: Create issue
         uses: imjohnbo/issue-bot@v3
         with:
