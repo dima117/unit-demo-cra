@@ -129,4 +129,5 @@ jobs:
               repo: context.repo.repo,
               issue_number: releaseIssue.number,
               body: updateBody,
+              state: 'closed',
             });
