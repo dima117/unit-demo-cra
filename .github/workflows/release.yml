@@ -48,6 +48,7 @@ jobs:
           update_existing: true
   add-branch:
     name: 🌳 Создание релизной ветки
+    needs: changelog
     runs-on: ubuntu-latest
 
     steps:
@@ -55,8 +56,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: 🔍 Удаление и создание ветки
-        run: |
-          git checkout master
+        run: | # git checkout master
           git branch -D release-${{ env.RELEASE_VERSION }}
           git push origin --delete release-${{ env.RELEASE_VERSION }}
           git checkout -b release-${{ env.RELEASE_COMMIT }} ${{ env.RELEASE_COMMIT }}
