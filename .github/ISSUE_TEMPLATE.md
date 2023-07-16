@@ -1,10 +1,10 @@
 ## Release Information
 
-name: {{ env.RELEASE_NAME }}
-about: Release issue
-title: 'test'
-labels: RELEASE
+---
+title: {{ env.RELEASE_NAME }}
 assignees: {{ env.RELEASE_AUTHOR }}
+labels: RELEASE
+---
 
 **Version:** {{ env.RELEASE_NAME }}
 **Release Date:** {{ env.RELEASE_DATE }}

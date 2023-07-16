@@ -63,7 +63,7 @@ jobs:
 
       - name: Create Release
         run: |
-          gh release create ${{ env.RELEASE_NAME }} -F ${{ steps.download.outputs.download-path }}
+          gh release create ${{ env.RELEASE_NAME }} -F ${{ steps.download.outputs.download-path }}/CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -101,7 +101,7 @@ jobs:
           RELEASE_AUTHOR: ${{ github.actor }}
           RELEASE_NAME: ${{ env.RELEASE_NAME }}
           RELEASE_DATE: ${{ env.RELEASE_DATE }}
-          RELEASE_CHANGELOG: ${{ steps.download.outputs.download-path }}
+          RELEASE_CHANGELOG: ${{ steps.download.outputs.download-path }}/CHANGELOG.md
 
   base-checks:
     uses: ./.github/workflows/base-ci.yaml
