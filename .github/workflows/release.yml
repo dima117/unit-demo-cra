@@ -33,12 +33,12 @@ jobs:
       - name: Checkout кода
         uses: actions/checkout@v3
 
-      # - name: Conventional changelog action
-      #   id: changelog
-      #   uses: TriPSs/conventional-changelog-action@latest
-      #   with:
-      #     github-token: ${{ secrets.github_token }}
-      #     skip-git-pull: "true"
+      - name: Conventional changelog action
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@latest
+        with:
+          github-token: ${{ secrets.github_token }}
+          skip-git-pull: "true"
 
       - name: Create an issue
         uses: JasonEtco/create-an-issue@v2
