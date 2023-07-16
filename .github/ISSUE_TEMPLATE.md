@@ -1,5 +1,7 @@
 ---
 title: RELEASE ISSUE {{env.TAG}}
+assignees: danveld
+labels: wontfix
 ---
 
 New Release!
