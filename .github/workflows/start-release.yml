@@ -30,18 +30,14 @@ jobs:
           git config --global user.email ${{ secrets.EMAIL }}
           git config --global user.name ${{ secrets.NAME }}
           npm version ${{ steps.vars.outputs.tag }}
-      - name: Commit version
-        run: |
           git push
-      - name: Generate changelog
+      - name: Create changelog text
         id: changelog
-        uses: metcalfc/changelog-generator@v4.1.0
-        with:
-          myToken: ${{ secrets.GITHUB_TOKEN }}
-          head-ref: ${{ steps.vars.outputs.tag }}
-          base-ref: ${{ steps.package-version.outputs.current-version}}
-      - name: Get the changelog
+        uses: loopwerk/tag-changelog@v1
+      - name: Prepend changelog
         run: |
-          cat << "EOF"
-          ${{ steps.changelog.outputs.changelog }}
-          EOF
+          cat <<< "${{ steps.changelog.outputs.changes }}
+          $(cat CHANGELOG.md)"
+          git add .
+          git commit -m"chore: changelog"
+          git push
