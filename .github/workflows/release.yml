@@ -41,7 +41,7 @@ jobs:
       - name: 🔍 Получить предыдущий релизный тег
         run: |
           git checkout ${{ env.RELEASE_VERSION }}
-          echo "PREV_TAG=$(git describe --abbrev=0 --tags HEAD)" >> $GITHUB_ENV
+          echo "PREV_TAG=$(git describe --abbrev=0 --tags HEAD~1)" >> $GITHUB_ENV
           git checkout -
       - name: ⚒️ Коммиты между релизами
         id: collect-commits
