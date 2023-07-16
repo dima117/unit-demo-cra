@@ -110,6 +110,13 @@ jobs:
           FOLDER: build
           CLEAN: true
 
+      - name: List files in current and issue_number directories
+        run: |
+          echo "Current directory:"
+          ls -la
+          echo "issue_number directory:"
+          ls -la issue_number
+
       - name: Close Release Issue
         run: |
           issue_number=$(cat issue_number/issue_number.txt)
