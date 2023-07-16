@@ -95,7 +95,7 @@ jobs:
   deploy:
     name: Deploy
     needs: create_issue
-    if: ${{ needs.create_issue.outputs.unit_test_result == 'PASSED' && needs.create_issue.outputs.e2e_test_result == 'PASSED ✅' }}
+    if: ${{ needs.create_issue.outputs.unit_test_result == 'PASSED' && needs.create_issue.outputs.e2e_test_result == 'PASSED' }}
     uses: ./.github/workflows/static.yml
 
   close-issue:
