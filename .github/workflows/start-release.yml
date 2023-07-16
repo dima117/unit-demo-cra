@@ -22,13 +22,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: release/${{ steps.vars.outputs.tag }}
-      - name: package-json-version
         run: |
           git config --global user.email ${{ secrets.EMAIL }}
           git config --global user.name ${{ secrets.NAME }}
           npm version ${{ steps.vars.outputs.tag }}
-      - name: Commit version
-        run: |
           git add .
           git commit -m:"chore: version bump"
           git push
