@@ -14,6 +14,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Print versions
+        run: git version
       - name: Generate Tag Report
         run: bash ./.github/scripts/generate_report.sh 
       - name: Create issue
