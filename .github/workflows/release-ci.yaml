@@ -14,6 +14,7 @@ jobs:
 
       - name: Get Last Release Tag
         id: last_tag
+        shell: bash
         run: |
           LAST_TAG=$(git describe --abbrev=0 --tags ${{ github.ref_name }}^)
           echo "${LAST_TAG}" >> $GITHUB_ENV
