@@ -16,9 +16,6 @@ jobs:
         with:
           fetch-depth: 0
 
-#      - name: Get version from tag
-#        run: echo "::set-output name=version::${{ github.ref }}"
-
       - name: Changelog
         id: changelog
         uses: metcalfc/changelog-generator@v4.1.0
