@@ -143,3 +143,14 @@ jobs:
           RELEASE_CHANGELOG: ${{ env.CHANGELOG_CONTENT }}
           RELEASE_RESULT_URL: ${{ env.RESULT_URL }}
           RELEASE_DEPLOY_STATUS: ${{ needs.deploy.outputs.deploy_status }}
+
+  close-issue:
+    runs-on: ubuntu-latest
+    needs: create_issue
+    steps:
+      - name: Close Issue
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{ needs.create_issue.outputs.issue_number }}
+          comment: |
+            Success release was finished
