@@ -35,3 +35,4 @@ jobs:
           git push
       - name: generate-changelog-action
         uses: ScottBrenner/generate-changelog-action@v1.3.3
+      - run: git push
