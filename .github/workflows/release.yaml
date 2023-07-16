@@ -18,7 +18,7 @@ jobs:
     name: release-branch-creation
     runs-on: ubuntu-latest
     needs: build-workflow
-    if: github.ref === "refs/heads/master"
+    if: github.ref == "refs/heads/master"
 
     steps:
       - uses: actions/checkout@v3
