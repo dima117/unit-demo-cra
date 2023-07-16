@@ -96,6 +96,13 @@ jobs:
       - name: List all tags
         run: git tag
 
+      - name: Load environment variables
+        run: |
+          VERSION=$(cat env_vars.txt)
+          DIFF_RESULT=$(git diff $VERSION..HEAD)
+          echo DIFF_RESULT="$DIFF_RESULT" >> $GITHUB_ENV
+          echo $DIFF_RESULT
+
       - name: Create Release Issue
         uses: actions/github-script@v6
         with:
