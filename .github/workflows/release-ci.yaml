@@ -56,9 +56,36 @@ jobs:
   base-checks:
     uses: ./.github/workflows/base-ci.yaml
 
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [create-release, base-checks]
+
+    outputs:
+      deploy_status: ${{ steps.deploy.outcome }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+      - name: Build Application
+        run: npm run build
+
+      - name: Deploy 🚀
+        id: deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build # The folder the action should deploy.
+
   create-issue:
     runs-on: ubuntu-latest
-    needs: [base-checks, make_changelog]
+    needs: [base-checks, make_changelog, deploy]
+
+    outputs:
+      issue_number: ${{ steps.create_or_update_issue.outputs.number }}
 
     permissions:
       contents: write
@@ -95,6 +122,7 @@ jobs:
           echo "RESULT_URL=${URL}" >> "$GITHUB_ENV"
 
       - name: Create or Update Release Issue
+        id: create_or_update_issue
         uses: JasonEtco/create-an-issue@v2
         with:
           update_existing: true
@@ -106,22 +134,4 @@ jobs:
           RELEASE_DATE: ${{ env.RELEASE_DATE }}
           RELEASE_CHANGELOG: ${{ env.CHANGELOG_CONTENT }}
           RELEASE_RESULT_URL: ${{ env.RESULT_URL }}
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [create-release, base-checks]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-      - name: Build Application
-        run: npm run build
-
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: build # The folder the action should deploy.
+          RELEASE_DEPLOY_STATUS: ${{ needs.deploy.outputs.deploy_status }}
