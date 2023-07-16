@@ -2,7 +2,7 @@
 
 GH_TOKEN=$1
 VERSION=$(git describe --tags --abbrev=0)
-TAG_DATE=$(git log -1 --pretty=format:"%ai" $VERSION)
+TAG_DATE=$(date --iso-8601=seconds)
 RELEASED_BY=$(git log --pretty=format:"%an" | grep -v "semantic-release-bot" | head -n 1)
 RUN_ID=$2
 CHANGES=$(awk -v RS='\n\n' -v version="$VERSION" '$0 ~ version' CHANGELOG.md)
