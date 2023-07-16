@@ -41,8 +41,9 @@ jobs:
 
       - name: Create issue
         run: |
-          echo ${{steps.get_info.outputs}}
-          echo ${{steps.find_issues.outputs}}
+          echo ${{steps.get_info.outputs.author}}
+          echo ${{steps.get_info.outputs.version}}
+          echo ${{steps.find_issues.outputs.issues}}
 
   commitlint:
     name: CommitLint
