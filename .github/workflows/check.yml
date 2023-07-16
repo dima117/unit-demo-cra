@@ -5,6 +5,8 @@ on:
     types: [opened, synchronize, reopened, closed]
 
   push:
+    branches:
+      - main
     tags:
       - v[0-9]+
 
@@ -26,7 +28,7 @@ jobs:
         uses: actions-cool/issues-helper@v3
         with:
           actions: "find-issues"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{secrets.GITHUB_TOKEN}}
           issue-state: "open"
           title-includes: ${{github.ref_name}}
           labels: "RELEASE"
