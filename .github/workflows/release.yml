@@ -22,7 +22,7 @@ jobs:
         id: chlog
         uses: metcalfc/changelog-generator@v4.1.0
         with:
-          myToken: ${{ secrets.RELEASE_TOKEN }}
+          myToken: ${{ secrets.GITHUB_TOKEN  }}
 
       - name: Release Issue
         uses: JasonEtco/create-an-issue@v2
