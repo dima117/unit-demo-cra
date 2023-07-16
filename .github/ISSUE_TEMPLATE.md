@@ -1,6 +1,5 @@
 ---
-title: Release issue
-assignees: ""
+title: Release issue {{ env.TAG }}
 ---
 
 New Release!
