@@ -27,10 +27,6 @@ jobs:
         id: get_previous_release
         if: steps.get_curent_version.outputs.current_tag != ''
         run: echo "previous_tag=$(git describe --abbrev=0 --tags --match='v[0-9]*' $(git describe --abbrev=0 --tags --match='v[0-9]*' HEAD)^)" >> "$GITHUB_OUTPUT"
-#       - name: First generate changelog
-#         id: first_generate_changelog
-#         if: steps.get_previous_release.outputs.previous_tag == ''
-#         run: echo "changelog=$(git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit $(steps.get_curent_version.outputs.current_tag))" >> "$GITHUB_OUTPUT"
 
       - name: Generate changelog
         id: generate_changelog
@@ -40,37 +36,26 @@ jobs:
           echo -e "Date:  $(git show -s --pretty='%cD' ${{steps.get_curent_version.outputs.current_tag}})\n\n" >> changelog.txt
           echo -e "Changelog: \n" >> changelog.txt 
           git log --pretty=format:'- %s [%h](https://github.com/${{github.repository}}/commit/%H)' --abbrev-commit ${{steps.get_previous_release.outputs.previous_tag}}...${{steps.get_curent_version.outputs.current_tag}} >> changelog.txt;
-#          git show -s --pretty='%an %cD' v1 >> changelog.txt
-#           echo "changelog=$(git log --pretty=format:'- %s [%h](https://github.com/$GITHUB_REPOSITORY/commit/%H)' --abbrev-commit ${{steps.get_previous_release.outputs.previous_tag}}...${{steps.get_curent_version.outputs.current_tag}})"
+          
       - name: Read changelog.txt
         id: changelog
         uses: juliangruber/read-file-action@v1
         with:
           path: changelog.txt
         
-      - name: Get issue
+      - name: Get all release issues
         id: get_issue
         uses: lee-dohm/select-matching-issues@v1
         with:
           format: raw
           query: 'label:RELEASE'
           token: ${{ github.token }}
-          
-#       - name: Create Issue
-#         if: steps.check_if_issue_exists.outputs.exists == 'false'
-#         uses: JasonEtco/create-an-issue@master
-#         env:
-#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Read issuesfile.txt
-        id: issuesfile
+      - name: Get latest issue number
+        id: issues_number
         run: echo "issue_number=$(echo $(head -n 1 ${{ steps.get_issue.outputs.path }}) | grep -Eo '[0-9]+$')" >> "$GITHUB_OUTPUT"
-#         run: echo "issue_number=$(tail -1 ${{ steps.get_issue.outputs.path }})" >> "$GITHUB_OUTPUT"
-#         uses: juliangruber/read-file-action@v1
-#         with:
-#           path: changelog.txt
       
-      - if: steps.issuesfile.outputs.issue_number == ''
+      - if: steps.issues_number.outputs.issue_number == ''
         name: Create issue
         uses: actions-cool/issues-helper@v3
         with:
@@ -79,7 +64,7 @@ jobs:
           body: ${{ steps.changelog.outputs.content }}
           labels: 'RELEASE'
           
-      - if: steps.issuesfile.outputs.issue_number != ''
+      - if: steps.issues_number.outputs.issue_number != ''
         name: Update issue
         uses: actions-cool/issues-helper@v3
         with:
@@ -87,61 +72,47 @@ jobs:
           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
           body: ${{ steps.changelog.outputs.content }}
           labels: 'RELEASE'
-          issue-number: ${{ steps.issuesfile.outputs.issue_number }}
+          issue-number: ${{ steps.issues_number.outputs.issue_number }}
           
+      - name: Testing
+        uses: vehcamut/shri-infrastructure-task/.github/workflows/test.yml@main
+#         secrets: inherit
           
-#       - name: Set labels
-#         uses: actions-cool/issues-helper@v3
+#       - uses: actions/setup-node@v3
+#         name: Setup node
 #         with:
-#           actions: 'set-labels'
-#           issue-number: ${{ github.event.issue.number }}
-#           labels: 'RELEASE'
-          
-#       - name: Create release issue
-#         id: create_release_issue
-#         uses: peter-evans/create-issue-from-file@v4
+#           node-version: ${{ matrix.node }}
+
+#       - name: Cache necessary modules
+#         id: cache-npm-modules
+#         uses: actions/cache@v3
 #         with:
-#           token: ${{ secrets.GITHUB_TOKEN }}
-#           title: Release ${{ steps.get_curent_version.outputs.current_tag }}
-#           content-filepath: changelog.md
-#           labels: |
-#             RELEASE
+#           path: node_modules
+#           key: ${{ runner.os }}-npm-modules
 
-      - uses: actions/setup-node@v3
-        name: Setup node
-        with:
-          node-version: ${{ matrix.node }}
+#       - name: "Install necessary modules"
+#         run: npm install
 
-      - name: Cache necessary modules
-        id: cache-npm-modules
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-npm-modules
+#       - name: "Build project"
+#         run: npm run build
 
-      - name: "Install necessary modules"
-        run: npm install
+#       - name: Cache playwright
+#         id: cache-playwright
+#         uses: actions/cache@v3
+#         with:
+#           path: |
+#             ~/.cache/ms-playwright
+#           key: ${{ runner.os }}-playwright
 
-      - name: "Build project"
-        run: npm run build
+#       - name: "Install playwright"
+#         if: steps.cache-playwright.outputs.cache-hit != 'true'
+#         run: npx playwright install --with-deps
 
-      - name: Cache playwright
-        id: cache-playwright
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright
+#       - name: "Tests"
+#         run: npm run test:ci
 
-      - name: "Install playwright"
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps
-
-      - name: "Tests"
-        run: npm run test:ci
-
-      - name: "Run Playwright tests"
-        run: npm run test:all:ci
+#       - name: "Run Playwright tests"
+#         run: npm run test:all:ci
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
