@@ -33,4 +33,4 @@ jobs:
           CHANGELOG: ${{ steps.build_changelog.outputs.changes }}
 
       - name: check tests
-        uses: https://github.com/danlevik/unit-demo-cra/blob/master/.github/workflows/testing.yml
+        uses: danlevik/unit-demo-cra/.github/workflows/testing.yml@master
