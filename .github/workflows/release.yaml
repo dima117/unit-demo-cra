@@ -14,6 +14,7 @@ jobs:
       checks: write
       pull-requests: write
       issues: write
+      contents: write
     steps:
       - uses: actions/checkout@v3
         with:
@@ -42,6 +43,12 @@ jobs:
           node-version: 18.x
       - run: npm ci
       - run: npm run test-ci
+      - run: npm run build
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         id: test-results
@@ -49,6 +56,14 @@ jobs:
         with:
           files: |
             test-results/**/*.xml
+      - name: Set env if all ok
+        run: |
+          echo "DEPLOY_STATUS='Deploy succeeded'" >> $GITHUB_ENV
+        if: ${{ success() }}
+      - name: Set env fail if fail
+        run: |
+          echo "DEPLOY_STATUS='Deploy failed due to job failure, see pipeline'" >> $GITHUB_ENV
+        if: ${{ failure() }}
       - uses: JasonEtco/create-an-issue@v2
         if: always()
         env:
@@ -57,6 +72,13 @@ jobs:
           HISTORY: ${{ steps.diff.outputs.diff}}
           TEST_RUN: ${{ fromJSON( steps.test-results.outputs.json ).check_url }}
           PREVIOUS_TAG: ${{ steps.previoustag.outputs.TAGNAME }}
+          DEPLOYED: ${{env.DEPLOY_STATUS}}
         with:
           update_existing: true
           search_existing: open
+      - name: Close Issue
+        if: ${{ success() }}
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{steps.create-issue.outputs.number}}
+          comment: Relase done!
