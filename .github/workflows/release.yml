@@ -17,11 +17,13 @@ jobs:
       - name: Release info
         id: release_info
         run: |
+          echo "### Release Information"
           echo "### Release Information" > release_issue.md
           
-          echo "${{ github.ref.refs.tags }}"
+          echo "${{ github.ref.refs.tags[0] }}"
 
           RELEASE_VERSION=$(echo "${{ github.ref.refs.tags }}" | sed 's/v//')
+          echo "- Version: $RELEASE_VERSION"
           echo "- Version: $RELEASE_VERSION" >> release_issue.md
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
           
@@ -36,6 +38,7 @@ jobs:
           RELEASE_BEFORE=$((RELEASE_VERSION-1))
           LAST_TAG="v$RELEASE_BEFORE"
           echo "- Last release tag: $RELEASE_BEFORE"
+          echo "#### Changelog"
           echo "#### Changelog" >> release_issue.md
           TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" $LAST_TAG..HEAD)
           echo "$TEXT_CHANGELOG" >> release_issue.md
