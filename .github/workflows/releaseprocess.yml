@@ -7,25 +7,36 @@ on:
       - "v[0-9]+"
 
 jobs:
-  run_pr_checks:
-    uses: ./.github/workflows/pullrequest.yml
-
-  create_changelog:
+  create_issue:
     name: Create changelog
     runs-on: ubuntu-latest
 
     steps:
-      - name: Echo
-        uses: "Start creating changelog"
-
-      - name: Get the repo code
-        uses: actions/checkout@v3
-
-      - name: Update changelog
-        id: changelog
-        uses: requarks/changelog-action@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
-          token: ${{ github.token }}
-          tag: ${{ github.ref_name }}
+          node-version: "14"
 
-      - run: echo "${{ toJson(steps.build_changelog.outputs) }}"
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check release version from tag
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Create Release Issue
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const issueTitle = `Release ${process.env.RELEASE_VERSION}`
+            let body = `Author: ${context.payload.sender.login}\n`
+            body += `Date: ${new Date().toLocaleString()}\n`
+            body += `Version: ${process.env.RELEASE_VERSION}\n\n`
+
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: issueTitle,
+              body: body,
+              labels: ['RELEASE']
+            })
