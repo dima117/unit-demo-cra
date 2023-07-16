@@ -1,5 +1,3 @@
-## Release Information
-
 ---
 title: {{ env.RELEASE_NAME }}
 assignees: {{ env.RELEASE_AUTHOR }}
