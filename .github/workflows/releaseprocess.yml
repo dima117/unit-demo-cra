@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Echo
+        uses: "Start creating changelog"
+
       - name: Get the repo code
         uses: actions/checkout@v3
 
