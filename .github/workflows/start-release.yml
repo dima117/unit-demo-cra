@@ -37,8 +37,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Echo changelog
-        run: echo ${{ steps.changelog.outputs.changes }}
+        run: echo "${{ steps.changelog.outputs.changelog }}"
       - name: Prepend changelog
         run: |
-          cat <<< "${{ steps.changelog.outputs.changes }}
+          cat <<< "${{ steps.changelog.outputs.changelog }}
           $(cat CHANGELOG.md)"
