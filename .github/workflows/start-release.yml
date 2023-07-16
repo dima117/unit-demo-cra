@@ -50,5 +50,11 @@ jobs:
         with:
           token: ${{ github.token }}
           title: RELEASE ${{ steps.vars.outputs.tag }}
-          body: my new issue
           labels: RELEASE
+          body: |
+            ### Context
+            Workflow name - `${{ github.workflow }}`
+            Job -           `${{ github.job }}`
+            status -        `${{ job.status }}`
+            author -        `${{ github.actor }}`
+            date -          `${{ steps.vars.outputs.tag }}`
