@@ -18,3 +18,9 @@ jobs:
         run: npm run lint
       - name: Run unit tests
         run: npm run test-ci
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: jest-report
+          path: /test-report.html
+          retention-days: 30
