@@ -16,6 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - run: echo CHANGELOG=$(git log --oneline `git tag -l | sort -r | head -n 1`..HEAD) >> $GITHUB_ENV
+    - run: npm install actions-toolkit
     - uses: ncipollo/release-action@v1
       with:
         tag: ${{github.ref_name}}
@@ -25,3 +26,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         filename: .github/ISSUE_TEMPLATE.md
+        update_existing: true
+        search_existing: all
