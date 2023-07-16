@@ -17,6 +17,7 @@ jobs:
       - name: Create release branch
         run: |
           BRANCH_NAME=release-${{ github.ref_name }}
+          git fetch
           if [ `git branch --list $BRANCH_NAME` ]; then
             git checkout "$BRANCH_NAME"
             git pull
