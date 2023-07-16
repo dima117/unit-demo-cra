@@ -43,7 +43,7 @@ jobs:
 
       - name: Create Release
         run: |
-          gh release create ${{ env.RELEASE_NAME }} -n ${{ steps.download.outputs.changelog }}
+          gh release create ${{ env.RELEASE_NAME }} -F ${{ steps.download.outputs.changelog }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -72,9 +72,6 @@ jobs:
       - name: Create or Update Release Issue
         uses: JasonEtco/create-an-issue@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          assignees: ${{ github.actor }}
-          labels: RELEASE
           update_existing: true
           search_existing: all
         env:
