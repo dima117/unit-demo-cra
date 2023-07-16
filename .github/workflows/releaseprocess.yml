@@ -104,7 +104,7 @@ jobs:
             body += `Date: ${new Date().toLocaleString()}\n`
             body += `Version: ${process.env.RELEASE_VER}\n\n`
 
-            body += `Changelog:\n${process.env.DIFF_RESULT}`
+            body += `Changelog:\n${process.env.DIFF_RESULT}\n\n`
 
             body += `Unit tests result: ${process.env.UNIT_TEST_RESULT}\n`
             body += `E2E tests result: ${process.env.E2E_TEST_RESULT}\n`
