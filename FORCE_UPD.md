@@ -5,3 +5,7 @@
 - feat: feat A;
 - feat: feat B;
 - chore: something-something-chore
+
+---
+
+- feat: feat C;
