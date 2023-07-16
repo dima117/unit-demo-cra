@@ -1,0 +1,26 @@
+name: testing
+
+on:
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: install dependencies
+        run: npm ci
+
+      - name: run jest tests
+        run: npm run test-ci:unit
+
+      - name: run e2e tests
+        run: npm run test-ci:e2e
