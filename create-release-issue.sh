@@ -32,7 +32,7 @@ get_existing_issue_number() {
 }
 
 issue_number=$(get_existing_issue_number)
-
+echo "Issue Number: $issue_number"
 if [ "$issue_number" != "null" ]; then
   echo "Issue already exists, adding a comment to existing issue #$issue_number"
   curl -X POST \
@@ -51,7 +51,6 @@ else
     echo $response
     issue_number=$(echo "$response" | jq '.number')
 fi
-echo $issue_number
 echo "$issue_number" > issue_number.txt
 
 
