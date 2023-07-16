@@ -37,7 +37,7 @@ jobs:
         run: echo "RELEASE_VER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       - name: Create Release Issue
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.TOKEN }}
           script: |
