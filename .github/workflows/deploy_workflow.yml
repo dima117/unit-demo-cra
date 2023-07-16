@@ -39,9 +39,7 @@ jobs:
               labels: 'release'
             })
 
-            console.log(issues)
-
-            const lastIssue = issues.data.pop()
+            const lastIssue = issues.data[0]
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -68,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: production-files
-          path: ./dist
+          path: ./build
       - name: Log build to issue
         uses: actions/github-script@v6
         with:
@@ -79,7 +77,7 @@ jobs:
               labels: 'release'
             })
 
-            const lastIssue = issues.data.pop()
+            const lastIssue = issues.data[0]
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -126,7 +124,7 @@ jobs:
               labels: 'release'
             })
 
-            const lastIssue = issues.data.pop()
+            const lastIssue = issues.data[0]
 
             github.rest.issues.createComment({
               owner: context.repo.owner,
