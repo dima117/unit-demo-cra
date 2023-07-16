@@ -76,7 +76,7 @@ jobs:
           
   testing:
     permissions: write-all
-    uses: vehcamut/shri-infrastructure-task/.github/workflows/test.yml@main
+    uses: ./.github/workflows/test.yml
     
   deploy:
     needs: testing
