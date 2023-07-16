@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} is running build
 
 on:
   push:
-    branches: [ master, release-v\d+ ]
+    branches: [ master, release-v\d+, workflow_call ]
 
 permissions: 
   contents: write
