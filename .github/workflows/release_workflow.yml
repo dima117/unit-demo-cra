@@ -64,7 +64,7 @@ jobs:
       - name: Log tests and build to issue
         uses: actions/github-script@v6
         env:
-          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.issue-number }}
         with:
           script: |
             github.rest.issues.createComment({
@@ -81,7 +81,7 @@ jobs:
       - name: Log Deployment 
         uses: actions/github-script@v6
         env:
-          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.issue-number }}
         with:
           script: |
             github.rest.issues.createComment({
