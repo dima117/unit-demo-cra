@@ -1,6 +1,5 @@
 ---
 title: RELEASE ISSUE {{env.TAG}}
-labels: RELEASE
 ---
 
 New Release!
