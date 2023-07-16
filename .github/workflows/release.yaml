@@ -58,7 +58,7 @@ jobs:
           CHANGELOG=$(git log --pretty=format:"- %s" "${{ steps.tag_id.outputs.previous }}...${{ steps.tag_id.outputs.current }}")
           echo "Display changelog:"
           echo $CHANGELOG
-          echo "log='${CHANGELOG}'" >> "$GITHUB_OUTPUT"
+          echo "log=${CHANGELOG}" >> "$GITHUB_OUTPUT"
 
       - name: creating-issue
         uses: imjohnbo/issue-bot@v3
@@ -71,7 +71,7 @@ jobs:
           pinned: false
           close-previous: false
           body: |
-            ## App Release, v${{ github.ref_name }}
+            ## App Release, ${{ github.ref_name }}
 
             Release author: ${{ github.actor }}
             Timestamp: ${{ steps.tag_id.outputs.timestamp }}
