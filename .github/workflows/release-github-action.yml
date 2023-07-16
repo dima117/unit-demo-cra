@@ -17,20 +17,10 @@ jobs:
       - name: Create release branch
         run: |
           BRANCH_NAME="release-${{ github.ref_name }}"
-          git fetch
-          if [ `git branch --list ${BRANCH_NAME}` ]; then
-            echo "I have to delete existing branch"
-            git fetch
-            git branch -d "$BRANCH_NAME"
-            git branch "$BRANCH_NAME"
-            echo "I will push now"
-            git push -f -u origin "$BRANCH_NAME"
-          else
-            echo "I will create new branch now"
-            git checkout -b "$BRANCH_NAME"
-            git push -u origin "$BRANCH_NAME"
-          fi
-
+          git branch -d "$BRANCH_NAME" || true;
+          git branch "$BRANCH_NAME"
+          git push -f -u origin "$BRANCH_NAME"
+          
   create_issue:
     name: 📃 Create Release issue
     runs-on: ubuntu-latest
