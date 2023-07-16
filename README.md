@@ -1,4 +1,4 @@
-1. Добавил `config` файлы для commitlint и добавил workflows для github (commitlint.yml)[infrastructure/unit-demo-cra/.github/workflows/commitlint.yml]
+1. Добавил `config` файлы для commitlint и добавил workflows для github (https://github.com/AparinAA/unit-demo-cra/blob/dev1/.github/workflows/commitlint.yml)[commitlint.yml] . Делать коммит через с именем `'refactor: commitText'` .
 
 В этом репозитории находится пример приложения с тестами:
 
