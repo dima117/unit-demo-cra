@@ -23,4 +23,4 @@ jobs:
         with:
           ref: release/${{ steps.vars.outputs.tag }}
       - name: package-json-version
-        run: npm version {{ steps.vars.outputs.tag }}
+        run: npm version ${{ steps.vars.outputs.tag }}
