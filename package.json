@@ -59,6 +59,8 @@
     "devDependencies": {
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
-        "jest-html-reporter": "^3.7.0"
+        "jest-html-reporter": "^3.7.0",
+        "@commitlint/cli": "^17.6.6",
+        "@commitlint/config-conventional": "^17.6.6"
     }
 }
