@@ -1,8 +1,6 @@
 name: Create Release Branch and Run Tests
 
-on:
-  push:
-    tags: v* # Run this workflow for any v* tags, i.e. v1.0, v20.15.10
+on: [workflow_dispatch, push]
 
 jobs:
   create-release-branch:
