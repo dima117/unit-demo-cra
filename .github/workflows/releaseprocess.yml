@@ -31,7 +31,27 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: "Tests: unit"
+        id: unit_test
+        run: npm run test-unit-ci > unit_test_output.txt 2>&1
+        continue-on-error: true
+
+      - name: "Tests: e2e"
+        id: e2e_test
+        run: npm run test-e2e-ci > e2e_test_output.txt 2>&1
+        continue-on-error: true
+
+      - name: Get unit test results
+        id: unit_test_results
+        run: echo "::set-output name=result::$(cat unit_test_output.txt)"
+
+      - name: Get e2e test results
+        id: e2e_test_results
+        run: echo "::set-output name=result::$(cat e2e_test_output.txt)"
 
       - name: Check release version from tag
         run: echo "RELEASE_VER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
@@ -45,6 +65,8 @@ jobs:
             let body = `Author: ${context.payload.sender.login}\n`
             body += `Date: ${new Date().toLocaleString()}\n`
             body += `Version: ${process.env.RELEASE_VER}\n\n`
+            body += `Unit Test Results: \n${{ steps.unit_test_results.outputs.result }}\n\n`
+            body += `E2E Test Results: \n${{ steps.e2e_test_results.outputs.result }}\n\n`      
 
             github.rest.issues.create({
               owner: context.repo.owner,
@@ -54,9 +76,7 @@ jobs:
               labels: ['RELEASE']
             })
 
-  test_job:
-    uses: ./.github/workflows/pullrequest.yml
-
   deploy:
-    needs: test_job
+    needs: create_issue
+    if: needs.create_issue.outputs.unit_test_success && needs.create_issue.outputs.e2e_test_success
     uses: ./.github/workflows/static.yml
