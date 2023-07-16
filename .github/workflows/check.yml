@@ -88,18 +88,25 @@ jobs:
 
       - name: Unit test
         run: npm run test-ci:unit
+        env:
+          JEST_JUNIT_OUTPUT_NAME: jest.xml
 
       - name: Test report
         uses: dorny/test-reporter@v1
         if: always()
         with:
-          name: Jest test
-          path: junit.xml
+          name: Report jest test
+          path: jest.xml
           reporter: jest-junit
 
   test-e2e:
     name: e2e test
     runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+      checks: write
 
     steps:
       - name: Checkout
@@ -121,11 +128,13 @@ jobs:
 
       - name: e2e test
         run: npm run test-ci:e2e
+        env:
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: playwright.xml
 
       - name: Test report
         uses: dorny/test-reporter@v1
         if: always()
         with:
-          name: Playwright test
-          path: e2e.xml
+          name: Report playwright test
+          path: playwright.xml
           reporter: jest-junit
