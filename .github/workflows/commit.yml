@@ -1,9 +1,10 @@
-name: CI
+name: 👩‍🔧 CI
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   commitlint:
+    name: 👔 Проверка коммитов
     runs-on: ubuntu-latest
 
     strategy:
@@ -38,6 +39,7 @@ jobs:
           npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
   testing-e2e:
+    name: 🐛 Тесты e2e
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
 
@@ -64,6 +66,7 @@ jobs:
           name: playwright-report
           path: playwright-report
   testing-unit:
+    name: 🃏 Тесты unit
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
 
@@ -80,7 +83,7 @@ jobs:
       - name: ⬇️ Установка зависимостей
         run: |
           npm ci
-      - name: 🧪🃏 Запуск unit тестов
+      - name: 🧪 Запуск unit тестов
         run: |
           npm run test-ci
       - name: 🧙‍♂️ Сохранение артефактов
