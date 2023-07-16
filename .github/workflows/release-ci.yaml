@@ -16,7 +16,7 @@ jobs:
         id: last_tag
         shell: bash
         run: |
-          LAST_TAG=$(git describe --abbrev=0 --tags ${{ github.ref_name }}^)
+          LAST_TAG=$(git describe --abbrev=0 --tags ${{ github.ref_name }}~1)
           echo "${LAST_TAG}" >> $GITHUB_ENV
 
       - name: Install auto-changelog
