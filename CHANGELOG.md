@@ -1,3 +1,10 @@
+# [1.16.0](https://github.com/Rubicones/hw-infra/compare/v1.15.2...v1.16.0) (2023-07-16)
+
+
+### Features
+
+* gh-pages release job added ([6e521a7](https://github.com/Rubicones/hw-infra/commit/6e521a70474dacbaaf3ff68bc65788dbaaab0943))
+
 ## [1.15.2](https://github.com/Rubicones/hw-infra/compare/v1.15.1...v1.15.2) (2023-07-16)
 
 
