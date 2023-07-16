@@ -9,9 +9,6 @@ jobs:
   make_changelog:
     runs-on: ubuntu-latest
 
-    outputs:
-      changelog: ${{ steps.changelog_step.outputs.changelog }}
-
     steps:
       - uses: actions/checkout@v3
 
@@ -24,6 +21,11 @@ jobs:
 
       - name: Generate Changelog
         run: auto-changelog --output CHANGELOG.md --starting-version ${{ env.LAST_TAG }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: changelog
+          path: CHANGELOG.md
 
       - name: Save Changelog to Output
         id: changelog_step
@@ -39,9 +41,13 @@ jobs:
       - name: Set Release Name
         run: echo "RELEASE_NAME=$(echo ${{ github.ref }} | sed 's#refs/tags/##')" >> $GITHUB_ENV
 
+      - uses: actions/download-artifact@v3
+        with:
+          name: changelog
+
       - name: Create Release
         run: |
-          gh release create ${{ env.RELEASE_NAME }} -n ${{ needs.make_changelog.outputs.changelog }}
+          gh release create ${{ env.RELEASE_NAME }} -n ${{ steps.download.outputs.changelog }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -63,6 +69,10 @@ jobs:
         id: release_date
         run: echo "RELEASE_DATE=$(git show -s --format=%ci ${{ env.RELEASE_NAME }})" >> $GITHUB_ENV
 
+      - uses: actions/download-artifact@v3
+        with:
+          name: changelog
+
       - name: Create or Update Release Issue
         uses: JasonEtco/create-an-issue@v2
         with:
@@ -76,7 +86,7 @@ jobs:
           RELEASE_AUTHOR: ${{ github.actor }}
           RELEASE_NAME: ${{ env.RELEASE_NAME }}
           RELEASE_DATE: ${{ env.RELEASE_DATE }}
-          RELEASE_CHANGELOG: ${{ needs.make_changelog.outputs.changelog }}
-          
+          RELEASE_CHANGELOG: ${{ steps.download.outputs.changelog }}
+
   base-checks:
     uses: ./.github/workflows/base-ci.yaml
