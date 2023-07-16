@@ -15,6 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install GitHub CLI
+        run: |
+          if [ "$(uname)" = "Darwin" ]; then
+            brew install gh
+          else
+            # For Linux
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+            sudo apt-add-repository https://cli.github.com/packages
+            sudo apt update
+            sudo apt install gh
+          fi
+
       - name: Set Release Name
         run: echo "RELEASE_NAME=$(echo ${{ github.ref }} | sed 's#refs/tags/##')" >> $GITHUB_ENV
       
@@ -32,74 +44,44 @@ jobs:
       - name: Generate Changelog
         run: auto-changelog --output CHANGELOG.md --starting-version ${{ env.LAST_TAG }}
 
-      - name: Read Changelog
-        id: read_changelog
-        run: echo "::set-output name=changelog::$(cat CHANGELOG.md)"
-      
       - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ env.RELEASE_NAME }}
-          name: ${{ env.RELEASE_NAME }}
-          body: |
-            This is the release ${{ env.RELEASE_NAME }}.
-            Changelog:
-            $(cat CHANGELOG.md)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Find Existing Issue
-        id: find_existing_issue_init
         run: |
-          response=$(curl -s -X GET -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=open&labels=RELEASE&creator=${GITHUB_ACTOR}")
-          issue_number=$(echo "$response" | jq '.[] | select(.title == "RELEASE: $RELEASE_NAME") | .number')
-          echo "::set-output name=issue_number::$issue_number"
+          gh release create ${{ env.RELEASE_NAME }} ./CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          RELEASE_NAME: ${{ env.RELEASE_NAME }}
-      
-      - name: Create Release Issue
-        id: create_or_update_issue
-        if: steps.find_existing_issue.outputs.issue_number == ''
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          token: ${{ secrets.MAKE_PR_PAT }}
-          title: "RELEASE: ${{ env.RELEASE_NAME }}"
-          content-filepath: issue_template.md
-          labels: RELEASE
-        env:
-          RELEASE_NAME: ${{ env.RELEASE_NAME }}
 
       - name: Find Existing Issue
         id: find_existing_issue
         run: |
-          response=$(curl -s -X GET -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=open&labels=RELEASE&creator=${GITHUB_ACTOR}")
-          issue_number=$(echo "$response" | jq '.[] | select(.title == "RELEASE: $RELEASE_NAME") | .number')
+          issue_number=$(gh issue list --state open --label "RELEASE" --author "${GITHUB_ACTOR}" --title "RELEASE: $RELEASE_NAME" --json number | jq -r '.[0].number')
           echo "::set-output name=issue_number::$issue_number"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_ACTOR: ${{ github.actor }}
           RELEASE_NAME: ${{ env.RELEASE_NAME }}
       
-      - name: Update Release Issue
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          token: ${{ secrets.MAKE_PR_PAT }}
-          issue-number: ${{ steps.find_existing_issue.outputs.issue_number }}
-          body: |
-            ## Release Information
+      - name: Create or Update Release Issue
+        id: create_or_update_issue
+        run: |
+          if [ -z "$RELEASE_DATE" ]; then
+            RELEASE_DATE=$(date -u +'%Y-%m-%d')
+          fi
+          body=$(cat <<EOM
+          ## Release Information
 
-            **Tag:** ${{ env.RELEASE_NAME }}
-            **Version:** ${{ env.RELEASE_NAME }}
-            **Release Date:** ${{ env.RELEASE_DATE }}
-            **Author:** ${{ github.actor }}
-            **Changelog:**
+          **Tag:** $RELEASE_NAME
+          **Version:** $RELEASE_NAME
+          **Release Date:** $RELEASE_DATE
+          **Author:** ${GITHUB_ACTOR}
+          **Changelog:**
 
-            $(cat CHANGELOG.md)
+          $(cat CHANGELOG.md)
+          EOM
+          )
+          if [ -z "${{ steps.find_existing_issue.outputs.issue_number }}" ]; then
+            gh issue create --title "RELEASE: $RELEASE_NAME" --body "$body" --label "RELEASE"
+          else
+            gh issue comment "${{ steps.find_existing_issue.outputs.issue_number }}" --body "$body"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_NAME: ${{ env.RELEASE_NAME }}
