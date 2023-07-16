@@ -1,5 +1,5 @@
 ---
-title: {{ env.RELEASE_VERSION }}
+title: Release {{ env.RELEASE_VERSION }}
 assignees: ZeraiGR
 labels: RELEASE
 ---
