@@ -1,0 +1,28 @@
+name: Release-Process
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "v[0-9]+"
+
+jobs:
+  run_pr_checks:
+    uses: ./.github/workflows/pullrequest.yml
+
+  create_changelog:
+    name: Create changelog
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the repo code
+        uses: actions/checkout@v3
+
+      - name: Update changelog
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+
+      - run: echo "${{ toJson(steps.build_changelog.outputs) }}"
