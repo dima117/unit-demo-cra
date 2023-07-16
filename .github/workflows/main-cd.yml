@@ -32,13 +32,13 @@ jobs:
             - name: Find previous release tag
               id: get_previous_tag
               run: |
-                echo $(git tag)
                 PREVIOUS_TAG=$(git describe --tags $(git rev-list --tags --skip=1 --max-count=1) --abbrev=0)
                 echo ::set-output name=previous_tag::$(git rev-parse $PREVIOUS_TAG) 
 
             - name: Generate changelog
               id: generate_changelog
               run: |
+                echo ${{ steps.get_previous_tag.outputs.previous_tag }}
                 git log --pretty=format:"- hash: %h, name: %s" ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
                 echo ::set-output name=changelog::$(cat changelog.txt)
                 echo ${{ steps.get_previous_tag.outputs.previous_tag }}
