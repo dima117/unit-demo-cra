@@ -22,16 +22,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: release/${{ steps.vars.outputs.tag }}
-      - name: Generate changelog
-        id: changelog
-        uses: metcalfc/changelog-generator@v4.1.0
-        with:
-          myToken: ${{ secrets.GITHUB_TOKEN }}
-      - name: Get the changelog
-        run: |
-          cat << "EOF"
-          ${{ steps.changelog.outputs.changelog }}
-          EOF
       - name: Get current package version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
       - run: echo ${{ steps.package-version.outputs.current-version}}
@@ -43,3 +33,15 @@ jobs:
       - name: Commit version
         run: |
           git push
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.1.0
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+          head-ref: ${{ steps.vars.outputs.tag }}
+          base-ref: ${{ steps.package-version.outputs.current-version}}
+      - name: Get the changelog
+        run: |
+          cat << "EOF"
+          ${{ steps.changelog.outputs.changelog }}
+          EOF
