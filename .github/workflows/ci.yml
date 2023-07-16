@@ -19,6 +19,9 @@ jobs:
       - name: Run tests
         run: npm run test-ci
 
+      - name: Install XServer for using Playwright
+        run: sudo apt install xvfb
+
       - name: Install Playwright
         run: npx playwright install
 
