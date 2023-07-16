@@ -32,4 +32,3 @@ npm test
 ```
 # test -- 
 # check1
-# check2
