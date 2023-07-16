@@ -68,7 +68,7 @@ jobs:
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue: ${{ steps.issue.outputs.issue_number }},
+              issue: steps.issue.outputs.issue_number,
               body: "Successfuly ran tests and build"
             })
       - name: Deploy to Github Pages
@@ -83,7 +83,7 @@ jobs:
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue: ${{ steps.issue.outputs.issue_number }},
+              issue: steps.issue.outputs.issue_number,
               body: "Successfuly deployed"
             })
 
