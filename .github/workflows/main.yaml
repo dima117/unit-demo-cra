@@ -19,6 +19,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
+      - name: Run ESLint
+        run: eslint . --ext .js,.jsx,.ts,.tsx
       - run: npm ci
       - run: npm run test-ci
       - name: Install Playwright Browsers
