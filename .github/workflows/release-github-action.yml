@@ -76,7 +76,9 @@ jobs:
           ISSUE_ID=$(gh issue list --json number,title,labels -q \
             ".[] | select(.title == \"${ISSUE_TITLE}\" and .labels[].name == \"RELEASE\") | .number")
           if [ ! -z "$ISSUE_ID" ]; then
+            echo "Editing existing issue"
             gh issue edit $ISSUE_ID --body "$ISSUE_BODY"
           else
+            echo "Creating new issue"
             gh issue create --title "Release ${{ github.ref_name }}" --body "$ISSUE_BODY" --label "RELEASE" --assignee "@me"
           fi
