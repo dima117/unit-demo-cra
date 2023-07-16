@@ -1,4 +1,4 @@
-name: Pull Request CI
+name: PR
 
 on:
   pull_request:
@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
     
       - name: Commitlint check
@@ -53,7 +53,7 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci 
 
       - name: Install playwright
@@ -71,30 +71,30 @@ jobs:
         with:
           node-version: 18
       
-      - name: Install dependencies
+      - name: Install dep
         run: npm ci
   
-      - name: Run unit-tests
+      - name: Run test
         run: npm run test-ci
 
   merge-blocking:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Set up Node.js
+      - name: Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
 
-      - name: Eslint check
+      - name: Eslint 
         run: npm run test
 
       - name: Check CI status

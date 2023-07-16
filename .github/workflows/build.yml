@@ -1,5 +1,4 @@
 name: Build
-
 on:
   push:
     branches:
@@ -8,12 +7,12 @@ jobs:
   commit-lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout 
         uses: actions/checkout@v3
         with:
             fetch-depth: 0
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
   
       - name: Commitlint check
@@ -21,7 +20,7 @@ jobs:
   code-lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout 
         uses: actions/checkout@v3
         with:
             fetch-depth: 0
@@ -35,15 +34,15 @@ jobs:
     permissions:
         contents: write 
     steps:
-      - name: Checkout code
+      - name: Checkout 
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
 
       - name: Run build
@@ -51,7 +50,7 @@ jobs:
 
         if: success()
 
-      - name: Deploy to Pages
+      - name: Deploy
         id: deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
