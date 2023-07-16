@@ -30,8 +30,10 @@ get_existing_issue_number() {
        -H "Accept: application/vnd.github.v3+json" \
        "https://api.github.com/search/issues?q=repo:$GITHUB_REPOSITORY+label:RELEASE+in:title+$(echo "Release $VERSION" | sed 's/ /+/g')" | jq '.items[0].number'
 }
+echo "before"
 
 issue_number=$(get_existing_issue_number)
+echo "after"
 
 # if [ "$issue_number" != "null" ]; then
 #   echo "Issue already exists, adding a comment to existing issue #$issue_number"
