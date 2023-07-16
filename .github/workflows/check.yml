@@ -40,10 +40,17 @@ jobs:
           labels: "RELEASE"
 
       - name: Create issue
-        run: |
-          echo ${{steps.get_info.outputs.author}}
-          echo ${{steps.get_info.outputs.version}}
-          echo ${{steps.find_issues.outputs.issues}}
+        if: toJSON(steps.find_issues.outputs.issues) == "[]"
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: "create-issue"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: echo ${{steps.get_info.outputs.author}}
+          body: |
+            echo ${{steps.get_info.outputs.version}}
+            echo ${{steps.get_info.outputs.date}}
+            echo ${{steps.get_info.outputs.author}}
+          labels: "RELEASE"
 
   commitlint:
     name: CommitLint
