@@ -65,6 +65,7 @@ jobs:
               env:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
+                echo ${{ steps.upload_artifact.outputs }}
                 gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ${{ steps.upload_artifact.outputs.artifact_url }}' --label RELEASE
               # if [$(gh issue list --search "repo:${{ github.repository }} Release ${{ github.ref_name }}") -eq ""]; then
               #   gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ' --label RELEASE
