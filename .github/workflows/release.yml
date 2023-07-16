@@ -1,0 +1,124 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+"
+# permissions:
+  # contents: read
+  # issues: write 
+
+jobs:
+  # create_brunch:
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #     issues: write
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout кода
+  #     uses: actions/checkout@v3
+      
+  #   - name: Создание релизной ветки
+  #     uses: peterjgrainger/action-create-branch@v2.0.1
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     with:
+  #       branch: release-brunch-${{github.ref_name}}
+        
+  create_changelog_and_issue:
+    runs-on: ubuntu-latest
+    # needs: create_brunch
+    steps:
+      - name: Checkout кода
+        uses: actions/checkout@v3
+
+      # - name: Conventional changelog action
+      #   id: changelog
+      #   uses: TriPSs/conventional-changelog-action@latest
+      #   with:
+      #     github-token: ${{ secrets.github_token }}
+      #     skip-git-pull: "true"
+
+      - name: Create an issue
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: create-issue
+      
+  tests:
+    runs-on: ubuntu-latest
+    needs: create_changelog_and_issue
+    continue-on-error: true
+    steps:
+    - name: Checkout кода
+      uses: actions/checkout@v2
+
+    - name: Установка зависимостей
+      run: npm ci
+
+    - name: Установка playwright
+      run: npx playwright install --with-deps chromium
+
+    - name: Запуск автотестов
+      run: npm run test-ci
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [tests]
+    steps:
+    - name: Checkout кода
+      uses: actions/checkout@v2
+    - name: Настройка Node
+      uses: actions/setup-node@v2
+
+    - name: Установка зависимостей
+      run: npm ci
+
+    - name: Сборка
+      run: npm run build
+
+    - name: Сохранение сборки
+      uses: actions/upload-artifact@v3
+      with: 
+        name: build
+        path: ./build
+
+  deploy_and_close_issue: 
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    steps:
+    - name: Checkout кода
+      uses: actions/checkout@v2
+
+    - name: Получение артефакта
+      uses: actions/download-artifact@v3
+      with: 
+        name: build
+        path: ./build
+
+    - name: Вывод списка файлов
+      run: ls -a
+
+    - name: Деплой на gh-pages
+      uses: peaceiris/actions-gh-pages@v3.9.3
+      with:
+        github_token: ${{ secrets.github_token }}
+        publish_dir: ./build
+
+
+      # - name: Update release record with gh-pages link
+      #   uses: peter-evans/update-release@v1
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     release_id: ${{ steps.create_release.outputs.id }}
+      #     body: |
+      #       Changelog: ${{ steps.changelog.outputs.CHANGELOG }}
+      #       Application: [gh-pages](https://username.github.io/repo)
+
+    - name: Закрыть релизный issue
+      uses: peter-evans/close-issue@v3.0.0 
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        issue-number: 1
+        comment: Auto-closing issue
