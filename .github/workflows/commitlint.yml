@@ -1,4 +1,5 @@
 name: Lint Commit Messages
+
 on:
   push:
     branches:
@@ -7,6 +8,18 @@ on:
 jobs:
   commitlint:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: wagoid/commitlint-github-action@v5
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint Commit Messages
+        run: npx commitlint --from=HEAD~1 --quiet
