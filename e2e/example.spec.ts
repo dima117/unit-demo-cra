@@ -16,4 +16,5 @@ test("если добавить элемент, он появляется в с�
   const allTexts = await items.allTextContents();
 
   await expect(allTexts).toContain("Сделать домашку");
+  // await expect(allTexts).toContain("Сделать пакость");
 });
