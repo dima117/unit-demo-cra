@@ -32,9 +32,9 @@ jobs:
           TAG_DATE=$(git show --format='%ad' --date=format:'%Y-%m-%d %H:%M:%S' $TAG_NAME)
           echo "- Date: $CURRENT_DATE" >> release_issue.md
           
-          RELEASE_BEFORE = $RELEASE_VERSION - 1
+          RELEASE_BEFORE = $RELEASE_VERSION-1
           echo "#### Changelog" >> release_issue.md
-          LAST_TAG=$(git describe --abbrev=0 --tags --match "v$RELEASE_BEFORE")
+          LAST_TAG="v$RELEASE_BEFORE"
           TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" $LAST_TAG..HEAD)
           echo "$TEXT_CHANGELOG" >> release_issue.md
 
