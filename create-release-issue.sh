@@ -15,6 +15,16 @@ create_comment_payload() {
 EOF
 }
 
+create_issue_payload() {
+  cat <<EOF
+  {
+    "title": "Release $VERSION",
+    "labels": ["RELEASE"],
+    "body": "**Release version:** $VERSION \n**Released by:** $RELEASED_BY \n**Date:** $TAG_DATE \n\n[Check tests results link](https://github.com/$GITHUB_REPOSITORY/actions/runs/$RUN_ID) \n\n**Changelog:** \n$CHANGES"
+  }
+EOF
+}
+
 get_existing_issue_number() {
   curl -H "Authorization: token $GH_TOKEN" \
        -H "Accept: application/vnd.github.v3+json" \
@@ -32,9 +42,10 @@ if [ "$issue_number" != "null" ]; then
        -d "$(create_comment_payload)"
 else
   echo "No existing issue found, creating a new one"
-  curl -X POST \
-       -H "Authorization: token $GH_TOKEN" \
-       -H "Accept: application/vnd.github.v3+json" \
-       "https://api.github.com/repos/$GITHUB_REPOSITORY/issues" \
-       -d "$(create_comment_payload)"
+    curl \
+        -X POST \
+        -H "Authorization: token $GH_TOKEN" \
+        -H "Accept: application/vnd.github.v3+json" \
+        https://api.github.com/repos/$GITHUB_REPOSITORY/issues \
+        -d "$(create_issue_payload)"
 fi
