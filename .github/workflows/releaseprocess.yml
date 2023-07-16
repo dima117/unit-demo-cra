@@ -93,31 +93,6 @@ jobs:
               labels: ['RELEASE']
             })
 
-  debug:
-    name: Debug
-    needs: create_issue
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node: [18.x]
-
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Echo needs.create_issue.outputs.unit_test_result
-        run: echo ${{ needs.create_issue.outputs.unit_test_result }}
-      - name: Echo needs.create_issue.outputs.e2e_test_result
-        run: echo ${{ needs.create_issue.outputs.e2e_test_result }}
-      - name: Echo equality 1
-        run: echo ${{ needs.create_issue.outputs.unit_test_result == needs.create_issue.outputs.true_result }}
-      - name: Echo equality 2
-        run: echo ${{ needs.create_issue.outputs.e2e_test_result == needs.create_issue.outputs.true_result }}
-      - name: Echo equality 3
-        run: echo ${{ needs.create_issue.outputs.true_result }}
-      - name: Echo equality 5
-        run: echo ${{ true && true }}
-      - name: Echo summary
-        run: echo ${{ needs.create_issue.outputs.unit_test_result == 'PASSED' && needs.create_issue.outputs.e2e_test_result == 'PASSED' }}
-
   deploy:
     name: Deploy
     needs: create_issue
@@ -141,21 +116,19 @@ jobs:
         with:
           github-token: ${{ secrets.TOKEN }}
           script: |
-            const title = `Release ${process.env.RELEASE_VERSION}`
-
-            const { data } = await github.rest.issues.listForRepo({
+            console.log("Close-issue started");
+            const deployURL = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/`;
+            console.log(deployURL);
+            const issueTitle = `Release ${process.env.RELEASE_VERSION}`;
+            const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
-            })
-            const current_issue = data.find(issue => issue.title === title);
-
-            const deployURL = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/`
+            });
+            const releaseIssue = issues.find(issue => issue.title === issueTitle);
             const updateBody = `${current_issue.body}Deploy results: ${deployURL}`;
-
             github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: current_issue.number,
+              issue_number: releaseIssue.number,
               body: updateBody,
-              state: 'closed',
             });
