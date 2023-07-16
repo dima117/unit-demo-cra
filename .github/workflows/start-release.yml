@@ -18,4 +18,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          branch: ${{ steps.vars.outputs.tag }}
+          branch: release/${{ steps.vars.outputs.tag }}
