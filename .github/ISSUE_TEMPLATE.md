@@ -1,8 +1,9 @@
 ---
-title: RELEASE {{ tools.context.ref.tag }}
+title: RELEASE {{ ref.tag }}
 labels: RELEASE
 ---
-Author: {{ tools.context.ref.author }}
+Author: {{ ref.author }}
 Release date: {{ date | date('dddd, MMMM Do') }}
-Version number: {{ tools.context.ref.tag }}
+Version number: {{ ref.tag }}
 Changelog: {{ env.CHANGELOG }}
+Changelog: {{ payload }}

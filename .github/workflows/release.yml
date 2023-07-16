@@ -19,7 +19,7 @@ jobs:
     - run: npm install actions-toolkit
     - uses: ncipollo/release-action@v1
       with:
-        tag: ${{github.ref_name}}
+        tag: ${{ github.ref_name }}
         body: ${{ env.CHANGELOG }}
     - uses: JasonEtco/create-an-issue@v2
       env:
