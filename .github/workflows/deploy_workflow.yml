@@ -1,5 +1,4 @@
 name: Deploy
-
 on:
   push:
     branches:
@@ -18,11 +17,15 @@ jobs:
       - name: Install Deps
         run: npm ci
       - name: Run Unit Tests
-        run: npm test
+        run: |
+          unit=$(npm test)
+          echo "UNIT=$unit" >> $GITHUB_ENV
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
       - name: Run e2e
-        run: npm run ci:e2e
+        run: |
+          e2e=$(npm run ci:e2e)
+          echo "E2E=$e2e" >> $GITHUB_ENV
       - uses: actions/upload-artifact@v3
         if: always()
         with:
@@ -31,6 +34,8 @@ jobs:
           retention-days: 30
       - name: Log tests to issue
         uses: actions/github-script@v6
+        env:
+          BRANCH: ${{ github.ref_name }}
         with:
           script: |
             const issues = await github.rest.issues.listForRepo({
@@ -39,13 +44,14 @@ jobs:
               labels: 'release'
             })
 
-            const lastIssue = issues.data[0]
+            const tagName = process.env.BRANCH.split('-')[1]
 
-            github.rest.issues.createComment({
+            const lastIssue = issues.data.find(issue => issue.title.includes(tagName))
+
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: lastIssue.number,
-              body: "Successfuly ran tests"
+              repo: context.repo.repo, issue_number: lastIssue.number,
+              body: `## Tests Report\n\n### Unit Tests Report\n${process.env.UNIT}\n\n### E2E Tests Report\n${process.env.E2E}` 
             })
 
   build:
@@ -61,7 +67,9 @@ jobs:
       - name: Install Deps
         run: npm ci
       - name: Build
-        run: npm run build
+        run: |
+          build=$(npm run build)
+          echo "BUILD=$build" >> $GITHUB_ENV
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v3
         with:
@@ -69,6 +77,8 @@ jobs:
           path: ./build
       - name: Log build to issue
         uses: actions/github-script@v6
+        env:
+          BRANCH: ${{ github.ref_name }}
         with:
           script: |
             const issues = await github.rest.issues.listForRepo({
@@ -77,13 +87,15 @@ jobs:
               labels: 'release'
             })
 
-            const lastIssue = issues.data[0]
+            const tagName = process.env.BRANCH.split('-')[1]
 
-            github.rest.issues.createComment({
+            const lastIssue = issues.data.find(issue => issue.title.includes(tagName))
+
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: lastIssue.number,
-              body: "Successfuly ran build"
+              body: `## Build Report\n${process.env.BUILD}` 
             })
 
   deploy:
@@ -117,6 +129,8 @@ jobs:
         uses: actions/deploy-pages@v1
       - name: Log deployment to issue
         uses: actions/github-script@v6
+        env:
+          BRANCH: ${{ github.ref_name }}
         with:
           script: |
             const issues = await github.rest.issues.listForRepo({
@@ -125,7 +139,9 @@ jobs:
               labels: 'release'
             })
 
-            const lastIssue = issues.data[0]
+            const tagName = process.env.BRANCH.split('-')[1]
+
+            const lastIssue = issues.data.find(issue => issue.title.includes(tagName))
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
