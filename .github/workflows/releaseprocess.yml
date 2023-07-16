@@ -59,6 +59,9 @@ jobs:
           path: ./playwright-report
           if-no-files-found: error
 
+      - name: Save release version
+        run: echo "RELEASE_VER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
       - name: Create Release Issue
         uses: actions/github-script@v6
         with:
