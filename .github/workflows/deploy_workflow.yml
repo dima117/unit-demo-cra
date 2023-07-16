@@ -47,7 +47,7 @@ jobs:
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo, issue_number: lastIssue.number,
-              body: `## Tests Report\n\n### Unit Tests Report\n${process.env.UNIT}\n\n### E2E Tests Report\n${process.env.E2E}` 
+              body: `## Tests Report\n\n### Unit Tests Report\n<div>${process.env.UNIT}</div>\n\n### E2E Tests Report\n<div>${process.env.E2E}</div>` 
             })
 
   build:
@@ -63,9 +63,7 @@ jobs:
       - name: Install Deps
         run: npm ci
       - name: Build
-        run: |
-          build=$(npm run build)
-          echo "BUILD=$build" >> $GITHUB_ENV
+        run: bash ./.github/scripts/gen_build.sh
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v3
         with:
@@ -91,7 +89,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: lastIssue.number,
-              body: `## Build Report\n${process.env.BUILD}` 
+              body: `## Build Report\n<div>${process.env.BUILD}</div>` 
             })
 
   deploy:

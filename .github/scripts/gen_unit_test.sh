@@ -1,4 +1,5 @@
 #!/bin/bash
 
-unit=$(npm test)
-echo "UNIT="$unit"" >> $GITHUB_ENV
+unit="$(npm test; echo x)"
+unit="${unit%?}"
+echo "UNIT=$unit" >> $GITHUB_ENV
