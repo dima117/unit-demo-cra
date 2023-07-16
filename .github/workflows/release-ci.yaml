@@ -24,14 +24,14 @@ jobs:
         id: last_tag
         shell: bash
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 ${{ github.ref_name }}~1)
-          echo "${LAST_TAG}" >> $GITHUB_ENV
+          LAST_TAG=$(git describe --tags --abbrev=0 ${{ github.ref_name }}^)
+          echo "last_tag=${LAST_TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Install auto-changelog
         run: npm install -g auto-changelog
 
       - name: Generate Changelog
-        run: auto-changelog --output CHANGELOG.md --starting-version ${{ env.LAST_TAG }}
+        run: auto-changelog --output CHANGELOG.md --starting-version ${{ steps.last_tag.outputs.last_tag }}
 
       - uses: actions/upload-artifact@v3
         with:
