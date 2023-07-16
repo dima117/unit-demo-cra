@@ -1,9 +1,8 @@
 ---
-title: RELEASE {{ ref.tag }}
+title: RELEASE {{ ref }}
 labels: RELEASE
 ---
-Author: {{ ref.author }}
+Author: {{ actor }}
 Release date: {{ date | date('dddd, MMMM Do') }}
-Version number: {{ ref.tag }}
+Version number: {{ ref }}
 Changelog: {{ env.CHANGELOG }}
-Changelog: {{ payload }}
