@@ -32,5 +32,6 @@ jobs:
           TAG: ${{ github.ref_name }}
           CHANGELOG: ${{ steps.build_changelog.outputs.changes }}
 
-      - name: check tests
-        uses: danlevik/unit-demo-cra/.github/workflows/testing.yml@master
+  check-tests:
+    name: check tests
+    uses: danlevik/unit-demo-cra/.github/workflows/testing.yml@master
