@@ -8,10 +8,6 @@ jobs:
 
   lint-and-test:
     runs-on: ubuntu-latest
-    outputs:
-      output1: ${{ steps.lint-result.outputs.run-lint }}
-      output2: ${{ steps.unit-test-result.outputs.run-unit-test }}
-      output3: ${{ steps.e2e-test-result.outputs.run-e2e-test }}
 
     steps:
       - name: Checkout Repo
@@ -29,14 +25,24 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run Lint
+        uses: mathiasvr/command-output@v2.0.0
         id: lint-result
-        run: |
-          echo "run-lint=$(npm run lint)\n" >> "$GITHUB_OUTPUT"
+        with:
+          run: npm run lint
+      - run: echo Command succeeded >> "$GITHUB_OUTPUT"
+        if: ${{ steps.lint-result.outputs.stdout }}
+      - run: echo Command failed >> "$GITHUB_OUTPUT"
+        if: ${{ steps.lint-result.outputs.stderr }}
 
       - name: Run Unit Tests
+        uses: mathiasvr/command-output@v2.0.0
         id: unit-test-result
-        run: |
-          echo "run-unit-test=$(npm run test-ci)\n" >> "$GITHUB_OUTPUT"
+        with:
+          run: npm run test-ci
+      - run: echo Command succeeded >> "$GITHUB_OUTPUT"
+        if: ${{ steps.unit-test-result.outputs.stdout }}
+      - run: echo Command failed >> "$GITHUB_OUTPUT"
+        if: ${{ steps.unit-test-result.outputs.stderr }}
 
       - name: Upload Unit Test Artifacts
         uses: actions/upload-artifact@v3
@@ -47,9 +53,14 @@ jobs:
           retention-days: 30
 
       - name: Run Playwright Tests
+        uses: mathiasvr/command-output@v2.0.0
         id: e2e-test-result
-        run: |
-          echo "run-e2e-test=$(npx playwright test --project=chromium)\n" >> "$GITHUB_OUTPUT"
+        with:
+          run: npx playwright test --project=chromium
+      - run: echo Command succeeded >> "$GITHUB_OUTPUT"
+        if: ${{ steps.e2e-test-result.outputs.stdout }}
+      - run: echo Command failed >> "$GITHUB_OUTPUT"
+        if: ${{ steps.e2e-test-result.outputs.stderr }}
 
       - name: Upload E2E Test Artifacts
         uses: actions/upload-artifact@v3
