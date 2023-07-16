@@ -42,6 +42,6 @@ it("если добавить элемент, он появляется в сп�
 
   const items = getAllByTestId("list-item");
 
-  // expect(items.map((el) => el.textContent)).toContain("Сделать домашку");
-  expect(items.map((el) => el.textContent)).toContain("Сделать пакость");
+  expect(items.map((el) => el.textContent)).toContain("Сделать домашку");
+  // expect(items.map((el) => el.textContent)).toContain("Сделать пакость");
 });
