@@ -28,13 +28,14 @@ jobs:
         uses: dacbd/create-issue-action@main
         with:
           title: "Release ${{ steps.extract_version.outputs.version }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             ## Release Details
             - Version: ${{ steps.extract_version.outputs.version }}
             - Changelog: ${{ steps.changelog.outputs.chlog }}
             - Author: ${{ github.actor }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
         run: npm ci
