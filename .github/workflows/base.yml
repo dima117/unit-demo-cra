@@ -50,7 +50,9 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
       - name: Create release branch
-        run: git checkout -b release/v${{ github.event.inputs.versionName }}
+        run: |
+          git checkout -b release/v${process.env.RELEASE_VERSION}
+          git push origin release/v${process.env.RELEASE_VERSION}
       - name: Create Release Issue
         uses: actions/github-script@v4
         with:
