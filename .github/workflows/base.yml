@@ -29,9 +29,6 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run build
-        run: npm run build --if-present
-
       - name: Run unit tests
         run: npm run test
 
