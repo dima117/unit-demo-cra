@@ -46,7 +46,7 @@ jobs:
           git commit -m"chore: changelog"
           git push
       - name: get tag date
-        run: echo "date=${date}" >> $GITHUB_OUTPUT
+        run: echo "date=$(date)" >> $GITHUB_OUTPUT
       - name: create an issue
         uses: dacbd/create-issue-action@main
         with:
