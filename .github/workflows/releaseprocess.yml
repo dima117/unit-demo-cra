@@ -77,7 +77,8 @@ jobs:
           script: |
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
-              repo: context.repo.repo
+              repo: context.repo.repo,
+              state: 'all',
             })
             console.log("Issues:\n", issues);
             const lastIssue = issues[0];
@@ -99,7 +100,7 @@ jobs:
 
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
-              repo: context.repo.repo
+              repo: context.repo.repo,
             })
             const existingIssue = issues.find(issue => issue.title === title)
 
