@@ -1,0 +1,80 @@
+name: release
+run-name: ${{ github.actor }} is running release process
+
+on:
+   push:
+     branches:
+       - master
+     tags:
+       - "v\d+"
+
+jobs:
+
+  build-workflow:
+    uses: ./.github/workflows/build-&-deploy.yml
+
+  create-release-branch:
+    name: release-branch-creation
+    runs-on: ubuntu-latest
+    needs: build-workflow
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: creating-release-branch
+        run: |
+          BRANCH_NAME=release-${{ github.ref_name }}
+          git checkout -b $BRANCH_NAME
+          git push -u origin $BRANCH_NAME
+
+  create_issue:
+    name: creating release issue
+    runs-on: ubuntu-latest
+    needs: create-release-branch
+    permissions:
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Defining tags
+        id: tag_id
+        run: |
+          TAG_CURRENT=${{ github.ref_name }} 
+          TIMESTAMP=$(git show -s --format=%ai ${TAG_CURRENT})
+          TAG_PREVIOUS=$(git describe --tags --abbrev=0 ${TAG_CURRENT}^)
+          echo "current=${TAG_CURRENT}" >> "$GITHUB_OUTPUT"
+          echo "previous=${TAG_PREVIOUS}" >> "$GITHUB_OUTPUT"
+          echo "timestamp=${TIMESTAMP}" >> "$GITHUB_OUTPUT"
+
+      - name: generating-changelog
+        id: changelog_id
+        run: |
+          CHANGELOG=$(git log --pretty=format:"- %s" "${{ steps.tag_id.outputs.previous }}...${{ steps.tag_id.outputs.current }}")
+          echo "Display changelog:"
+          echo $CHANGELOG
+          echo "log='${CHANGELOG}'" >> "$GITHUB_OUTPUT"
+
+      - name: creating-issue
+        uses: imjohnbo/issue-bot@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          assignees: "EricRovell"
+          title: Release ${{ github.ref_name }}
+          labels: "RELEASE"
+          pinned: false
+          close-previous: false
+          body: |
+            ## App Release, v${{ github.ref_name }}
+
+            Release author: ${{ github.actor }}
+            Timestamp: ${{ steps.tag_id.outputs.timestamp }}
+
+            Changelog:
+
+            ${{ steps.changelog_id.outputs.log }}
