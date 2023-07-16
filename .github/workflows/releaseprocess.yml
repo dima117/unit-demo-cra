@@ -90,6 +90,9 @@ jobs:
             }
             fs.writeFileSync('env_vars.txt', `${lastIssue}`);
 
+      - name: Fetch all tags
+        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+
       - name: List all tags
         run: git tag
 
