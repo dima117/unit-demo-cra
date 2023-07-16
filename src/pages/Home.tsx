@@ -10,7 +10,7 @@ export const Home: FC = () => {
         <title>Home page</title>
       </Helmet>
       <h1 data-testid="page-title">Home</h1>
-      <p>This is the list.</p>
+      <p>Это список.</p>
       <TodoList />
     </>
   );
