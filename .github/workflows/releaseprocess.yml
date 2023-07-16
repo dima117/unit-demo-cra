@@ -25,7 +25,7 @@ jobs:
     outputs:
       unit_test_result: ${{ env.UNIT_TEST_RESULT }}
       e2e_test_result: ${{ env.E2E_TEST_RESULT }}
-      true_result: "PASSED"
+      release_title: ${{ env.RELEASE_VER }}
 
     steps:
       - name: Get the repo code
@@ -108,7 +108,7 @@ jobs:
         node: [18.x]
     runs-on: ${{ matrix.os }}
 
-    needs: deploy
+    needs: [deploy, create_issue]
 
     steps:
       - name: Close current issue
@@ -119,12 +119,13 @@ jobs:
             console.log("Close-issue started");
             const deployURL = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/`;
             console.log(deployURL);
-            const issueTitle = `Release ${process.env.RELEASE_VERSION}`;
+            const issueTitle = `Release ${needs.create_issue.outputs.release_title}`;
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
             console.log(issues);
+            console.log("IssueTitle:", issueTitle);
             const releaseIssue = issues.find(issue => issue.title === issueTitle);
             console.log(releaseIssue);
             const updateBody = `${releaseIssue.body}Deploy results: ${deployURL}`;
