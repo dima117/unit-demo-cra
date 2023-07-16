@@ -16,8 +16,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get version from tag
-        run: echo "::set-output name=version::${{ github.ref }}"
+#      - name: Get version from tag
+#        run: echo "::set-output name=version::${{ github.ref }}"
 
       - name: Chlog
         id: chlog
@@ -32,8 +32,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             ## Release Details
-            - Version: ${{ steps.extract_version.outputs.version }}
-            - Changelog: ${{ steps.changelog.outputs.chlog }}
+            - Info: ${{ github.ref }}
+            - Changelog: ${{ steps.chlog.outputs }}
             - Author: ${{ github.actor }}
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
