@@ -41,6 +41,8 @@ jobs:
 
       - name: Create issue
         if: toJSON(${{steps.find_issues.outputs.issues}}) == '[]'
+        permissions:
+          issues: write
         uses: actions-cool/issues-helper@v3
         with:
           actions: "create-issue"
