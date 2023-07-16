@@ -20,6 +20,10 @@ jobs:
     name: 🏂 Начат релиз
     runs-on: ubuntu-latest
     # if: ${{ github.ref_type  == 'tag' }}
+    permissions:
+      contents: write
+      actions: write
+      checks: write
 
     steps:
       - uses: actions/checkout@v3
