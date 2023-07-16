@@ -6,4 +6,4 @@ New Release!
 Author: {{env.AUTHOR}}
 Date: {{ date | date('dddd, MMMM Do') }}
 Version: {{env.TAG}}
-Changelog:
+Changelog: {{ env.CHANGELOG }}
