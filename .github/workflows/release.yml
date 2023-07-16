@@ -1,64 +1,43 @@
 name: Create Release Branch and Run Tests
+
 on:
   push:
-    tags: v\d+
-  workflow_dispatch:
-permissions:
-  contents: read
-  issues: write
+    tags: v* # Run this workflow for any v* tags, i.e. v1.0, v20.15.10
+
 jobs:
   create-release-branch:
     runs-on: ubuntu-latest
-    permissions: write-all
     steps:
-      - uses: actions/checkout@v3
-      - uses: peterjgrainger/action-create-branch@v2.0.1
+      - uses: actions/checkout@v2
+      - name: Create Release Branch
+        uses: peterjgrainger/action-create-branch@v2.0.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          branch: release-${{ github.ref_name }}
+          branch: 'release-${{ github.ref_name }}'
 
   run_tests:
     needs: create-release-branch
-    uses: ./.github/workflows/e2e.yml
-    with:
-      branch-name: release-${{ github.ref_name }}
-
-  create-release-issue:
     runs-on: ubuntu-latest
-    needs: run_tests
-    permissions: write-all
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v2
+      - name: Run tests
+        run: npm run test-ci
 
-      - uses: actions/download-artifact@v3
-        with:
-          name: result_url
-
-      - name: Pull url to env variable
-        shell: bash
-        run: echo "TEST_RESULTS=$(cat test_result_url.txt)" >> $GITHUB_ENV
-
-      - name: Get previous tag
-        shell: bash
-        id: previous-tag
-        run: echo "::set-output name=previous-tag::$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))"
-
-      - name: Create changelog with hotfixes
-        uses: nielstenboom/semantic-changelog-generator@v1.2.0
-        id: changelog
-        with:
-          base: ${{ steps.previous-tag.outputs.previous-tag }}
-          head: ${{ github.ref_name }}
-
-      - name: Create or update release issue
-        id: create-release-issue
-        uses: JasonEtco/create-an-issue@v2
+  build:
+    name: Create Release
+    needs: run_tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CHANGELOG: ${{ steps.changelog.outputs.changelog }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          update_existing: true
-          search_existing: all
+          tag_name: ${{ github.ref }}
+          release_name: 'Release ${{ github.ref }}'
+          draft: false
+          prerelease: false
