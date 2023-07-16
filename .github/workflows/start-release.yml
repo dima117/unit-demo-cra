@@ -24,7 +24,7 @@ jobs:
           ref: release/${{ steps.vars.outputs.tag }}
       - name: Get current package version
         uses: martinbeentjes/npm-get-version-action@v1.3.1
-      -run echo ${{ steps.package-version.outputs.current-version}}
+      - run: echo ${{ steps.package-version.outputs.current-version}}
       - name: package-json-version
         run: |
           git config --global user.email ${{ secrets.EMAIL }}
@@ -35,6 +35,3 @@ jobs:
           git push
       - name: Create Changelogs
         uses: heineiuo/create-changelogs@v0.2.8
-    
-
-      
