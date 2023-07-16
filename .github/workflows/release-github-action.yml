@@ -59,7 +59,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
         run: |
           ISSUE_TITLE="Release ${{ github.ref_name }}"
-          ISSUE_BODY << EOF
+          read -r -d '' ISSUE_BODY << EOF
           ### Это релиз приложения версии ${{ github.ref_name }}
 
           Автор релиза: ${{ github.actor }}
