@@ -54,5 +54,6 @@ jobs:
           body: |
             ### Release credentials:
             author -        `${{ github.actor }}`
-            date -          `${{ steps.vars.outputs.tag }}`
+            version -       `${{ steps.vars.outputs.tag }}`
             time -          `new Date()`
+            changelog       `${{ steps.changelog.outputs.changelog }}`
