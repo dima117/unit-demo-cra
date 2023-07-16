@@ -70,8 +70,8 @@ jobs:
           script: |
             const issueTitle = `Release ${process.env.GITHUB_REF_NAME}`;
 
-            const currentTag = `$(git describe --abbrev=0 --tags)`;
-            const previousTag = `$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))`;
+            const currentTag = execSync('git describe --abbrev=0 --tags').toString().trim();
+            const previousTag = execSync('git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1)').toString().trim();
             const tagRange = `${currentTag}...${previousTag}`;
             const command = `git log --pretty=format:"- %s" ${tagRange}`;
             const changeLog = `$(echo "${command}" | bash)`;
