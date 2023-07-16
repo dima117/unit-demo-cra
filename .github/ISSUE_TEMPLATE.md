@@ -1,5 +1,5 @@
 ---
-title: RELEASE ISSUE {{env.TAG}}
+title: Release issue {{env.TAG}}
 assignees: danveld
 labels: wontfix
 ---
