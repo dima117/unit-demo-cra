@@ -18,7 +18,7 @@ jobs:
         run: |
           BRANCH_NAME=release-${{ github.ref_name }}
           git fetch
-          if [ `git branch --list $BRANCH_NAME` ]; then
+          if [ `git branch --list ${BRANCH_NAME}` ]; then
             echo "I have to delete existing branch"
             git fetch
             git branch -d "$BRANCH_NAME"
@@ -26,7 +26,7 @@ jobs:
             echo "I will push now"
             git push -f -u origin "$BRANCH_NAME"
           else
-            echo "I will create we branch now"
+            echo "I will create new branch now"
             git checkout -b "$BRANCH_NAME"
             git push -u origin "$BRANCH_NAME"
           fi
