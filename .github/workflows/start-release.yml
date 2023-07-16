@@ -36,10 +36,9 @@ jobs:
         uses: loopwerk/tag-changelog@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Echo changelog
+        run: echo ${{ steps.changelog.outputs.changes }}
       - name: Prepend changelog
         run: |
           cat <<< "${{ steps.changelog.outputs.changes }}
           $(cat CHANGELOG.md)"
-          git add .
-          git commit -m"chore: changelog"
-          git push
