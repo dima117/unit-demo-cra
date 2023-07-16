@@ -25,19 +25,13 @@ jobs:
         run: npm run test-ci
 
   build:
-    name: Create Release
     needs: run_tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - uses: actions/checkout@v2
+      - name: Publish a Release
+        uses: elgohr/Github-Release-Action@v4
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: 'Release ${{ github.ref }}'
-          draft: false
-          prerelease: false
+          title: 'MyReleaseMessage'
