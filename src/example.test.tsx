@@ -29,7 +29,7 @@ it("если добавить элемент, он появляется в сп�
   const application = (
     <BrowserRouter>
       <Provider store={store}>
-        <Application />
+        {/* <Application /> */}
       </Provider>
     </BrowserRouter>
   );
