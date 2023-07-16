@@ -25,10 +25,14 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run Lint
-        run: npm run lint
+        run: |
+          npm run lint
+          echo "lint done" >> "$GITHUB_OUTPUT"
 
       - name: Run Unit Tests
-        run: npm run test-ci
+        run: |
+          npm run test-ci
+          echo "unit tests done" >> "$GITHUB_OUTPUT"
 
       - name: Upload Unit Test Artifacts
         uses: actions/upload-artifact@v3
@@ -39,7 +43,9 @@ jobs:
           retention-days: 30
 
       - name: Run Playwright Tests
-        run: npx playwright test --project=chromium
+        run: |
+          npx playwright test --project=chromium
+          echo "e2e tests done" >> "$GITHUB_OUTPUT"
 
       - name: Upload E2E Test Artifacts
         uses: actions/upload-artifact@v3
@@ -53,6 +59,8 @@ jobs:
   generate-changelog-and-create-issue:
     needs: lint-and-test
     runs-on: ubuntu-latest
+      - env:
+        prevOutput: ${{ needs.lint-and-test.outputs.* }}
 
     steps:
       - name: Checkout Repo
@@ -71,17 +79,13 @@ jobs:
         run: |
           previousTag=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))
           echo "Previous tag: $previousTag"
+          echo "Previous output: $prevOutput"
           changelog=$(git log --pretty=format:"%h %s (%an)" $previousTag..HEAD)
-          echo "::set-output name=changelog::$changelog"
+          echo "Changelog: $changelog" > changelog.txt
 
       - name: Create Release Issue
-        uses: peter-evans/create-issue-from-file@v3
+        uses: peter-evans/create-issue-from-file@v4
         with:
           title: "RELEASE: ${{ github.ref }}"
-          body: |
-            Author: ${{ github.actor }}
-            Release Date: ${{ github.event.repository.updated_at }}
-            Version Number: ${{ github.ref }}
-            Changelog:
-            ${{ steps.changelog.outputs.changelog }}
+          content-filepath: ./changelog.txt
           labels: "RELEASE"
