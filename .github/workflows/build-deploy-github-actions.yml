@@ -31,8 +31,10 @@ jobs:
         run: npm ci
     
       - name: 🎬 Build application
+        env:
+          HOMEPAGE_URL: ${{ vars.HOMPAGE_URL }}
         run: |
-          HOMEPAGE_URL="${{ vars.HOMPAGE_URL }}"
+          echo "$HOMEPAGE_URL"
           jq --arg url "$HOMEPAGE_URL" '. + {homepage: $url}' package.json > temp.json && mv temp.json package.json
           npm run build
         
