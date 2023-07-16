@@ -56,11 +56,11 @@ jobs:
           git checkout -b release/${GITHUB_REF#refs/*/}
           git push origin release/${GITHUB_REF#refs/*/}
 
-      - name: Generate changelog
-        id: changelog
-        uses: metcalfc/changelog-generator@v4.0.0
-        with:
-          myToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Changelog
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release Issue
         uses: actions/github-script@v4
@@ -74,7 +74,7 @@ jobs:
               **Version**: ${process.env.RELEASE_VERSION}
               
               Changelog:
-              ${{ steps.changelog.outputs.changelog }}
+              ${{steps.github_release.outputs.changelog}}
             `;
             const { data: newIssue } = await github.issues.create({
               owner: context.repo.owner,
