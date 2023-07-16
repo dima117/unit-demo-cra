@@ -1,11 +1,12 @@
 name: 👩‍🔧 CI
 
-on: [pull_request]
+on: [pull_request, workflow_call]
 
 jobs:
   commitlint:
     name: 👔 Проверка коммитов
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
 
     strategy:
       matrix:
@@ -41,7 +42,6 @@ jobs:
   testing-e2e:
     name: 🐛 Тесты e2e
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' }}
 
     strategy:
       matrix:
@@ -68,7 +68,6 @@ jobs:
   testing-unit:
     name: 🃏 Тесты unit
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' }}
 
     strategy:
       matrix:
