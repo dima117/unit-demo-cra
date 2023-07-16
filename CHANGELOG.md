@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/Rubicones/hw-infra/compare/v1.14.1...v1.15.0) (2023-07-16)
+
+
+### Features
+
+* added 'released by' line in Issue ([07aa050](https://github.com/Rubicones/hw-infra/commit/07aa05001a161f5dd39c282808f6449974ecb9a0))
+
 ## [1.14.1](https://github.com/Rubicones/hw-infra/compare/v1.14.0...v1.14.1) (2023-07-16)
 
 
