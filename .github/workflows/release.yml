@@ -5,7 +5,7 @@ on:
       - v[0-9]+
 
 env: 
-  CHANGELOG: '0'
+  CHANGELOG: ''
 
 jobs:
   build:
