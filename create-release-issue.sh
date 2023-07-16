@@ -22,20 +22,23 @@ ALL_ISSUES=$(curl \
   -X GET \
   https://api.github.com/repos/$GITHUB_REPOSITORY/issues)
 
-echo $ALL_ISSUES
+# echo $ALL_ISSUES
 EXISTING_ISSUE_NUMBER=""
 for row in $(echo "${ALL_ISSUES}" | jq -r '.[] | @base64'); do
-    echo "parse"
     _jq() {
      echo ${row} | base64 --decode | jq -r ${1}
     }
 
-    ISSUE_TITLE=$(_jq '.title')
-    echo "ISSUE_TITLE: $ISSUE_TITLE"
-    ISSUE_NUMBER=$(_jq '.number')
-    echo "ISSUE_NUMBER: $ISSUE_NUMBER"
+    echo "Original row: ${row}" 
+    DECODED_ROW=$(echo ${row} | base64 --decode)
+    echo "Decoded row: ${DECODED_ROW}" 
 
-    echo "Release $VERSION"
+    ISSUE_TITLE=$(_jq '.title')
+    ISSUE_NUMBER=$(_jq '.number')
+
+    echo "Issue title: ${ISSUE_TITLE}" 
+    echo "Issue number: ${ISSUE_NUMBER}" 
+
     if [ "$ISSUE_TITLE" = "Release $VERSION" ]; then
         EXISTING_ISSUE_NUMBER="$ISSUE_NUMBER"
         break
