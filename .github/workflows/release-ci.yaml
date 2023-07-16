@@ -27,10 +27,6 @@ jobs:
           name: changelog
           path: CHANGELOG.md
 
-      - name: Save Changelog to Output
-        id: changelog_step
-        run: echo "changelog=$(cat CHANGELOG.md)" >> $GITHUB_OUTPUT
-
   create-release:
     runs-on: ubuntu-latest
     needs: make_changelog
