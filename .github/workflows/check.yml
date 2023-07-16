@@ -66,6 +66,11 @@ jobs:
     name: Unit test
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+      contents: read
+      checks: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -93,7 +98,7 @@ jobs:
           reporter: jest-junit
 
   test-e2e:
-    name: e2e tests
+    name: e2e test
     runs-on: ubuntu-latest
 
     steps:
