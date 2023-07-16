@@ -34,6 +34,8 @@ jobs:
       - name: Create changelog text
         id: changelog
         uses: loopwerk/tag-changelog@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Prepend changelog
         run: |
           cat <<< "${{ steps.changelog.outputs.changes }}
