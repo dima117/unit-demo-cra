@@ -31,3 +31,6 @@ jobs:
           AUTHOR: ${{ github.actor }}
           TAG: ${{ github.ref_name }}
           CHANGELOG: ${{ steps.build_changelog.outputs.changes }}
+
+      - name: check tests
+        uses: https://github.com/danlevik/unit-demo-cra/blob/master/.github/workflows/testing.yml
