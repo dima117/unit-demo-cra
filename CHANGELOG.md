@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/Rubicones/hw-infra/compare/v1.11.0...v1.12.0) (2023-07-16)
+
+
+### Features
+
+* issue script testing on release trigger ([c1d3092](https://github.com/Rubicones/hw-infra/commit/c1d3092ae9890371ee9580057525e98c362c61a0))
+
 # [1.11.0](https://github.com/Rubicones/hw-infra/compare/v1.10.0...v1.11.0) (2023-07-16)
 
 
