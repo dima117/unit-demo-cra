@@ -93,7 +93,7 @@ jobs:
       - name: Load environment variables
         run: |
           VERSION=$(cat env_vars.txt)
-          DIFF_RESULT=$(git diff $VERSION HEAD)
+          DIFF_RESULT=$(git diff $VERSION..HEAD)
           echo DIFF_RESULT="$DIFF_RESULT" >> $GITHUB_ENV
           echo $DIFF_RESULT
 
