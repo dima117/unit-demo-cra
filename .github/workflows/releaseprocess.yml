@@ -68,7 +68,7 @@ jobs:
             let body = `Author: ${context.payload.sender.login}\n`
             body += `Date: ${new Date().toLocaleString()}\n`
             body += `Version: ${process.env.RELEASE_VER}\n\n`
-            body += `Test results: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${runId}`
+            body += `Test results: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.runId}`
 
             github.rest.issues.create({
               owner: context.repo.owner,
