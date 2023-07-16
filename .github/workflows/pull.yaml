@@ -1,0 +1,25 @@
+name: Test a new pull request
+run-name: "Test a new pull request by @${{ github.actor }}"
+on: [pull_request]
+jobs:
+  test:
+    name: 🧪 Perform the pull request's testing
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: 🪜 Checkout
+        uses: actions/checkout@v3
+      - name: 🔧 Setup Node.JS
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+      - name: 📥 Install the NPM dependencies
+        run: npm ci
+      - name: 🧪 Run the tests
+        uses: ./.github/actions/run-tests
+      - name: ⛓️ Add the run's link to the pull request
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: 🎉 All tests has succeeded. The results are published on https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}.
+      

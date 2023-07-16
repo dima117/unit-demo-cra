@@ -1,0 +1,181 @@
+name: Process a newly sent release
+run-name: "Process a newly sent ${{github.ref_name}} release"
+on:
+  push:
+    branches: [$default-branch]
+    tags:
+      - "v*"
+jobs:
+  create:
+    name: 🛠️ Setup the release
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: 🪜 Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: 🔧 Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: 💾 Cache the NPM dependencies
+        uses: actions/cache@v3
+        id: cache-primes
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+
+      - name: 📥 Install the dependencies
+        if: steps.cache-primes.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: 🧪 Run the tests
+        uses: ./.github/actions/run-tests
+      - name: 📝 Generate the changelog
+        uses: orhun/git-cliff-action@v2
+        id: git-cliff
+        with:
+          config: cliff.toml
+          args: --latest
+      - name: 🖋️ Create a record for the release
+        uses: actions/github-script@v6
+        id: add_record
+        with:
+          result-encoding: string
+          script: |
+            const response = await github.rest.search.issuesAndPullRequests({
+              q:`repo:${{github.repository}} is:issue "${{github.ref_name}}" in:title is:closed`
+            })
+            console.log(response)
+            const foundIssues = response.data.items
+            
+            const changelogWithAuthor = `${{steps.git-cliff.outputs.content}}`.replace("$AUTHOR_USERNAME","[@${{github.actor}}](https://github.com/${{github.actor}})")
+
+            const searchData = {
+              owner: context.repo.owner,
+                repo: context.repo.repo
+            }
+            const dataToWrite = {
+                ...searchData,
+                labels:["RELEASE"],
+                title: "Release ${{github.ref_name}}",
+                body: changelogWithAuthor,
+                assignees:["${{github.actor}}"]
+            }
+            let issue;
+            if(foundIssues.length > 0){
+                issue = await github.rest.issues.update({
+                  issue_number:foundIssues[0].number,
+                  ...searchData,
+                  state:"opened"
+                })
+                await github.rest.issues.createComment({
+                ...searchData,
+                issue_number:issue.data.number,
+                body:`Some changes has been pushed to the release.\n${dataToWrite.body}`
+            })
+            } else{
+            issue = await github.rest.issues.create(dataToWrite)
+            }
+            await github.rest.issues.createComment({
+                ...searchData,
+                issue_number:issue.data.number,
+                body:`All tests has succeeded. The results are published on https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}.`
+            })
+            return issue.data.number
+    outputs:
+      issue_number: ${{steps.add_record.outputs.result}}
+  deploy:
+    name: 📤 Deploy to Github Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: create
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      issues: write
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+    steps:
+      - name: 🪜 Checkout
+        uses: actions/checkout@v3
+      - name: 🔨 Setup Github Pages
+        uses: actions/configure-pages@v3
+      - name: 🔧 Setup Node.JS
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: 📥 Get the NPM dependencies from cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+      - name: 📦 Build the app
+        run: npm run build
+      - name: 💾 Save the app artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: './build'
+      - name: 📤 Deploy the app
+        id: deployment
+        uses: actions/deploy-pages@v2
+      - name: 🖋️ Add the app URL to the release record
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issueNumber = ${{needs.create.outputs.issue_number}}
+            const data = {
+              owner:context.repo.owner,
+              repo:context.repo.repo,
+              issue_number:issueNumber
+            }
+            const issue = await github.rest.issues.get(data)
+            
+            if(!issue){
+              return core.setFailed(`The issue #${issueNumber} was not found. Aborting...`)
+            }
+            await github.rest.issues.createComment({...data,body:"🎉 The app was deployed to ${{steps.deployment.outputs.page_url}}."})
+  finish:
+    name: 🏁 Finish the release
+    runs-on: ubuntu-latest
+    permissions: write-all
+    needs: [create,deploy]
+    steps:
+      - name: 🪜 Checkout
+        uses: actions/checkout@v3
+      # - name: Add to ${{ github.event.repository.default_branch }}
+      #   uses: actions/github-script@v6
+      #   with:
+      #     script: |
+      #       const res = await github.rest.repos.merge({
+      #         owner:context.repo.owner,
+      #         repo:context.repo.repo,
+      #         base:"master",
+      #         head:"${{github.ref_name}}",
+      #       });
+      #       console.log(res)
+      - name: 🔒 Close the record
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issueNumber = ${{needs.create.outputs.issue_number}}
+            const data = {
+              owner:context.repo.owner,
+              repo:context.repo.repo,
+              issue_number:issueNumber
+            }
+            await github.rest.issues.createComment({
+              ...data,
+              body:'🏁 The release has been fully finished. The record is closed.'
+            })
+            github.rest.issues.update({
+              ...data,
+              state:"closed"
+            })

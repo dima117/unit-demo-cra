@@ -1,7 +1,7 @@
 {
     "name": "unit-demo-cra",
     "version": "0.1.0",
-    "homepage": ".",
+    "homepage": "https://extrapoisonouscake.github.io/unit-demo-cra/",
     "private": true,
     "dependencies": {
         "@testing-library/jest-dom": "^5.16.5",
@@ -30,7 +30,8 @@
         "build": "react-scripts build",
         "eject": "react-scripts eject",
         "test": "react-scripts test",
-        "e2e": "playwright test --project=chromium && playwright show-report",
+        "e2e:basic":"playwright test --project=chromium",
+        "e2e": "npm run e2e:basic && playwright show-report",
         "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
     },
     "eslintConfig": {
@@ -57,8 +58,12 @@
         ]
     },
     "devDependencies": {
+        "@commitlint/cli": "^17.6.6",
+        "@commitlint/config-conventional": "^17.6.6",
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
+        "generate-changelog": "^1.8.0",
+        "husky": "^8.0.3",
         "jest-html-reporter": "^3.7.0"
     }
 }

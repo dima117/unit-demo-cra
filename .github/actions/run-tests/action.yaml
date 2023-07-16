@@ -1,0 +1,25 @@
+name: 🧪 Run the tests
+runs:
+  using: "composite"
+  steps:
+    - name: 📥 Install Playwright
+      run: npx playwright install --with-deps
+      shell: bash
+    - name: 🔬 Run the E2E-tests
+      run: npm run e2e:basic
+      shell: bash
+    - name: 💾 Save the E2E-tests results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: playwright-report
+        path: playwright-report
+    - name: 🧩 Run the unit tests
+      run: npm run test-ci
+      shell: bash
+    - name: 💾 Save the unit tests results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-report.html
+        path: ./test-report.html
