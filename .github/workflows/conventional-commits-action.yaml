@@ -1,0 +1,33 @@
+name: conventional-commits-action
+on: [push, pull_request]
+jobs:
+    commitlint:
+        runs-on: ubuntu-22.04
+
+        steps:
+            - name: Get source code
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+
+            - name: Setup node
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: "18"
+
+            - name: Cache node modules
+            - uses: actions/cache@v3
+              with:
+                  path: ~/.npm
+                  key: node_modules_cache
+
+            - name: Install dependencies
+              run: npm i -g @commitlint/cli @commitlint/config-conventional conventional-changelog-conventionalcommits
+
+            - name: Validate current commit (last commit) with commitlint
+              if: github.event_name == 'push'
+              run: npx commitlint --from HEAD~1 --to HEAD --verbose
+
+            - name: Validate PR commits with commitlint
+              if: github.event_name == 'pull_request'
+              run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
