@@ -77,7 +77,7 @@ jobs:
         id: read_changelog
         run: |
           changelog_content=$(cat "${{ steps.download.outputs.download-path }}/CHANGELOG.md")
-          echo "::set-output name=changelog_content::$changelog_content"
+          echo "$changelog_content" >> "$GITHUB_OUTPUT"
 
       - name: Create or Update Release Issue
         uses: JasonEtco/create-an-issue@v2
@@ -89,7 +89,7 @@ jobs:
           RELEASE_AUTHOR: ${{ github.actor }}
           RELEASE_NAME: ${{ env.RELEASE_NAME }}
           RELEASE_DATE: ${{ env.RELEASE_DATE }}
-          RELEASE_CHANGELOG: ${{ env.CHANGELOG_CONTENT }}
+          RELEASE_CHANGELOG: ${{ steps.read_changelog.outputs.changelog_content }}
 
   base-checks:
     uses: ./.github/workflows/base-ci.yaml
