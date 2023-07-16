@@ -45,7 +45,7 @@ jobs:
             - name: Generate changelog
               id: generate_changelog
               run: |
-                git log --pretty=format:$'- hash: %h, name: %s \r\n' ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
+                git log --pretty=format:$'- hash: %h, name: %s' ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
                 echo ::set-output name=changelog::$(cat changelog.txt)
 
             - name: Create release
@@ -58,7 +58,12 @@ jobs:
               env:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ' --label RELEASE
+                if [$(gh issue list --search "repo:${{ github.repository }} Release ${{ github.ref_name }}") -eq ""]; then
+                  gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ' --label RELEASE
+                else 
+                  num=$(gh issue list --search "Release ${{ github.ref_name }}" --format json | jq -r '.[0].number')
+                  gh issue edit $num --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: '
+                fi
     
     upload_to_pages:
       runs-on: ubuntu-latest
