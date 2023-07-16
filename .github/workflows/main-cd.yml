@@ -67,10 +67,6 @@ jobs:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                 gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ${{ steps.upload_artifact.outputs.url }}' --label RELEASE
-                title="Release ${{ github.ref_name }}"
-                repo="${{github.repository}}"
-                url=$(curl -s "https://api.github.com/repos/$repo/issues?q=is:issue%20is:open%20in:title%20$title&sort=created&order=desc&per_page=1" | grep -m1 -oP '(?<="number": )\d+')
-                echo $url
               # if [$(gh issue list --search "repo:${{ github.repository }} Release ${{ github.ref_name }}") -eq ""]; then
               #   gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ' --label RELEASE
               # else 
