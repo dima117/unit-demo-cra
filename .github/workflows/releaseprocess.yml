@@ -99,9 +99,10 @@ jobs:
       - name: Load environment variables
         run: |
           VERSION=$(cat env_vars.txt)
-          DIFF_RESULT=$(git diff $VERSION..HEAD)
-          echo DIFF_RESULT="$DIFF_RESULT" >> $GITHUB_ENV
-          echo $DIFF_RESULT
+          git diff $VERSION..HEAD > diff_result.txt
+          echo "DIFF_RESULT<<EOF" >> $GITHUB_ENV
+          cat diff_result.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Create Release Issue
         uses: actions/github-script@v6
