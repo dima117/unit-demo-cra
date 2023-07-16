@@ -50,8 +50,8 @@ jobs:
           title: Release ${{steps.get_info.outputs.version}}
           body: |
             Version: ${{steps.get_info.outputs.version}}
-            Author: ${{steps.get_info.outputs.author}}
-            Data: ${{steps.get_info.outputs.date}}
+            ${{steps.get_info.outputs.author}}
+            ${{steps.get_info.outputs.date}}
           labels: "RELEASE"
 
   commitlint:
