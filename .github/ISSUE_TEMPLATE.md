@@ -9,6 +9,5 @@ labels: RELEASE
 **Author:** {{ env.RELEASE_AUTHOR }}
 **Release Date:** {{ env.RELEASE_DATE }}
 **Version:** {{ env.RELEASE_NAME }}
-**Changelog:**
 
 {{ env.RELEASE_CHANGELOG }}
