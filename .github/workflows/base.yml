@@ -56,26 +56,27 @@ jobs:
           git checkout -b release/${GITHUB_REF#refs/*/}
           git push origin release/${GITHUB_REF#refs/*/}
 
-      - name: Build Changelog
-        id: github_release
-        uses: mikepenz/release-changelog-builder-action@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Create Release Issue
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const issueTitle = `Release ${process.env.GITHUB_REF_NAME}`;
+
+            const currentTag = execSync('git describe --abbrev=0 --tags').toString().trim();
+            const previousTag = execSync('git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1)').toString().trim();
+            const tagRange = `${currentTag}...${previousTag}`
+            const command = `git log --pretty=format:"- %s" ${command}`
+            const changeLog = execSync(`git log --pretty=format:"- %s" ${command}`).toString()
             const issueBody = `
               **Author**: ${process.env.GITHUB_ACTOR}
               **Date**: ${new Date().toISOString()}
               **Version**: ${process.env.RELEASE_VERSION}
               
               Changelog:
-              ${{steps.github_release.outputs.changelog}}
+              ${changeLog};
             `;
+            
             const { data: newIssue } = await github.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
