@@ -4,17 +4,6 @@ on:
   push:
     tags:
       - 'v[0-9]+'
-  workflow_dispatch:
-
-# _WORKFLOW
-# CHECK_STATUS
-#   1. GET PUSHED TAG VALUE
-#   2. GET TAG FROM LATEST RELEASE
-#   3. COMPARE WITH TWO OPTIONS POSSIBLE
-#
-# NEW_RELEASE
-#
-# EDIT_OLD_RELEASE
 
 jobs:
   check_status:
@@ -218,27 +207,3 @@ jobs:
             ${{ needs.check_status.outputs.LAST_VERSION != '' && needs.check_status.outputs.CHANGLELOG || 'First release'}}
           draft: false
           prerelease: false
-
-    # add comment with link
-    # create release 
-    # fix change log
-
-    
-
-
-
-
-      # - uses: actions/checkout@v3
-      # - name: Create an issue
-      #   id: create_issue
-      #   uses: dacbd/create-issue-action@main
-      #   with:
-      #     token: ${{ secrets.GH_TOKEN }}
-      #     title: ${{ steps.get_tag.outputs.new_tag }}
-      #     body: |
-      #       ### Context
-      #       [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-      #       [Codebase](https://github.com/${{ github.repository }}/tree/${{ github.sha }})
-      #       Author: `${{ github.actor }}`
-      #     labels: 'Release'
-      #     assignees: 'Iluxmas'
