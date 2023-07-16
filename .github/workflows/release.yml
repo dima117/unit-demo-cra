@@ -8,10 +8,6 @@ jobs:
 
   lint-and-test:
     runs-on: ubuntu-latest
-    outputs:
-      output1: ${{ steps.lint-result.outputs.run-lint }}
-      output2: ${{ steps.unit-test-result.outputs.run-unit-test }}
-      output3: ${{ steps.e2e-test-result.outputs.run-e2e-test }}
 
     steps:
       - name: Checkout Repo
@@ -29,24 +25,10 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run Lint
-        uses: mathiasvr/command-output@v2.0.0
-        id: lint-result
-        with:
-          run: npm run lint
-      - run: echo Command succeeded >> "$GITHUB_OUTPUT"
-        if: ${{ steps.lint-result.outputs.stdout }}
-      - run: echo Command failed >> "$GITHUB_OUTPUT"
-        if: ${{ steps.lint-result.outputs.stderr }}
+        run: npm run lint
 
       - name: Run Unit Tests
-        uses: mathiasvr/command-output@v2.0.0
-        id: unit-test-result
-        with:
-          run: npm run test-ci
-      - run: echo Command succeeded >> "$GITHUB_OUTPUT"
-        if: ${{ steps.unit-test-result.outputs.stdout }}
-      - run: echo Command failed >> "$GITHUB_OUTPUT"
-        if: ${{ steps.unit-test-result.outputs.stderr }}
+        run: npm run test-ci
 
       - name: Upload Unit Test Artifacts
         uses: actions/upload-artifact@v3
@@ -57,14 +39,7 @@ jobs:
           retention-days: 30
 
       - name: Run Playwright Tests
-        uses: mathiasvr/command-output@v2.0.0
-        id: e2e-test-result
-        with:
-          run: npx playwright test --project=chromium
-      - run: echo Command succeeded >> "$GITHUB_OUTPUT"
-        if: ${{ steps.e2e-test-result.outputs.stdout }}
-      - run: echo Command failed >> "$GITHUB_OUTPUT"
-        if: ${{ steps.e2e-test-result.outputs.stderr }}
+        run: npx playwright test --project=chromium
 
       - name: Upload E2E Test Artifacts
         uses: actions/upload-artifact@v3
@@ -109,7 +84,4 @@ jobs:
             Version Number: ${{ github.ref }}
             Changelog:
             ${{ steps.changelog.outputs.changelog }}
-            ${{ needs.lint-and-test.outputs.output1 }}
-            ${{ needs.lint-and-test.outputs.output2 }}
-            ${{ needs.lint-and-test.outputs.output3 }}
           labels: "RELEASE"
