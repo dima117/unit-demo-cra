@@ -1,0 +1,88 @@
+name: Generate Changelog and Create Release Issue
+on:
+  push:
+    tags:
+      - "v[0-9]+"
+
+jobs:
+
+  lint-and-test:
+  runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ join(steps.lint-result.outputs.run-lint, '\n') }}
+      output2: ${{ join(steps.unit-test-result.outputs.run-unit-test, '\n') }}
+      output2: ${{ join(steps.e2e-test-result.outputs.run-e2e-test, '\n') }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - name: Install Deps
+        run: npm ci
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Run Lint
+        id: lint-result
+        run: |
+          echo "run-lint=$(npm run lint)\n" >> "$GITHUB_OUTPUT"
+      - name: Run Unit Tests
+        id: unit-test-result
+        run: |
+          echo "run-unit-test=$(npm run test-ci)\n" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: jest-report
+          path: /test-report.html
+          retention-days: 30
+      - name: Run Playwright Tests
+        id: e2e-test-result
+        run: |
+          echo "run-e2e-test=$(npx playwright test --project=chromium)\n" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+
+  generate-changelog-and-create-issue:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          previousTag=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1))
+          echo "Previous tag: $previousTag"
+          changelog=$(git log --pretty=format:"%h %s (%an)" $previousTag..HEAD)
+          echo "::set-output name=changelog::$changelog"
+
+      - name: Create Release Issue
+        uses: peter-evans/create-issue-from-file@v3
+        with:
+          title: "RELEASE: ${{ github.ref }}"
+          body: |
+            Author: ${{ github.actor }}
+            Release Date: ${{ github.event.repository.updated_at }}
+            Version Number: ${{ github.ref }}
+            Changelog:
+            ${{ steps.changelog.outputs.changelog }}
+            ${{ needs.lint-and-test.outputs.output1 }}
+            ${{ needs.lint-and-test.outputs.output2 }}
+            ${{ needs.lint-and-test.outputs.output3 }}
+          labels: "RELEASE"
