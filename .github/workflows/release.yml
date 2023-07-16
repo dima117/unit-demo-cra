@@ -56,4 +56,4 @@ jobs:
   deploy:
     name: Deploy
     needs: release
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/_deploy.yml
