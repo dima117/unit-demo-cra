@@ -11,6 +11,7 @@ env:
   COMMIT_LIST: __env_commit__
   PREV_TAG: __env_tag__
   RELEASE_VERSION: __env_tag__
+  RELEASE_COMMIT:
 
 jobs:
   changelog:
@@ -45,3 +46,18 @@ jobs:
           COMMITS: ${{ env.COMMIT_LIST }}
         with:
           update_existing: true
+  add-branch:
+    name: 🌳 Создание релизной ветки
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: 🔍 Удаление и создание ветки
+        run: |
+          git checkout master
+          git branch -D release-${{ env.RELEASE_VERSION }}
+          git push origin --delete release-${{ env.RELEASE_VERSION }}
+          git checkout -b release-${{ env.RELEASE_COMMIT }} ${{ env.RELEASE_COMMIT }}
+          git push origin release-${{ env.RELEASE_VERSION }}
