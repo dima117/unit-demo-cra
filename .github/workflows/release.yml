@@ -79,6 +79,7 @@ jobs:
     uses: ./.github/workflows/test.yml
     
   testingissue: 
+    needs: testing
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -92,18 +93,17 @@ jobs:
         
       - run: git fetch --prune --unshallow
       
-      - name: Download math result for job 1
+      - name: Download math result for testing
         uses: actions/download-artifact@v3
         with:
           name: jest-report
           
-      - name: Read changelog.txt
+      - name: Read jest-report.md
         id: report
         uses: juliangruber/read-file-action@v1
         with:
           path: jest-report.md       
-
-      
+          
       - name: Create comment
         uses: actions-cool/issues-helper@v3
         with:
