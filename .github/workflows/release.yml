@@ -9,38 +9,50 @@ jobs:
   lint-and-test:
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ join(steps.lint-result.outputs.run-lint, '\n') }}
-      output2: ${{ join(steps.unit-test-result.outputs.run-unit-test, '\n') }}
-      output2: ${{ join(steps.e2e-test-result.outputs.run-e2e-test, '\n') }}
+      output1: ${{ steps.lint-result.outputs.run-lint }}
+      output2: ${{ steps.unit-test-result.outputs.run-unit-test }}
+      output3: ${{ steps.e2e-test-result.outputs.run-e2e-test }}
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: '18.x'
+
       - name: Install Deps
         run: npm ci
+
       - name: Install Playwright
         run: npx playwright install --with-deps chromium
+
       - name: Run Lint
         id: lint-result
         run: |
           echo "run-lint=$(npm run lint)\n" >> "$GITHUB_OUTPUT"
+
       - name: Run Unit Tests
         id: unit-test-result
         run: |
           echo "run-unit-test=$(npm run test-ci)\n" >> "$GITHUB_OUTPUT"
-      - uses: actions/upload-artifact@v3
+
+      - name: Upload Unit Test Artifacts
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: jest-report
-          path: /test-report.html
+          path: test-report.html
           retention-days: 30
+
       - name: Run Playwright Tests
         id: e2e-test-result
         run: |
           echo "run-e2e-test=$(npx playwright test --project=chromium)\n" >> "$GITHUB_OUTPUT"
-      - uses: actions/upload-artifact@v3
+
+      - name: Upload E2E Test Artifacts
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: playwright-report
@@ -53,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repo
         uses: actions/checkout@v3
 
       - name: Set up Node.js
@@ -61,7 +73,7 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: Install dependencies
+      - name: Install Deps
         run: npm ci
 
       - name: Generate Changelog
