@@ -18,8 +18,10 @@ jobs:
         run: |
           BRANCH_NAME=release-${{ github.ref_name }}
           if [ `git branch --list $BRANCH_NAME` ]; then
+            git fetch
             git branch -d "$BRANCH_NAME"
             git branch "$BRANCH_NAME"
+            echo "I will now push"
             git push -f -u origin "$BRANCH_NAME"
           else
             git checkout -b "$BRANCH_NAME"
