@@ -1,4 +1,4 @@
-name: Test PR
+name: Test PR and lint
 on:
     pull_request:
 jobs:
