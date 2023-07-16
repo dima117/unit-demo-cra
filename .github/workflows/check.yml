@@ -38,7 +38,7 @@ jobs:
           actions: "find-issues"
           token: ${{secrets.GITHUB_TOKEN}}
           issue-state: "open"
-          title-includes: ${{github.ref_name}}
+          title-includes: ${{steps.get_info.outputs.version}}
           labels: "RELEASE"
 
       - name: Create issue
@@ -47,11 +47,11 @@ jobs:
         with:
           actions: "create-issue"
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: echo ${{steps.get_info.outputs.author}}
+          title: Release ${{steps.get_info.outputs.version}}
           body: |
-            echo ${{steps.get_info.outputs.version}}
-            echo ${{steps.get_info.outputs.date}}
-            echo ${{steps.get_info.outputs.author}}
+            Version: ${{steps.get_info.outputs.version}}
+            Author: ${{steps.get_info.outputs.author}}
+            Data: ${{steps.get_info.outputs.date}}
           labels: "RELEASE"
 
   commitlint:
