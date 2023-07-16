@@ -42,7 +42,7 @@ jobs:
           labels: "RELEASE"
 
       - name: Create issue
-        if: toJSON(${{steps.find_issues.outputs.issues}}) == '[]'
+        if: ${{steps.find_issues.outputs.issues}} == []
         uses: actions-cool/issues-helper@v3
         with:
           actions: "create-issue"
