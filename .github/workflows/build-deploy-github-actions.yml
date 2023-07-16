@@ -33,9 +33,7 @@ jobs:
       - name: 🎬 Build application
         env:
           BASE_URL: ${{ vars.BASE_URL }}
-        run: |
-          PUBLIC_URL="${BASE_URL}" npm run build
-          echo "${BASE_URL}"
+        run: PUBLIC_URL="${BASE_URL}" npm run build
         
         if: success()
       - uses: actions/upload-artifact@v3
