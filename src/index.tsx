@@ -7,7 +7,8 @@ import { initStore } from "./store";
 import "./index.css";
 
 const container = document.getElementById("root");
-console.log('hello')
+console.log("hello");
+console.log("hello");
 
 if (container) {
   const root = createRoot(container);
