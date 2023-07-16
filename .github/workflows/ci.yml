@@ -22,3 +22,22 @@ jobs:
       - name: Validate PR commits with commitlint
         if: github.event_name == 'pull_request'
         run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Install required dependencies
+        run: npm ci --force
+      
+      - name: Run unit tests
+        run: npm run test-ci
+        
+      - name: Check test result
+        run: |
+          exit_code=$?
+          if [ $exit_code -ne 0 ]; then
+            echo "Tests failed. Exiting with code $exit_code."
+            exit $exit_code
+          fi
