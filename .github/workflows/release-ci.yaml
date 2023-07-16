@@ -73,11 +73,14 @@ jobs:
           name: changelog
           path: changelog
 
-      - name: Read Changelog Content
+      - name: Read Changelog File
         id: read_changelog
         run: |
-          changelog_content=$(cat "${{ steps.download.outputs.download-path }}/CHANGELOG.md")
-          echo "::set-output name=changelog_content::$changelog_content"
+          CHANGELOG_CONTENT=$(cat << EOF
+          $(cat changelog/CHANGELOG.md)
+          EOF
+          )
+          echo "::set-output name=changelog_content::$CHANGELOG_CONTENT"
 
       - name: Read changelog logging
         run: |
