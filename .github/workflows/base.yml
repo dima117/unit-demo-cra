@@ -46,17 +46,12 @@ jobs:
 
     steps:
       - name: Get release version
-        run: |
-          const previousTag = execSync('git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1)').toString().trim();
-          const tagRange = `${currentTag}...${previousTag}`;
-          const command = `git log --pretty=format:"- %s" ${tagRange}`;
-          echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          echo "GITLOG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
 
       - name: Check out code
         uses: actions/checkout@v3
         with:
-         fetch-depth: '0'
+          fetch-depth: "0"
 
       - name: Create release branch
         run: |
@@ -76,7 +71,7 @@ jobs:
             const tagRange = `${currentTag}...${previousTag}`;
             const command = `git log --pretty=format:"- %s" ${tagRange}`;
             const changeLog = `$(echo "${command}" | bash)`;
-        
+
             const issueBody = `
               **Author**: ${process.env.GITHUB_ACTOR}
               **Date**: ${new Date().toISOString()}
@@ -85,7 +80,7 @@ jobs:
               Changelog:
               ${changeLog};
             `;
-            
+
             const { data: newIssue } = await github.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
