@@ -19,20 +19,21 @@ jobs:
         run: |
           echo "### Release Information" > release_issue.md
           
-          RELEASE_VERSION=$(echo "${{ github.ref }}" | sed 's/v//')
+          echo "${{ github.ref.refs.tags }}"
+
+          RELEASE_VERSION=$(echo "${{ github.ref.refs.tags }}" | sed 's/v//')
           echo "- Version: $RELEASE_VERSION" >> release_issue.md
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
           
-          TAG_NAME=${{ github.ref }}
+          TAG_NAME=${{ github.ref.refs.tags }}
           TAG_AUTHOR=$(git show --format='%an' $TAG_NAME)
-          echo "- Author: $TAG_NAME"
+          echo "- Author: $TAG_AUTHOR"
 
-          TAG_DATE=$(date +"%Y-%m-%d")
-          # TAG_DATE=$(git show --format='%ad' --date=format:'%Y-%m-%d %H:%M:%S' $TAG_NAME)
+          TAG_DATE=$(git show --format='%ad' --date=format:'%Y-%m-%d %H:%M:%S' $TAG_NAME)
           echo "- Date: $CURRENT_DATE" >> release_issue.md
           
           echo "#### Changelog" >> release_issue.md
-          LAST_TAG=$(git describe --abbrev=0 --tags --match 'v[0-9]*')
+          LAST_TAG=$(git describe --abbrev=0 --tags --match 'v[0-9]*' --max-count=1 --skip=1)
           TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" $LAST_TAG..HEAD)
           echo "$TEXT_CHANGELOG" >> release_issue.md
 
