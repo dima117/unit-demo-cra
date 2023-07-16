@@ -10,9 +10,12 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
+      - name: Set output
+        id: vars
+        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
       - name: Create Branch
         uses: peterjgrainger/action-create-branch@v2.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.branch-name.outputs.tag }}
+          branch: ${{ steps.vars.outputs.tag }}
