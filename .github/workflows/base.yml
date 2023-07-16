@@ -70,7 +70,7 @@ jobs:
             const previousTag = execSync('git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1)').toString().trim();
             const tagRange = `${currentTag}...${previousTag}`;
             const command = `git log --pretty=format:"- %s" ${tagRange}`;
-            const changeLog = `$(echo "${command}" | bash)`;
+            const changeLog = execSync(`${command}`).toString().trim();
 
             const issueBody = `
               **Author**: ${process.env.GITHUB_ACTOR}
