@@ -58,7 +58,7 @@ jobs:
         output: report-markdown
         
     - name: Wright jest-report.md
-      run: echo "${{ steps.jest.outputs.report }}" >> jest-report.md
+      run: echo '${{ steps.jest.outputs.report }}' >> jest-report.md
 
 
     - uses: actions/upload-artifact@v3
