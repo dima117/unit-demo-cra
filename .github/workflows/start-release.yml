@@ -56,4 +56,5 @@ jobs:
             author -        `${{ github.actor }}`
             version -       `${{ steps.vars.outputs.tag }}`
             time -          `new Date()`
-            changelog       `${{ steps.changelog.outputs.changelog }}`
+            changelog:
+            `${{ steps.changelog.outputs.changelog }}`
