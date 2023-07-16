@@ -6,8 +6,32 @@ on:
       - 'v[0-9]+'
 
 jobs:
+  make_changelog:
+    runs-on: ubuntu-latest
+
+    outputs:
+      changelog: ${{ steps.changelog_step.outputs.changelog }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get Last Release Tag
+        id: last_tag
+        run: echo "LAST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Install auto-changelog
+        run: npm install -g auto-changelog
+
+      - name: Generate Changelog
+        run: auto-changelog --output CHANGELOG.md --starting-version ${{ env.LAST_TAG }}
+
+      - name: Save Changelog to Output
+        id: changelog_step
+        run: echo "changelog=$(cat CHANGELOG.md)" >> $GITHUB_OUTPUT
+
   create-release:
     runs-on: ubuntu-latest
+    needs: make_changelog
 
     steps:
       - uses: actions/checkout@v3
@@ -15,23 +39,15 @@ jobs:
       - name: Set Release Name
         run: echo "RELEASE_NAME=$(echo ${{ github.ref }} | sed 's#refs/tags/##')" >> $GITHUB_ENV
 
-      - name: Get Last Release Tag
-        id: last_tag
-        run: echo "LAST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
-      
-      - name: Install auto-changelog
-        run: npm install -g auto-changelog
-
-      - name: Generate Changelog
-        run: auto-changelog --output CHANGELOG.md --starting-version ${{ env.LAST_TAG }}
-
       - name: Create Release
         run: |
-          gh release create ${{ env.RELEASE_NAME }} ./CHANGELOG.md -F ./CHANGELOG.md
+          gh release create ${{ env.RELEASE_NAME }} -n ${{ needs.make_changelog.outputs.changelog }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   create-issue:
     runs-on: ubuntu-latest
+    needs: make_changelog
 
     permissions:
       contents: write
@@ -40,10 +56,27 @@ jobs:
     steps: 
       - uses: actions/checkout@v3
 
-      - name: Get Last Release Tag
-        id: last_tag
-        run: echo "LAST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+      - name: Get Release Name
+        run: echo "RELEASE_NAME=$(echo ${{ github.ref_name }})" >> $GITHUB_ENV
 
       - name: Get Release Date
         id: release_date
         run: echo "RELEASE_DATE=$(git show -s --format=%ci ${{ env.RELEASE_NAME }})" >> $GITHUB_ENV
+
+      - name: Create or Update Release Issue
+        uses: JasonEtco/create-an-issue@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          assignees: ${{ github.actor }}
+          labels: RELEASE
+          update_existing: true
+          search_existing: all
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_AUTHOR: ${{ github.actor }}
+          RELEASE_NAME: ${{ env.RELEASE_NAME }}
+          RELEASE_DATE: ${{ env.RELEASE_DATE }}
+          RELEASE_CHANGELOG: ${{ needs.make_changelog.outputs.changelog }}
+          
+  base-checks:
+    uses: ./.github/workflows/base-ci.yaml
