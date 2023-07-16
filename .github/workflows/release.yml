@@ -9,6 +9,11 @@ jobs:
   lint-and-test:
     runs-on: ubuntu-latest
 
+    outputs:
+      l-output: ${{ steps.run-lint.outputs.* }}
+      ut-output: ${{ steps.run-unit-tests.outputs.* }}
+      e2e-output: ${{ steps.run-e2e-tests.outputs.* }}
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -25,11 +30,13 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run Lint
+        id: run-lint
         run: |
           npm run lint
           echo "lint done" >> "$GITHUB_OUTPUT"
 
       - name: Run Unit Tests
+        id: run-unit-tests
         run: |
           npm run test-ci
           echo "unit tests done" >> "$GITHUB_OUTPUT"
@@ -43,6 +50,7 @@ jobs:
           retention-days: 30
 
       - name: Run Playwright Tests
+        id: run-e2e-tests
         run: |
           npx playwright test --project=chromium
           echo "e2e tests done" >> "$GITHUB_OUTPUT"
@@ -61,6 +69,16 @@ jobs:
     needs: lint-and-test
 
     steps:
+      - env:
+          output1: ${{ needs.lint-and-test.outputs.l-output }}
+          output2: ${{ needs.lint-and-test.outputs.ut-output }}
+          output3: ${{ needs.lint-and-test.outputs.e2e-output }}
+        run: |
+        echo "Linting: $output1" >> changelog.txt
+        echo "Unit Tests: $output2" >> changelog.txt
+        echo "E2E Tests: $output3" >> changelog.txt
+
+
       - name: Checkout Repo
         uses: actions/checkout@v3
 
@@ -79,10 +97,7 @@ jobs:
           echo "Previous tag: $previousTag"
           echo "Previous output: $prevOutput"
           changelog=$(git log --pretty=format:"%h %s (%an)" $previousTag..HEAD)
-          echo "Changelog: $changelog" > changelog.txt
-      - env:
-          prevOutput: ${{ needs.lint-and-test.outputs.* }}
-        run: echo "$prevOutput" >> changelog.txt
+          echo "Changelog: $changelog" >> changelog.txt
 
       - name: Create Release Issue
         uses: peter-evans/create-issue-from-file@v4
