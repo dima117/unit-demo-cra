@@ -13,10 +13,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Generate Tag Report
+      - name: Run ls
         run: |
-          chmod +x ./.github/scripts/generate_report.sh
-          ./.github/scripts/generate_report.sh 
+          ls
+          pwd
+      - name: Generate Tag Report
+        run: bash ./.github/scripts/generate_report.sh 
       - name: Create issue
         uses: imjohnbo/issue-bot@v3
         with:
