@@ -11,6 +11,10 @@ npm ci
 # Активация пре-коммит хуков
 npx husky install
 
+# Если пре-коммит хук был пропущен
+chmod ug+x .husky/*
+chmod ug+x .git/hooks/*
+
 #Тест пре-коммита, который выдаст ошибку
 git commit -m "foo: this will fail"
 
