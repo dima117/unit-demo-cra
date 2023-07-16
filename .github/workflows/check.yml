@@ -13,7 +13,6 @@ on:
 jobs:
   release-info:
     name: Get release info
-    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -35,6 +34,7 @@ jobs:
           echo "date=$(git show ${version} | grep Date -m 1)" >> $GITHUB_OUTPUT
 
       - name: Find issues
+        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master'
         uses: actions-cool/issues-helper@v3
         id: find-issues
         with:
@@ -45,7 +45,7 @@ jobs:
           labels: "RELEASE"
 
       - name: Create issue
-        if: steps.find-issues.outputs.issues == '[]'
+        if: steps.find-issues.outputs.issues == '[]' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master')
         uses: actions-cool/issues-helper@v3
         id: create-issue
         with:
@@ -182,7 +182,6 @@ jobs:
 
       - name: Test report
         uses: dorny/test-reporter@v1
-        id: e2e-report
         if: always()
         with:
           name: Report playwright test
@@ -197,4 +196,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ needs.release-info.outputs.issue-create }}
           body: |
-            [e2e test results](${{ github.server_url }}/${{ github.repository }}/runs/${{ steps.e2e-report.id }})
+            [e2e test results](${{ github.server_url }}/${{ github.repository }}/runs/${{ github.run_id }})
