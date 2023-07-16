@@ -71,6 +71,18 @@ jobs:
             let body = `Author: ${context.payload.sender.login}\n`
             body += `Date: ${new Date().toLocaleString()}\n`
             body += `Version: ${process.env.RELEASE_VER}\n\n`
+            if (steps.unit_test.outcome == 'success') {
+              body += "Unit tests results: PASSED ✅\n"
+            }
+            else {
+              body += "Unit tests results: FAILED 🚫\n"
+            }
+            if (steps.e2e_test.outcome == 'success') {
+              body += "E2E tests results: PASSED ✅\n"
+            }
+            else {
+              body += "Unit tests results: FAILED 🚫\n"
+            }
             body += `Test results: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.runId}`
 
             github.rest.issues.create({
