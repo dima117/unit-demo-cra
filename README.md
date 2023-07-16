@@ -1,5 +1,8 @@
 Telegram: RightBefore ✍🏻
 
+![image](https://github.com/ivi-ivi/unit-demo-cra/assets/50278067/2537ca59-5e0b-4300-acf5-2be7455504fd)
+
+
 В этом репозитории находится пример приложения с тестами:
 
 - [e2e тесты](e2e/example.spec.ts)
