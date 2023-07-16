@@ -15,13 +15,14 @@ create_issue_payload() {
   }
 EOF
 }
-
+echo "first"
 ALL_ISSUES=$(curl \
   -H "Authorization: token $GH_TOKEN" \
   -H "Accept: application/vnd.github.v3+json" \
   -X GET \
   https://api.github.com/repos/$GITHUB_REPOSITORY/issues)
 
+echo $ALL_ISSUES
 EXISTING_ISSUE_NUMBER=""
 for row in $(echo "${ALL_ISSUES}" | jq -r '.[] | @base64'); do
     echo "parse"
