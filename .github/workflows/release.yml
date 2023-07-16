@@ -20,18 +20,18 @@ jobs:
           echo "### Release Information"
           echo "### Release Information" > release_issue.md
           
-          echo "${{ github.ref.refs.tags[0] }}"
+          echo "${{ github.ref }}"
 
-          RELEASE_VERSION=$(echo "${{ github.ref.refs.tags }}" | sed 's/v//')
+          RELEASE_VERSION=$(echo "${{ github.ref }}" | sed 's/v//')
           echo "- Version: $RELEASE_VERSION"
           echo "- Version: $RELEASE_VERSION" >> release_issue.md
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
           
-          TAG_AUTHOR=$(git log -1 --pretty=format:%an ${{ github.ref.refs.tags }})
+          TAG_AUTHOR=$(git log -1 --pretty=format:%an ${{ github.ref }})
           echo "- Author: $TAG_AUTHOR"
           echo "- Author: $TAG_AUTHOR" >> release_issue.md
 
-          TAG_DATE=$(git log -1 --pretty=format:%ci ${{ github.ref.refs.tags }})
+          TAG_DATE=$(git log -1 --pretty=format:%ci ${{ github.ref }})
           echo "- Date: $TAG_DATE"
           echo "- Date: $TAG_DATE" >> release_issue.md
           
