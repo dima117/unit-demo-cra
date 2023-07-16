@@ -20,9 +20,9 @@ jobs:
 
       - name: build changelog
         id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+        uses: loopwerk/tag-changelog@v1
+        with:
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
 
       - name: create issue
         uses: JasonEtco/create-an-issue@v2
@@ -30,4 +30,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
           AUTHOR: ${{ github.actor }}
           TAG: ${{ github.ref_name }}
-          CHANGELOG: ${{ steps.build_changelog.outputs.changelog }}
+          CHANGELOG: ${{ steps.build_changelog.outputs.changes }}
