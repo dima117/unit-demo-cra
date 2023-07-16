@@ -32,12 +32,7 @@ jobs:
             - name: Find previous release tag
               id: get_previous_tag
               run: |
-                if [ $(git tag | wc -l) -ge 2 ]; then 
-                  PREVIOUS_TAG=$(git rev-list --tags --max-count=2 --skip=1)             
-                else 
-                  PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD) 
-                  echo "$PREVIOUS_TAG" 
-                fi 
+                PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${ github.ref_name }^)
                 echo ::set-output name=previous_tag::$(git rev-parse $PREVIOUS_TAG) 
 
             - name: Generate changelog
