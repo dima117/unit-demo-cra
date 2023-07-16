@@ -45,14 +45,14 @@ jobs:
             - name: Generate changelog
               id: generate_changelog
               run: |
-                git log --pretty=format:$'- hash: %h, name: %s \n' ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
+                git log --pretty=format:$'- hash: %h, name: %s \r\n' ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
                 echo ::set-output name=changelog::$(cat changelog.txt)
 
             - name: Create release
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run:
-                gh release create ${{ github.ref_name }} --title ${{ github.ref_name }} --notes ${{ steps.generate_changelog.outputs.changelog }}
+                gh release create ${{ github.ref_name }} --title ${{ github.ref_name }} --notes "${{ steps.generate_changelog.outputs.changelog }}"
 
             - name: Make issue
               env:
