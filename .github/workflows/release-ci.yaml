@@ -14,6 +14,10 @@ jobs:
 
       - name: Set Release Name
         run: echo "RELEASE_NAME=$(echo ${{ github.ref }} | sed 's#refs/tags/##')" >> $GITHUB_ENV
+
+      - name: Get Last Release Tag
+        id: last_tag
+        run: echo "LAST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
       
       - name: Install auto-changelog
         run: npm install -g auto-changelog
