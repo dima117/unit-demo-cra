@@ -52,6 +52,7 @@ jobs:
           title: RELEASE ${{ steps.vars.outputs.tag }}
           labels: RELEASE
           body: |
+            cat << EOF
             ### Context
             Workflow name - `${{ github.workflow }}`
             Job -           `${{ github.job }}`
