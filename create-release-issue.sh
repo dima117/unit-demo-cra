@@ -48,6 +48,9 @@ else
         -H "Accept: application/vnd.github.v3+json" \
         https://api.github.com/repos/$GITHUB_REPOSITORY/issues \
         -d "$(create_issue_payload)" | tr -d '\n'
+
+    here=$(get_existing_issue_number)
+    echo "$here"
     # echo $response
     # issue_number=$(echo "$response" | jq '.number')
 fi
