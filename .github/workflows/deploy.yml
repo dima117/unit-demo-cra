@@ -52,7 +52,7 @@ jobs:
       - name: Dump parsed object
         run: |
           url="$(cat ${{ steps.find-issue.outputs.path }})"
-          echo "cat __matching-issues.txt"
+          echo "$url"
           response=$(curl -sSL \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
