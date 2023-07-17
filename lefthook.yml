@@ -33,8 +33,3 @@
 #       runner: node
 #     "any.go":
 #       runner: go run
-
-pre-commit:
-  hooks:
-      - id: commitlint
-        run: npx commitlint --edit $1
