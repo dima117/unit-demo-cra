@@ -68,7 +68,7 @@ jobs:
       - name: Показать текст
         run: |
           echo "${{ steps.load-issue.outputs.BODY}}"
-          echo '{{TEXT}}\n Сделан деплой\n https://neemkashu.github.io/unit-demo-cra-neemkashu/\n Деплой утвердил: {{ payload.sender.login }}' > template.md
+          echo '{{TEXT}}\n Сделан деплой\n https://neemkashu.github.io/unit-demo-cra-neemkashu/\n Деплой утвердил: ${{ github.actor }}' > template.md
       - uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
