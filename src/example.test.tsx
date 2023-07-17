@@ -21,7 +21,7 @@ it('по адресу /about должна открываться страниц�
 
   const { getByTestId } = render(application);
 
-  expect(getByTestId('page-title').textContent).toEqual('About');
+  expect(getByTestId('page-title').textContent).toEqual('Aasdassdbout');
 });
 
 it('если добавить элемент, он появляется в списке', async () => {
@@ -42,5 +42,5 @@ it('если добавить элемент, он появляется в сп�
 
   const items = getAllByTestId('list-item');
 
-  expect(items.map(el => el.textContent)).toContain('Сделать домашкуawdawd');
+  expect(items.map(el => el.textContent)).toContain('awdawdделать домашкуawdawd');
 });
