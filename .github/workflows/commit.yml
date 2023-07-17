@@ -10,6 +10,8 @@ on:
         value: ${{ jobs.testing-e2e.outputs.output3 }}
       unit-result:
         value: ${{ jobs.testing-unit.outputs.output1 }}
+      artifact-link:
+        value: ${{ jobs.testing-unit.outputs.output3 }}
 
 jobs:
   commitlint:
@@ -119,4 +121,4 @@ jobs:
         id: save-test
         run: |
           echo "result-unit=${{ steps.unit-test.outcome }}" >> $GITHUB_OUTPUT
-          echo "Workflow Run Link: ${{ github.repository }}/actions/runs/ ${{ github.run_id }}"
+          echo "Workflow Run Link: github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"

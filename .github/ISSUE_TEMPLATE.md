@@ -11,6 +11,6 @@ title: RELEASE version {{env.RELEASE_VERSION}}
 
 Результаты тестов
 
-- unit: ${{env.TEST_UNIT}}
-- e2e: ${{env.TEST_E2E}}
-- job: ${{env.TEST}}
+- unit: {{env.TEST_UNIT}}
+- e2e: {{env.TEST_E2E}}
+- job: {{env.TEST}}
