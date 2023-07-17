@@ -14,7 +14,9 @@ if (container) {
   const store = initStore();
 
   root.render(
-    <BrowserRouter>
+    <BrowserRouter
+      basename={process.env.DEPLOY ? "unit-demo-cra-neemkashu" : ""}
+    >
       <Provider store={store}>
         <Application />
       </Provider>
