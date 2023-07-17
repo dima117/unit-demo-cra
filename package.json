@@ -31,7 +31,9 @@
         "eject": "react-scripts eject",
         "test": "react-scripts test",
         "e2e": "playwright test --project=chromium && playwright show-report",
-        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\""
+        "test-ci-e2e": "playwright test --project=chromium",
+        "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\"",
+        "check-commit": "git log --all -n 1 --pretty=%s | commitlint"
     },
     "eslintConfig": {
         "extends": [
@@ -57,6 +59,8 @@
         ]
     },
     "devDependencies": {
+        "@commitlint/cli": "^17.6.6",
+        "@commitlint/config-conventional": "^17.6.6",
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
         "jest-html-reporter": "^3.7.0"

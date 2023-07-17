@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: '*'
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  ci:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run check-commit
+      - run: npm run build
+      - run: npm run test-ci
+      - run: npx playwright install
+      - run: npm run test-ci-e2e
