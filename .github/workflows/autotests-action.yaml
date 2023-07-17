@@ -1,0 +1,70 @@
+name: autotests-action
+on: pull_request
+jobs:
+    system-deployment:
+        runs-on: ubuntu-22.04
+
+        steps:
+            - name: Get source code
+              uses: actions/checkout@v3
+
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "18"
+
+            - name: Cache node modules
+              uses: actions/cache@v3
+              with:
+                  path: ~/.npm
+                  key: node_modules_cache
+
+            - name: Install dependencies
+              run: npm ci
+
+    unit-tests:
+        needs: system-deployment
+        runs-on: ubuntu-22.04
+
+        steps:
+            - name: Get source code
+              uses: actions/checkout@v3
+
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "18"
+
+            - name: Cache node modules
+              uses: actions/cache@v3
+              with:
+                  path: ~/.npm
+                  key: node_modules_cache
+
+            - name: Run unit tests
+              run: npm run test-ci
+
+    e2e-tests:
+        needs: system-deployment
+        runs-on: ubuntu-22.04
+
+        steps:
+            - name: Get source code
+              uses: actions/checkout@v3
+
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "18"
+
+            - name: Cache node modules
+              uses: actions/cache@v3
+              with:
+                  path: ~/.npm
+                  key: node_modules_cache
+
+            - name: Install playwright
+              run: npx playwright install
+
+            - name: Run e2e tests
+              run: npm run e2e-ci
