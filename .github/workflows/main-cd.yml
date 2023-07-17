@@ -50,12 +50,6 @@ jobs:
               run: |
                 git log --pretty=format:$'- hash: %h, name: %s' ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
                 echo ::set-output name=changelog::$(cat changelog.txt)
-                USER_EMAIL=$(gh api users/${{ github.actor }} --jq '.email')
-                git config --global user.email $USER_EMAIL
-                git config --global user.name ${{ github.actor }}
-                git add changelog.txt
-                git commit -am "ci: add changelog"
-                git push
 
             - name: Upload changelog artifact
               id: upload_artifact
@@ -74,7 +68,7 @@ jobs:
               env:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ${{ steps.upload_artifact.outputs.url }}' --label RELEASE
+                gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Версия: ${{ github.ref_name }} \n Changelog: ${{ steps.generate_changelog.outputs.changelog }}' --label RELEASE
               # if [$(gh issue list --search "repo:${{ github.repository }} Release ${{ github.ref_name }}") -eq ""]; then
               #   gh issue create --title "Release ${{ github.ref_name }}" --body $'Автор релиза: ${{ github.actor }} \n Дата релиза: ${{ github.event.head_commit.timestamp }} \n Changelog: ' --label RELEASE
               # else 
