@@ -1,5 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
+.git
 # dependencies
 /node_modules
 /.pnp
@@ -26,3 +26,4 @@ test-report.html
 /test-results/
 /playwright-report/
 /playwright/.cache/
+junit.xml

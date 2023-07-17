@@ -1,0 +1,66 @@
+name: deploy-github-actions
+run-name: 🌍 ${{ github.actor }} is running deploy to PRODUCTION
+on: 
+  workflow_dispatch
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  call-test-workflow:
+    name: 🧪🐞🪲 Run tests
+    uses: ./.github/workflows/test-github-actions.yml
+
+
+  build-deploy:
+    needs: call-test-workflow
+    name: 🌍🚀🌖 Build and deploy
+    runs-on: ubuntu-latest
+      
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+        
+      - name: ⚙️ Install deps
+        run: npm ci
+    
+      - name: 🎬 Build application
+        env:
+          BASE_URL: ${{ vars.BASE_URL }}
+        run: PUBLIC_URL="${BASE_URL}" npm run build
+        
+        if: success()
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build/
+          retention-days: 30
+        
+      - name: Deploy to GitHub Pages
+        id: deployment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+        run: |
+          npm i gh-pages
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          npx gh-pages -d build -u "github-actions-bot <support+actions@github.com>"
+      
+        if: success()
+      - name: Close Issue
+        env:
+          GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+        run: |
+          BRANCH=${{ github.ref_name }}
+          ISSUE_TITLE="Release ${BRANCH#*-}"
+          ISSUE_ID=$(gh issue list --json number,title,labels -q \
+            ".[] | select(.title == \"${ISSUE_TITLE}\" and .labels[].name == \"RELEASE\") | .number")
+          if [ ! -z "$ISSUE_ID" ]; then
+            gh issue close $ISSUE_ID -c "[Deployment done](https://sr480.github.io/unit-demo-cra/)" -r "completed"
+          fi
+          

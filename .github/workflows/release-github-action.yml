@@ -1,0 +1,85 @@
+name: release-github-actions
+run-name: 🚀 ${{ github.actor }} is running release
+on:
+   push:
+     tags:
+       - 'v\d+'
+
+jobs:
+  create_release_branch:
+    name: 🥳 Create release branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
+
+      - name: Create release branch
+        run: |
+          BRANCH_NAME="release-${{ github.ref_name }}"
+          git branch -d "$BRANCH_NAME" || true;
+          git branch "$BRANCH_NAME"
+          git push -f -u origin "$BRANCH_NAME"
+          
+  create_issue:
+    name: 📃 Create Release issue
+    runs-on: ubuntu-latest
+    needs: create_release_branch
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: 🌈 Define tags
+        id: get_tags
+        run: |
+          CURRENT_TAG=${{ github.ref_name }} 
+          TIMESTAMP=$(git show -s --format=%ai ${CURRENT_TAG})
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${CURRENT_TAG}^)
+          echo "current=${CURRENT_TAG}" >> "$GITHUB_OUTPUT"
+          echo "previous=${PREVIOUS_TAG}" >> "$GITHUB_OUTPUT"
+          echo "timestamp=${TIMESTAMP}" >> "$GITHUB_OUTPUT"
+
+      - name: 📃 Generate changelog
+        id: generate_log
+        run: |
+          CHANGELOG=$(git log --pretty=format:"- %s" "${{ steps.get_tags.outputs.previous }}...${{ steps.get_tags.outputs.current }}")
+          echo "Display changelog:"
+          echo $CHANGELOG
+          echo "log<<EOF" >> $GITHUB_OUTPUT
+          echo "${CHANGELOG}" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+      - name: ✍️ Create release issue
+        env:
+          GH_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+        run: |
+          ISSUE_TITLE="Release ${{ github.ref_name }}"
+          ISSUE_BODY=$(cat << EOF
+          ### Это релиз приложения версии ${{ github.ref_name }}
+
+          Автор релиза: ${{ github.actor }}
+
+          Время: ${{ steps.get_tags.outputs.timestamp }}
+          
+          Changelog:
+
+          ${{ steps.generate_log.outputs.log }}
+
+          Для запуска развертывания перейдите на страницу экшена и выберите ветку релиза
+
+          [Deploy application](https://github.com/sr480/unit-demo-cra/actions/workflows/build-deploy-github-actions.yml)
+          EOF
+          )
+
+          ISSUE_ID=$(gh issue list --json number,title,labels -q \
+            ".[] | select(.title == \"${ISSUE_TITLE}\" and .labels[].name == \"RELEASE\") | .number")
+          if [ ! -z "$ISSUE_ID" ]; then
+            echo "Editing existing issue"
+            gh issue edit $ISSUE_ID --body "$ISSUE_BODY"
+          else
+            echo "Creating new issue"
+            gh issue create --title "Release ${{ github.ref_name }}" --body "$ISSUE_BODY" --label "RELEASE" --assignee "@me"
+          fi
