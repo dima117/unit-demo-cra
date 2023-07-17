@@ -23,28 +23,28 @@ jobs:
         run: |
           echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
           echo "BRANCH_RELEASE=release-$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
-  #       - uses: actions/checkout@v3
-  #       - name: 🔧 Сборка # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
-  #         run: |
-  #           npm ci
-  #           npm run build
-  #
-  #       - name: 🚀 Деплой
-  #         uses: JamesIves/github-pages-deploy-action@v4
-  #         with:
-  #           folder: build # The folder the action should deploy.
+      - uses: actions/checkout@v3
+      - name: 🔧 Сборка # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
+        run: |
+          npm ci
+          npm run build
+
+      - name: 🚀 Деплой
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build # The folder the action should deploy.
   close-issue:
     name: 📝 Запись в changelog
     runs-on: ubuntu-latest
     needs: build-and-deploy
     steps:
-      - name: Найти issue
+      - name: 🔎 Найти issue
         id: find-issue
         uses: lee-dohm/select-matching-issues@v1
         with:
           query: "in:title ${{needs.build-and-deploy.outputs.output1}}"
           token: ${{ github.token }}
-      - name: Получить номер issue
+      - name: 🔢 Получить номер issue
         id: issue-number
         run: |
           file_content=$(cat ${{ steps.find-issue.outputs.path }})
@@ -54,7 +54,7 @@ jobs:
         run: |
           echo "${{ steps.issue-number.outputs.issueNumber }}"
           echo "${{ steps.issue-number.outputs }}"
-      - name: Получить текст issue
+      - name: 🧾 Получить текст issue
         id: load-issue
         run: |
           echo 'BODY<<EOF' >> $GITHUB_OUTPUT
@@ -77,3 +77,8 @@ jobs:
         with:
           filename: ./template.md
           update_existing: true
+      - name: ✨ Закрыть issue
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{ steps.issue-number.outputs.issueNumber }}
+          comment: Релиз завершен
