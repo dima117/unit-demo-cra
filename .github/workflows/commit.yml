@@ -1,6 +1,15 @@
 name: 👩‍🔧 CI
 
-on: [pull_request, workflow_call]
+on:
+  pull_request:
+  workflow_call:
+    outputs:
+      e2e-result:
+        value: ${{ jobs.testing-e2e.outputs.output1 }}
+      e2e-job-result:
+        value: ${{ jobs.testing-e2e.outputs.output3 }}
+      unit-result:
+        value: ${{ jobs.testing-unit.outputs.output1 }}
 
 jobs:
   commitlint:
@@ -42,6 +51,9 @@ jobs:
   testing-e2e:
     name: 🐛 Тесты e2e
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{steps.save-test.outputs.result-e2e}}
+      output3: ${{steps.save-test.outcome}}
 
     strategy:
       matrix:
@@ -57,6 +69,7 @@ jobs:
         run: |
           npm ci
       - name: 🧪 Запуск e2e тестов
+        id: e2e-test
         run: |
           npm run e2e-ci
       - name: 🧙‍♂️ Сохранение артефактов
@@ -65,9 +78,18 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report
+      - name: 🔗 Сохранение ссылки
+        if: always()
+        id: save-test
+        run: |
+          echo "result-e2e=${{ steps.e2e-test.outcome }}" >> $GITHUB_OUTPUT
   testing-unit:
     name: 🃏 Тесты unit
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{steps.save-test.outputs.result-unit}}
+      # output2: ${{steps.save-test.outputs.link}}
+      output3: ${{steps.unit-test.outcome}}
 
     strategy:
       matrix:
@@ -83,6 +105,7 @@ jobs:
         run: |
           npm ci
       - name: 🧪 Запуск unit тестов
+        id: unit-test
         run: |
           npm run test-ci
       - name: 🧙‍♂️ Сохранение артефактов
@@ -91,3 +114,9 @@ jobs:
         with:
           name: jest-report
           path: test-report.html
+      - name: 🔗 Сохранение ссылки
+        if: always()
+        id: save-test
+        run: |
+          echo "result-unit=${{ steps.unit-test.outcome }}" >> $GITHUB_OUTPUT
+          echo "Workflow Run Link: ${{ github.repository }}/actions/runs/ ${{ github.run_id }}"

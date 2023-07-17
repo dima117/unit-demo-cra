@@ -51,13 +51,6 @@ jobs:
           COMMIT_LIST=$(git log --pretty=format:"%s" ${{ env.RELEASE_VERSION }} ^${{ env.PREV_TAG }})
           echo "$COMMIT_LIST" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-      - uses: JasonEtco/create-an-issue@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG_DATE: ${{ github.event.head_commit.timestamp }}
-          COMMITS: ${{ env.COMMIT_LIST }}
-        with:
-          update_existing: true
       - name: 🔎 Проверка наличия ветки
         id: check_branch
         run: |
@@ -81,3 +74,18 @@ jobs:
   call-tests:
     needs: changelog
     uses: ./.github/workflows/commit.yml
+  write-issue:
+    needs: call-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SENDER: ${{ github.actor }}
+          TAG_DATE: ${{ github.event.head_commit.timestamp }}
+          COMMITS: ${{ env.COMMIT_LIST }}
+          TEST_UNIT: ${{needs.call-tests.outputs.unit-result}}
+          TEST_E2E: ${{needs.call-tests.outputs.e2e-result}}
+          TEST: ${{needs.call-tests.outputs.e2e-job-result}}
+        with:
+          update_existing: true
