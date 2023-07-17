@@ -6,7 +6,7 @@ export interface ApplicationState {
   done: Record<number, boolean>;
 }
 
-const items = ["Позавтракать", "Сходить в магазин", "Покормить кота", "Новая задача", "Задача номер пять"];
+const items = ["Позавтракать", "Сходить в магазин", "Покормить кота", "Новая задача", "Задача номер пять", "Задача номер 6"];
 
 const DEFAULT_STATE = { items, done: {}, text: "" };
 
