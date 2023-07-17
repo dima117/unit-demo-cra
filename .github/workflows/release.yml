@@ -1,9 +1,9 @@
 name: Release Process
 
-on: [push]
-  # push:
-  #   tags:
-  #     - 'v\d+'
+on:
+  push:
+    tags:
+      - 'v\d+'
 
 jobs:
   release:
@@ -79,7 +79,7 @@ jobs:
     uses: ./.github/workflows/test.yml
     
   testingissue: 
-    needs: testing
+    needs: [testing, release]
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -102,14 +102,26 @@ jobs:
         id: report
         uses: juliangruber/read-file-action@v1
         with:
-          path: jest-report.md       
+          path: jest-report.md    
+          
+      - name: Get all release issues
+        id: get_issue
+        uses: lee-dohm/select-matching-issues@v1
+        with:
+          format: raw
+          query: 'label:RELEASE'
+          token: ${{ github.token }}
+
+      - name: Get latest issue number
+        id: issues_number
+        run: echo "issue_number=$(echo $(head -n 1 ${{ steps.get_issue.outputs.path }}) | grep -Eo '[0-9]+$')" >> "$GITHUB_OUTPUT"
           
       - name: Create comment
         uses: actions-cool/issues-helper@v3
         with:
           actions: 'create-comment'
           token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: 27
+          issue-number:  ${{ steps.issues_number.outputs.issue_number }}
           body: ${{ steps.report.outputs.content }}
 #           emoji: '+1' or '+1,heart'
     
