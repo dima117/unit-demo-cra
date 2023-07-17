@@ -51,7 +51,7 @@ jobs:
           body: ${{ steps.find-issue.outputs.path }}
       - name: Dump parsed object
         run: |
-          url="${{ steps.find-issue.outputs.path }}"
+          url="$(cat ${{ steps.find-issue.outputs.path }})"
           response=$(curl -sSL \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
