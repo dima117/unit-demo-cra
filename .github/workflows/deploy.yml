@@ -54,7 +54,7 @@ jobs:
         run: |
           echo "${{ steps.issue-number.outputs.issueNumber }}"
           echo "${{ steps.issue-number.outputs }}"
-      - name: Получить тест issue
+      - name: Получить текст issue
         id: load-issue
         run: |
           echo 'BODY<<EOF' >> $GITHUB_OUTPUT
@@ -68,3 +68,18 @@ jobs:
       - name: Показать текст
         run: |
           echo "${{ steps.load-issue.outputs.BODY}}"
+          cat << EOF > template.md
+          {{TEXT}}
+
+          Сделан деплой
+          https://neemkashu.github.io/unit-demo-cra-neemkashu/
+
+          Деплой утвердил: {{ payload.sender.login }}
+          EOF
+      - uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEXT: ${{ steps.load-issue.outputs.BODY }}
+        with:
+          filename: ./template.md
+          update_existing: true
