@@ -148,6 +148,7 @@ jobs:
               })
             }
             else {
+              console.log("Updating issue");
               github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
