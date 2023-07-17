@@ -27,5 +27,5 @@ echo "BRANCH=$branch_name" >> $GITHUB_ENV
 echo "AUTHOR=$author" >> $GITHUB_ENV
 echo "DATE=$date" >> $GITHUB_ENV
 echo "CHANGELOG<<\n" >> $GITHUB_ENV
-$changelog >> $GITHUB_ENV
+echo "$changelog" >> $GITHUB_ENV
 echo "\n" >> $GITHUB_ENV
