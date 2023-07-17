@@ -26,7 +26,6 @@
         "web-vitals": "^1.1.2"
     },
     "scripts": {
-        "prepare-commit-msg": "lefthook prepare-commit-msg",
         "start": "react-scripts start",
         "build": "react-scripts build",
         "eject": "react-scripts eject",
@@ -66,23 +65,5 @@
         "husky": "^8.0.3",
         "jest-html-reporter": "^3.7.0",
         "lefthook": "^1.4.4"
-    },
-    "configurations": [
-        {
-            "type": "pwa-node",
-            "request": "launch",
-            "name": "Launch Program",
-            "skipFiles": [
-                "<node_internals>/**",
-                "node_modules"
-            ],
-            "runtimeArgs": [
-                "-r",
-                "ts-node/register"
-            ],
-            "args": [
-                "${workspaceFolder}/src/server.ts"
-            ]
-        }
-    ]
+    }
 }
