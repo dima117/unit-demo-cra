@@ -121,4 +121,4 @@ jobs:
         id: save-test
         run: |
           echo "result-unit=${{ steps.unit-test.outcome }}" >> $GITHUB_OUTPUT
-          echo "link=$(github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_OUTPUT
+          echo "link=github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
