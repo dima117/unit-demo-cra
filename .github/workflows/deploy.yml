@@ -68,14 +68,7 @@ jobs:
       - name: Показать текст
         run: |
           echo "${{ steps.load-issue.outputs.BODY}}"
-          cat << EOF > template.md
-          \{\{TEXT\}\}
-
-          Сделан деплой
-          https://neemkashu.github.io/unit-demo-cra-neemkashu/
-
-          Деплой утвердил: {{ payload.sender.login }}
-          EOF
+          echo '{{TEXT}}\n Сделан деплой\n https://neemkashu.github.io/unit-demo-cra-neemkashu/\n Деплой утвердил: {{ payload.sender.login }}' > template.md
       - uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
