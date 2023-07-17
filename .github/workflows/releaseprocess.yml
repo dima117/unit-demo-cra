@@ -30,8 +30,6 @@ jobs:
     steps:
       - name: Get the repo code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Setup node
         uses: actions/setup-node@v3
