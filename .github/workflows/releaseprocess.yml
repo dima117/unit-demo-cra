@@ -99,12 +99,15 @@ jobs:
       - name: Load environment variables
         run: |
           VERSION=$(cat env_vars.txt)
-          git rev-list --pretty=oneline $VERSION...HEAD
-          git rev-list --pretty=oneline $VERSION...HEAD > diff_result.txt
+          git rev-list --pretty=oneline $VERSION...HEAD > diff_result.txt || echo "no correct info" > diff_result.txt
           echo "DIFF_RESULT<<EOF" >> $GITHUB_ENV
           cat diff_result.txt >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          echo "PREV_VERSION=$VERSION" >> $GITHUB_ENV
+          if grep -q "no correct info" diff_result.txt; then
+            echo "PREV_VERSION=no correct info" >> $GITHUB_ENV
+          else
+            echo "PREV_VERSION=$VERSION" >> $GITHUB_ENV
+          fi
 
       - name: Create Release Issue
         uses: actions/github-script@v6
