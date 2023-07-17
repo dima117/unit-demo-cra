@@ -36,3 +36,30 @@ jobs:
     needs: create-issue
     name: check tests
     uses: danlevik/unit-demo-cra/.github/workflows/testing.yml@master
+
+  deploy:
+    needs: check-tests
+    name: deploy on gh-pages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: install dependencies
+        run: npm ci
+
+      - name: build project
+        run: npm run build
+
+      - name: deploy
+        run: |
+          git remote set-url origin https://git:${{ secrets.GH_ACCESS_TOKEN }}@github.com/danlevik.git
+          npx gh-pages -d build -u 'github-actions-bot <support+actions@github.com>'
+        env:
+          GH_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
