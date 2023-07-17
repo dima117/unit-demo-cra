@@ -69,7 +69,7 @@ jobs:
         run: |
           echo "${{ steps.load-issue.outputs.BODY}}"
           cat << EOF > template.md
-          {{TEXT}}
+          \{\{TEXT\}\}
 
           Сделан деплой
           https://neemkashu.github.io/unit-demo-cra-neemkashu/
