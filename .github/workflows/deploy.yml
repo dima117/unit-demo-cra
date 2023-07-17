@@ -68,8 +68,7 @@ jobs:
       - name: Показать текст
         run: |
           echo "${{ steps.load-issue.outputs.BODY}}"
-          echo '--- \n title: RELEASE version {{env.RELEASE_VERSION}} \n --- \n{{env.TEXT}}\n Сделан деплой\n https://neemkashu.github.io/unit-demo-cra-neemkashu/\n Деплой утвердил: ${{ github.actor }}' > template.md
-          cat template.md
+          echo -e '---\ntitle: RELEASE version {{env.RELEASE_VERSION}}\n---\n{{env.TEXT}}\n Сделан деплой\n https://neemkashu.github.io/unit-demo-cra-neemkashu/\n Деплой утвердил: ${{ github.actor }}' > template.md
       - uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
