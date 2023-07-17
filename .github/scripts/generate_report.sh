@@ -4,6 +4,7 @@
 
 latest_tag=$(git describe --tags --abbrev=0)
 previous_tag=$(git describe --abbrev=0 --tags $latest_tag^)
+branch_name="release-$latest_tag"
 
 echo "Latest tag: $latest_tag"
 echo "Previous tag: $previous_tag"
@@ -22,6 +23,7 @@ echo "Changelog: $changelog"
 
 # Send to github env
 echo "TAG=$latest_tag" >> $GITHUB_ENV
+echo "BRANCH=$branch_name" >> $GITHUB_ENV
 echo "AUTHOR=$author" >> $GITHUB_ENV
 echo "DATE=$date" >> $GITHUB_ENV
 echo "CHANGELOG=$changelog" >> $GITHUB_ENV

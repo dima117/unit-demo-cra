@@ -7,8 +7,8 @@ on:
 
 jobs:
   release:
-    permissions:
-      issues: write
+
+    permissions: write-all
 
     runs-on: ubuntu-latest
 
@@ -16,15 +16,15 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Print versions
-        run: git version
+          token: ${{ secrets.WORKFLOW_TOKEN }}
       - name: Generate Tag Report
         run: bash ./.github/scripts/generate_report.sh 
       - name: Create issue
         uses: imjohnbo/issue-bot@v3
+        id: issue
         with:
           labels: "release"
-          title: "release ${{ env.TAG }}"
+          title: "Release ${{ env.TAG }}"
           body: |
             ## Information
             Author: ${{ env.AUTHOR }}
@@ -35,5 +35,8 @@ jobs:
           token: ${{ env.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      - name: Create release branch
+        run: |
+          git checkout -b ${{ env.BRANCH }}
+          git push -u origin ${{ env.BRANCH }}
 

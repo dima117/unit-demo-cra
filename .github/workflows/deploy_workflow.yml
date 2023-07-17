@@ -1,0 +1,161 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - 'release-v[0-9]+'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18 
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 
+      - name: Install Deps
+        run: npm ci
+      - name: Run Unit Tests
+        run: CI=true npm test -- --useStderr 2> unit_report.txt 
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run e2e
+        run: npm run ci:e2e > e2e_report.txt 
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+      - name: Log tests to issue
+        uses: actions/github-script@v6
+        env:
+          BRANCH: ${{ github.ref_name }}
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'release'
+            })
+
+            const tagName = process.env.BRANCH.split('-')[1]
+
+            const lastIssue = issues.data.find(issue => issue.title.includes(tagName))
+
+            const fs = require('fs')
+
+            const unit = fs.readFileSync('unit_report.txt', 'utf8')
+            const e2e = fs.readFileSync('e2e_report.txt', 'utf8')
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo, issue_number: lastIssue.number,
+              body: `## Tests Report\n\n### Unit Tests Report\n<div>${unit}</div>\n\n### E2E Tests Report\n<div>${e2e}</div>` 
+            })
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18 
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 
+      - name: Install Deps
+        run: npm ci
+      - name: Build
+        run: npm run build > build_report.txt 
+      - name: Upload production-ready build files
+        uses: actions/upload-artifact@v3
+        with:
+          name: production-files
+          path: ./build
+      - name: Log build to issue
+        uses: actions/github-script@v6
+        env:
+          BRANCH: ${{ github.ref_name }}
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'release'
+            })
+
+            const tagName = process.env.BRANCH.split('-')[1]
+
+            const lastIssue = issues.data.find(issue => issue.title.includes(tagName))
+
+            const fs = require('fs')
+
+            const build = fs.readFileSync('build_report.txt', 'utf8')
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: lastIssue.number,
+              body: `## Build Report\n<div>${build}</div>` 
+            })
+
+  deploy:
+    needs: build
+
+    permissions:
+      pages: write
+      id-token: write
+      issues: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: production-files
+          path: ./dist
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: './dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+      - name: Log deployment to issue
+        uses: actions/github-script@v6
+        env:
+          BRANCH: ${{ github.ref_name }}
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'release'
+            })
+
+            const tagName = process.env.BRANCH.split('-')[1]
+
+            const lastIssue = issues.data.find(issue => issue.title.includes(tagName))
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: lastIssue.number,
+              body: "Successfuly deployed"
+            })
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: lastIssue.number,
+              state: 'closed'
+            })
