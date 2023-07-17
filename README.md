@@ -20,7 +20,7 @@
 
 Пока все проверки не пройдены, ПР не может быть замержен.
 
-Пример валидного ПР ✅ [ссылка](https://github.com/neemkashu/unit-demo-cra-neemkashu/pulls)
+Пример валидного ПР ✅ [ссылка](https://github.com/neemkashu/unit-demo-cra-neemkashu/pull/13)
 
 Пример невалидного ПР ❌ [ссылка](https://github.com/neemkashu/unit-demo-cra-neemkashu/pull/9): падает тест и проверка коммита
 
