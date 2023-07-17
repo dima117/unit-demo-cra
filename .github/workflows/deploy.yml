@@ -57,11 +57,13 @@ jobs:
       - name: Получить тест issue
         id: load-issue
         run: |
+          echo 'EOF' >> $GITHUB_OUTPUT
           response=$(curl -sSL \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
           "https://api.github.com/repos/neemkashu/unit-demo-cra-neemkashu/issues/${{ steps.issue-number.outputs.issueNumber}}")
-          echo "::set-output name=issueText::$(echo "$response" | jq -r '.body')"
+          echo "$response" | jq -r '.body' >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
       - name: Показать текст
         run: |
-          echo "${{ steps.load-issue.outputs.issueText}}"
+          echo "${{ steps.load-issue.outputs.response}}"
