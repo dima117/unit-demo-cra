@@ -48,6 +48,9 @@ jobs:
               run: |
                 git log --pretty=format:$'- hash: %h, name: %s' ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
                 echo ::set-output name=changelog::$(cat changelog.txt)
+                USER_EMAIL=$(curl -s -H "Authorization: token <YOUR_GITHUB_TOKEN>" https://api.github.com/users/$GITHUB_ACTOR | grep -Eo '"email": "([^"]+)"' | cut -d '"' -f 4)
+                git config --global user.email $USER_EMAIL
+                git config --global user.name ${{ github.actor }}
                 git add changelog.txt
                 git commit -am "ci: add changelog"
                 git push
