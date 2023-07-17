@@ -42,7 +42,7 @@ jobs:
         id: find-issue
         uses: lee-dohm/select-matching-issues@v1
         with:
-          query: "title:${{needs.build-and-deploy.outputs.output1}}"
+          query: "in:title ${{needs.build-and-deploy.outputs.output1}}"
           token: ${{ github.token }}
       - name: Получить текст issue
         id: parsed
@@ -52,6 +52,7 @@ jobs:
       - name: Dump parsed object
         run: |
           url="$(cat ${{ steps.find-issue.outputs.path }})"
+          echo "cat __matching-issues.txt"
           response=$(curl -sSL \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github.v3+json" \
