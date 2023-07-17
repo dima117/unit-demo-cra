@@ -44,21 +44,16 @@ jobs:
         with:
           query: "in:title ${{needs.build-and-deploy.outputs.output1}}"
           token: ${{ github.token }}
-      - name: Получить текст issue
-        id: parsed
-        uses: codetheweb/gh-action-issue-parser@v1
-        with:
-          body: ${{ steps.find-issue.outputs.path }}
-      - name: Dump parsed object
+      - name: Получить номер issue
+        id: issue-number
         run: |
-          url="$(cat ${{ steps.find-issue.outputs.path }})"
-          echo "$url"
-          response=$(curl -sSL \
-          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          "$url")
-          echo "::set-output name=issueText::$(echo "$response" | jq -r '.body')"
-          echo ${{steps.find-issue.outputs.path}}
-          echo $parsed | jq
-        env:
-          parsed: ${{ steps.parsed.outputs.body }}
+          file_content=$(cat ${{ steps.find-issue.outputs.path }})
+          number=$(echo "$file_content" | grep -Eo '[0-9]+$')
+          echo "$number" >> $GITHUB_OUTPUT
+      - name: Parse Issue Body
+        uses: peter-murray/issue-body-parser-action@v1
+        id: issue_body_parser
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # This is assuming that you are triggering off the issue, otherwise you will need to know the issue number
+          issue_id: ${{ steps.issue-number.outputs.number }}
