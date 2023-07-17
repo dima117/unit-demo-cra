@@ -11,7 +11,7 @@ on:
       unit-result:
         value: ${{ jobs.testing-unit.outputs.output1 }}
       artifact-link:
-        value: ${{ jobs.testing-unit.outputs.output3 }}
+        value: ${{ jobs.testing-unit.outputs.output2 }}
 
 jobs:
   commitlint:
@@ -90,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       output1: ${{steps.save-test.outputs.result-unit}}
-      # output2: ${{steps.save-test.outputs.link}}
+      output2: ${{steps.save-test.outputs.link}}
       output3: ${{steps.unit-test.outcome}}
 
     strategy:
@@ -121,4 +121,4 @@ jobs:
         id: save-test
         run: |
           echo "result-unit=${{ steps.unit-test.outcome }}" >> $GITHUB_OUTPUT
-          echo "Workflow Run Link: github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "link=$(github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_OUTPUT

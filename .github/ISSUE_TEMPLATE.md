@@ -14,4 +14,4 @@ title: RELEASE version {{env.RELEASE_VERSION}}
 - unit: {{env.TEST_UNIT}}
 - e2e: {{env.TEST_E2E}}
 
-Артифакты можно найти по [ссылке]({{env.LINK}})
+Артефакты можно найти по [ссылке]({{env.LINK}})
