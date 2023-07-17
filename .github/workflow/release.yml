@@ -1,0 +1,158 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+"
+
+jobs:
+  create-release-body:
+    outputs:
+      release_body: ${{ steps.create-release-body.outputs.release_body }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout кода
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Добавление автора и даты в запись о релизе
+        run: |
+          git log --format='Автор релиза: %an%nДата релиза: %ad%n' -n 1 >> body.md
+
+      - name: Формирование changelog
+        run: |
+          printf "\nСписок изменений:\n" >> body.md
+          CURRENT_VERSION=$(git describe --all --match "v[0-9]*" --exclude "v[0-9]-*" --abbrev=4 HEAD | cut -c 7-)
+          echo "Текущая версия релиза: $CURRENT_VERSION"
+          RANGE='HEAD'
+          if [[ $CURRENT_VERSION != 1 ]]; then
+            PREV_VERSION=$(($CURRENT_VERSION - 1))
+            RANGE="v$PREV_VERSION..HEAD"
+            echo "Получение информации о коммитах: $RANGE"
+          fi
+          git log --format='* %s%b' $RANGE >> body.md
+
+      - id: create-release-body
+        run: |
+          echo 'release_body<<EOF' >> $GITHUB_OUTPUT
+          echo "$(cat body.md)" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+
+  create-issue:
+    outputs:
+      issue: ${{ steps.read_issue.outputs.issue }}
+    runs-on: ubuntu-latest
+    needs: create-release-body
+    steps:
+      - name: Checkout кода
+        uses: actions/checkout@v3
+
+      - name: Create issue
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: "create-issue"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "RELEASE ${{github.ref_name}}"
+          body: ${{needs.create-release-body.outputs.release_body}}
+        id: issue-create
+      - run: echo '${{steps.issue-create.outputs.issue-number}}' >> issue
+      - id: read_issue
+        run: |
+          echo "issue=${{steps.issue-create.outputs.issue-number}}"
+          echo "issue=${{steps.issue-create.outputs.issue-number}}" >> $GITHUB_OUTPUT
+
+  tests:
+    outputs:
+      tests_result: ${{ steps.tests_id.outputs.tests_result }}
+    runs-on: ubuntu-latest
+    needs: create-issue
+    continue-on-error: true
+    steps:
+      - name: Получение кода
+        uses: actions/checkout@v3
+
+      - name: Установка зависимостей
+        run: npm ci
+
+      - name: Установка playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Запуск автотестов
+        id: tests_id
+        run: |
+          onexit() {
+            exit_code=$?
+            if [[ ${exit_code} -eq 0 ]]; then
+              echo "tests_result=Тесты прошли успешно" >> $GITHUB_OUTPUT
+            else
+              echo "tests_result=Тесты завершились с ошибкой" >> $GITHUB_OUTPUT
+            fi
+          }
+
+          trap onexit EXIT
+          npm run test-ci
+
+  update-issue:
+    runs-on: ubuntu-latest
+    needs: [create-issue, tests]
+    steps:
+      - name: Получение кода
+        uses: actions/checkout@v3
+
+      - name: Update issue
+        uses: actions-cool/issues-helper@v3
+        with:
+          actions: "create-comment"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{needs.create-issue.outputs.issue}}
+          body: ${{needs.tests.outputs.tests_result}}
+
+  build:
+    runs-on: ubuntu-latest
+    needs: update-issue
+    steps:
+      - name: Получение кода
+        uses: actions/checkout@v3
+      - name: Настройка Node
+        uses: actions/setup-node@v3
+
+      - name: Установка зависимостей
+        run: npm ci
+
+      - name: Сборка
+        run: npm run build
+
+      - name: Сохранение сборки
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: ./build
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Получение кода
+        uses: actions/checkout@v3
+
+      - name: Получение артефакта
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: ./build
+
+      - name: Вывод списка файлов
+        run: ls -a
+
+      - name: Деплой на gh-pages
+        uses: peaceiris/actions-gh-pages@v3.9.3
+        with:
+          github_token: ${{ secrets.github_token }}
+          publish_dir: ./build
+
+      - name: Закрыть релизный issue
+        uses: peter-evans/close-issue@v3.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: 1
+          comment: Auto-closing issue
