@@ -44,8 +44,6 @@ jobs:
         with:
           query: "title:${{needs.build-and-deploy.outputs.output1}}"
           token: ${{ github.token }}
-      - uses: jwalton/gh-find-current-pr@v1
-        id: findPr
       - name: Получить текст issue
         id: parsed
         uses: codetheweb/gh-action-issue-parser@v1
@@ -53,6 +51,12 @@ jobs:
           body: ${{ steps.find-issue.outputs.path }}
       - name: Dump parsed object
         run: |
+          response=$(curl -sSL \
+          -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          "${{steps.find-issue.outputs.path}}")
+          echo "::set-output name=issueText::$(echo "$response" | jq -r '.body')"
+          echo ${{steps.find-issue.outputs.path}}
           echo $parsed | jq
         env:
           parsed: ${{ steps.parsed.outputs.body }}
