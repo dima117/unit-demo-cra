@@ -45,6 +45,8 @@ jobs:
 
             - name: Generate changelog
               id: generate_changelog
+              env:
+                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                 git log --pretty=format:$'- hash: %h, name: %s' ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
                 echo ::set-output name=changelog::$(cat changelog.txt)
