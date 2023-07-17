@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+'
+
+jobs:
+  release:
+    permissions:
+      issues: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Print versions
+        run: git version
+      - name: Generate Tag Report
+        run: bash ./.github/scripts/generate_report.sh 
+      - name: Create issue
+        uses: imjohnbo/issue-bot@v3
+        with:
+          labels: "release"
+          title: "release ${{ env.TAG }}"
+          body: |
+            ## Information
+            Author: ${{ env.AUTHOR }}
+            Release Date: ${{ env.DATE }}
+
+            ## Changelog
+            ${{ env.CHANGELOG }}
+          token: ${{ env.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
