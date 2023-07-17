@@ -68,11 +68,12 @@ jobs:
       - name: Показать текст
         run: |
           echo "${{ steps.load-issue.outputs.BODY}}"
-          echo '{{TEXT}}\n Сделан деплой\n https://neemkashu.github.io/unit-demo-cra-neemkashu/\n Деплой утвердил: ${{ github.actor }}' > template.md
+          echo '--- \n title: RELEASE version {{env.RELEASE_VERSION}} \n --- \n{{env.TEXT}}\n Сделан деплой\n https://neemkashu.github.io/unit-demo-cra-neemkashu/\n Деплой утвердил: ${{ github.actor }}' > template.md
       - uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TEXT: ${{ steps.load-issue.outputs.BODY }}
+          RELEASE_VERSION: ${{needs.build-and-deploy.outputs.output1}}
         with:
           filename: ./template.md
           update_existing: true
