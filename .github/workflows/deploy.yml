@@ -1,6 +1,6 @@
 name: 🚀 Deploy
 
-on: workflow_call
+on: workflow_dispatch
 
 env:
   RELEASE_VERSION:
