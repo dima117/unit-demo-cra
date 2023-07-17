@@ -1,7 +1,7 @@
 {
   "name": "unit-demo-cra",
   "version": "0.1.0",
-  "homepage": ".",
+  "homepage": "https://neemkashu.github.io/unit-demo-cra-neemkashu",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
@@ -27,8 +27,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
-    "build-ci": "DEPLOY=true react-scripts build",
+    "build": "cross-env DEPLOY=true react-scripts build",
+    "build-ci": "cross-env DEPLOY=true react-scripts build",
     "eject": "react-scripts eject",
     "test": "react-scripts test",
     "e2e": "playwright test --project=chromium && playwright show-report",
@@ -65,6 +65,7 @@
     "@commitlint/config-conventional": "^17.6.6",
     "@playwright/test": "^1.28.0",
     "@types/react-helmet": "^6.1.5",
+    "cross-env": "^7.0.3",
     "husky": "^8.0.3",
     "jest-html-reporter": "^3.7.0"
   }

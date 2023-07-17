@@ -15,7 +15,7 @@ if (container) {
 
   root.render(
     <BrowserRouter
-      basename={process.env.DEPLOY ? "unit-demo-cra-neemkashu" : ""}
+      basename={process.env.DEPLOY ? "" : "/unit-demo-cra-neemkashu"}
     >
       <Provider store={store}>
         <Application />
