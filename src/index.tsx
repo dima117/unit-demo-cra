@@ -6,6 +6,8 @@ import { initStore } from "./store";
 
 import "./index.css";
 
+// comment to create a difference at PR
+
 const container = document.getElementById("root");
 
 if (container) {
