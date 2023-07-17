@@ -1,5 +1,5 @@
 name: Cache node_modules
-on: [push, pull_request, workflow_dispatch]
+on: [push, workflow_dispatch]
 jobs:
     build:
         runs-on: ubuntu-22.04
@@ -12,19 +12,13 @@ jobs:
               id: cache-npm
               uses: actions/cache@v3
               with:
-                  path: ~/.npm
+                  path: node_modules
                   key: node_modules_cache-${{ hashFiles('**/package-lock.json') }}
 
             - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
               name: List the state of node modules
               continue-on-error: true
               run: npm list
-
-            - name: Install commitlint
-              run: npm i -g @commitlint/cli @commitlint/config-conventional conventional-changelog-conventionalcommits
-
-            - name: Install playwright
-              run: npx playwright install
 
             - name: Install other dependencies
               run: npm ci

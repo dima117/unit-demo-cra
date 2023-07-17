@@ -15,11 +15,8 @@ jobs:
               with:
                   node-version: "18"
 
-            - name: Cache node modules
-              uses: actions/cache@v3
-              with:
-                  path: ~/.npm
-                  key: node_modules_cache-${{ hashFiles('**/package-lock.json') }}
+            - name: Install commitlint
+              run: npm i -g @commitlint/cli @commitlint/config-conventional conventional-changelog-conventionalcommits
 
             - name: Validate current commit (last commit) with commitlint
               if: github.event_name == 'push'

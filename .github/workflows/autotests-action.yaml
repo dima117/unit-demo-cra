@@ -16,8 +16,11 @@ jobs:
             - name: Cache node modules
               uses: actions/cache@v3
               with:
-                  path: ~/.npm
+                  path: node_modules
                   key: node_modules_cache-${{ hashFiles('**/package-lock.json') }}
+
+            - name: Install other dependencies
+              run: npm ci
 
             - name: Run unit tests
               run: npm run test-ci
@@ -37,8 +40,14 @@ jobs:
             - name: Cache node modules
               uses: actions/cache@v3
               with:
-                  path: ~/.npm
+                  path: node_modules
                   key: node_modules_cache-${{ hashFiles('**/package-lock.json') }}
+
+            - name: Install other dependencies
+              run: npm ci
+
+            - name: Install playwright
+              run: npx playwright install
 
             - name: Run e2e tests
               run: npm run e2e-ci
