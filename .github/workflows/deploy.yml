@@ -1,0 +1,58 @@
+name: 🚀 Deploy
+
+on: workflow_call
+
+jobs:
+  build-and-deploy:
+    concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
+    runs-on: ubuntu-latest
+    outputs:
+      output1: ${{steps.release-tag.outputs.RELEASE_VERSION}}
+      output2: ${{steps.release-tag.outputs.BRANCH_RELEASE}}
+    permissions:
+      contents: write
+      actions: write
+      checks: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: 🏷️ Получить имя тега
+        id: release-tag
+        run: |
+          echo "RELEASE_VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+          echo "BRANCH_RELEASE=release-$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+      - name: 🔧 Сборка # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
+        run: |
+          npm ci
+          npm run build
+
+      - name: 🚀 Деплой
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build # The folder the action should deploy.
+  close-issue:
+    name: 📝 Запись в changelog
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    steps:
+      - name: Найти issue
+        id: find-issue
+        uses: lee-dohm/select-matching-issues@v1
+        with:
+          query: "title:${{needs.build-and-deploy.outputs.output1}}"
+          token: ${{ github.token }}
+      - uses: jwalton/gh-find-current-pr@v1
+        id: findPr
+      - name: Получить текст issue
+        id: parsed
+        uses: codetheweb/gh-action-issue-parser@v1
+        with:
+          body: ${{ steps.find-issue.outputs.path }}
+      - name: Dump parsed object
+        run: |
+          echo $parsed | jq
+        env:
+          parsed: ${{ steps.parsed.outputs.body }}
