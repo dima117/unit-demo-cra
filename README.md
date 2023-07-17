@@ -6,6 +6,10 @@
 
 `cat $1 | npx commitlint`
 
+нужно запустить вот это чтобы заработали хуки локально:
+
+`git config --local core.hooksPath hooks/`
+
 Эта же проверка запускается на CI чтобы устранить проблему локального отключения хуков
 
 Workflow описан в `.github/workflows/commitlint-github-actions.yml`
