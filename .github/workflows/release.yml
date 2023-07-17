@@ -91,6 +91,7 @@ jobs:
           COMMITS: ${{ needs.changelog.outputs.output4 }}
           TEST_UNIT: ${{needs.call-tests.outputs.unit-result}}
           TEST_E2E: ${{needs.call-tests.outputs.e2e-result}}
-          TEST: ${{needs.call-tests.outputs.e2e-job-result}}
+          LINK: ${{needs.call-tests.outputs.artifact-link}}
+          RELEASE_VERSION: ${{needs.changelog.outputs.output1}}
         with:
           update_existing: true
