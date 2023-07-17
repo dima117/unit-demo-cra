@@ -30,22 +30,38 @@ jobs:
           exit 1
         fi
 
-    - name: Set merge restriction
+    - name: Block PR merge on failure
       uses: actions/github-script@v4
       with:
-        github-token: ${{ secrets.GH_TOKEN }}
         script: |
           const { data: pullRequest } = await github.pulls.get({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            pull_number: context.issue.number
+            pull_number: context.payload.pull_request.number
           });
-          const { data: checks } = await github.checks.listForRef({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: pullRequest.head.sha
-          });
-          const failedChecks = checks.check_runs.filter(check => check.conclusion === 'failure');
-          if (failedChecks.length > 0) {
-            core.setFailed('Checks failed! Cannot merge changes.');
+
+          if (pullRequest.mergeable_state === 'dirty' || steps.check_status.outputs.status === 'failure') {
+            const { data: reviews } = await github.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+
+            const reviewId = reviews.find(review => review.user.login === 'github-actions[bot]')?.id;
+            if (reviewId) {
+              await github.pulls.dismissReview({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                review_id: reviewId
+              });
+            }
+
+            await github.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              event: 'REQUEST_CHANGES',
+              body: 'Automated checks failed. Please fix the issues before merging.'
+            });
           }
