@@ -11,7 +11,6 @@ export const Home: FC = () => {
       </Helmet>
       <h1 data-testid="page-title">Home</h1>
       <p>This is the list.</p>
-      <p>This is just another line.</p>
       <TodoList />
     </>
   );
