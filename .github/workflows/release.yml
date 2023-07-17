@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: create-release-body
     steps:
-      - name: Checkout кода
+      - name: Получение кода
         uses: actions/checkout@v3
 
       - name: Create issue
