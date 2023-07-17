@@ -48,6 +48,9 @@ jobs:
               run: |
                 git log --pretty=format:$'- hash: %h, name: %s' ${{ steps.get_previous_tag.outputs.previous_tag }}..HEAD > changelog.txt
                 echo ::set-output name=changelog::$(cat changelog.txt)
+                git add changelog.txt
+                git commit -am "ci: add changelog"
+                git push
 
             - name: Upload changelog artifact
               id: upload_artifact
@@ -59,7 +62,7 @@ jobs:
             - name: Create release
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run:
+              run: |
                 gh release create ${{ github.ref_name }} --title ${{ github.ref_name }} --notes "${{ steps.generate_changelog.outputs.changelog }}"
 
             - name: Make issue
