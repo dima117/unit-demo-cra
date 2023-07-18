@@ -4,8 +4,6 @@ on: # поменять триггер после отладки
   push:
     tags:
       - "v[0-9]+"
-    branches-ignore:
-      - "!master"
 permissions:
   contents: read
   issues: write
