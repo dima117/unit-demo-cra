@@ -4,8 +4,6 @@ on: # поменять триггер после отладки
   push:
     tags:
       - "v[0-9]+"
-    branches:
-      - master
 permissions:
   contents: read
   issues: write
@@ -17,6 +15,7 @@ jobs:
   changelog:
     name: 🏂 Начат релиз
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
 
     permissions:
       contents: write
