@@ -1,0 +1,33 @@
+name: Tests CI
+
+on: [ pull_request, workflow_call ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - run: npm ci
+      - run: npm install --only=dev
+      - run: npx playwright install
+      - run: npm run build --if-present
+
+      - name: Run unit tests
+        run: npm run test-ci
+
+      - name: Install XVFB
+        run: sudo apt-get install xvfb -y
+
+      - name: Start XVFB
+        run: |
+          export DISPLAY=:1
+          Xvfb :1 -screen 0 1024x768x24 > /dev/null 2>&1 &
+      - name: Run e2e tests
+        run: xvfb-run npm run e2e-ci
