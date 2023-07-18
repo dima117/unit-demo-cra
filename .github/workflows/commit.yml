@@ -19,19 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' }}
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18
           cache: "npm"
       - name: Установка commitlint
         run: |
@@ -57,16 +52,12 @@ jobs:
       output1: ${{steps.save-test.outputs.result-e2e}}
       output3: ${{steps.save-test.outcome}}
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18
       - name: ⬇️ Установка зависимостей
         run: |
           npm ci
@@ -93,16 +84,12 @@ jobs:
       output2: ${{steps.save-test.outputs.link}}
       output3: ${{steps.unit-test.outcome}}
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18
       - name: ⬇️ Установка зависимостей
         run: |
           npm ci
@@ -121,4 +108,4 @@ jobs:
         id: save-test
         run: |
           echo "result-unit=${{ steps.unit-test.outcome }}" >> $GITHUB_OUTPUT
-          echo "link=github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
+          echo "link=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
