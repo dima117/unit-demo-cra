@@ -12,7 +12,7 @@ if (container) {
   const root = createRoot(container);
 
   const store = initStore();
-
+    console.log('hello2')
   root.render(
     <BrowserRouter>
       <Provider store={store}>
