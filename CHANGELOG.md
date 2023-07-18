@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/Rubicones/hw-infra/compare/v1.24.0...v1.25.0) (2023-07-18)
+
+
+### Features
+
+* test workflows ([2248396](https://github.com/Rubicones/hw-infra/commit/22483964a0e1647a1395d1f70d3aed792d4a887b))
+
 # [1.24.0](https://github.com/Rubicones/hw-infra/compare/v1.23.0...v1.24.0) (2023-07-16)
 
 
