@@ -25,5 +25,6 @@ module.exports = {
                 tagFormat: 'v${nextRelease.version}',
             },
         ],
-    ],
+    ], 
 };
+ 
