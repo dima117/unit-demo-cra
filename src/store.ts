@@ -1,25 +1,32 @@
-import { createStore } from "redux";
+import { createStore } from "redux"
 
 export interface ApplicationState {
-  text: string;
-  items: string[];
-  done: Record<number, boolean>;
+  text: string
+  items: string[]
+  done: Record<number, boolean>
 }
 
-const items = ["Позавтракать", "Сходить в магазин", "Покормить кота"];
+const items = [
+  "Позавтракать",
+  "Сходить в магазин",
+  "Покормить кота",
+  "Не сесть на чихухуа",
+  "Выбить Кокоми",
+  "Повесить колобка",
+]
 
-const DEFAULT_STATE = { items, done: {}, text: "" };
+const DEFAULT_STATE = { items, done: {}, text: "" }
 
 // actions
-export const addItem = (text: string) => ({ type: "ADD_ITEM", text } as const);
-export const setText = (text: string) => ({ type: "SET_TEXT", text } as const);
+export const addItem = (text: string) => ({ type: "ADD_ITEM", text } as const)
+export const setText = (text: string) => ({ type: "SET_TEXT", text } as const)
 export const setDone = (index: number, done: boolean) =>
-  ({ type: "SET_DONE", index, done } as const);
+  ({ type: "SET_DONE", index, done } as const)
 
 export type Action =
   | ReturnType<typeof addItem>
   | ReturnType<typeof setText>
-  | ReturnType<typeof setDone>;
+  | ReturnType<typeof setDone>
 
 // reducer
 const rootReducer = (
@@ -32,12 +39,12 @@ const rootReducer = (
         ...state,
         text: "",
         items: [...state.items, action.text],
-      };
+      }
     case "SET_TEXT":
       return {
         ...state,
         text: action.text,
-      };
+      }
     case "SET_DONE":
       return {
         ...state,
@@ -45,16 +52,16 @@ const rootReducer = (
           ...state.done,
           [action.index]: action.done,
         },
-      };
+      }
     default:
-      return state;
+      return state
   }
-};
+}
 
 // epics
 
 export function initStore() {
-  const store = createStore<ApplicationState, Action, {}, {}>(rootReducer);
+  const store = createStore<ApplicationState, Action, {}, {}>(rootReducer)
 
-  return store;
+  return store
 }
