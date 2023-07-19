@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      
+
       - name: Install commitlint
         run: |
           npm install conventional-changelog-conventionalcommits
@@ -27,21 +27,21 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      
+
       - name: Install required dependencies
         run: npm ci --force
-      
+
       - name: Run unit tests
         run: npm run test-ci
-        
-      - name: Install playwright 
+
+      - name: Install playwright
         run: |
           npx playwright install --with-deps chromium
           CI=true npx playwright test --project=chromium
 
       - name: Run e2e tests
         run: npm run e2e
-          
+
       - name: Check test result
         run: |
           exit_code=$?

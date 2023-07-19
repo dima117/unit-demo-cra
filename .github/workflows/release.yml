@@ -2,7 +2,7 @@ name: Release Workflow
 on:
   push:
     tags:
-      - 'v*' 
+      - 'v*'
 
 jobs:
   release:
@@ -104,7 +104,7 @@ jobs:
               }
             }
 
-            await addReleaseInfoToIssue();      
+            await addReleaseInfoToIssue();
 
       # - name: Check if release tag matches pattern
       #   id: check_tag
