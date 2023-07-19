@@ -5,7 +5,7 @@ import events from "@testing-library/user-event";
 import { BrowserRouter } from "react-router-dom";
 import { MemoryRouter } from "react-router";
 import { Provider } from "react-redux";
-
+ 
 import { initStore } from "./store";
 import { Application } from "./Application";
 
