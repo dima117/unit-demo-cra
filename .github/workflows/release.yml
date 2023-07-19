@@ -30,7 +30,7 @@ jobs:
           echo ::set-output name=previous_tag::$PREVIOUS_TAG
           echo ::set-output name=changelog::$(git log --oneline --pretty=format:"- %s" "$PREVIOUS_TAG"..)
 
-       - name: Create or update release issue
+      - name: Create or update release issue
         uses: actions/github-script@v4
         env:
           ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -69,7 +69,7 @@ jobs:
 
             await createOrUpdateReleaseIssue();
 
-       - name: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
