@@ -35,6 +35,9 @@ jobs:
       - name: Run e2e tests
         run: npm run e2e
 
+      - name: Validate all commits from PR
+        run: npx commitlint --from HEAD~${{ github.event.pull_request.commits }} --to HEAD --verbose
+
   release:
     if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push'
     needs: build
