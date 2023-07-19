@@ -4,7 +4,7 @@
     "homepage": ".",
     "private": true,
     "dependencies": {
-        "@commitlint/cli": "^17.6.6",
+        "@commitlint/cli": "^17.6.7",
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/react": "^13.4.0",
         "@testing-library/user-event": "^14.4.3",
@@ -59,7 +59,7 @@
         ]
     },
     "devDependencies": {
-        "@commitlint/config-conventional": "^17.6.6",
+        "@commitlint/config-conventional": "^17.6.7",
         "@playwright/test": "^1.28.0",
         "@types/react-helmet": "^6.1.5",
         "husky": "^8.0.3",
