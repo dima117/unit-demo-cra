@@ -1,0 +1,62 @@
+name: Lint and run test
+on:
+  workflow_call:
+    inputs:
+      commit-from:
+        required: true
+        type: string
+      commit-to:
+        required: true
+        type: string
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install deps
+        run: npm ci
+      - name: Eslint checks
+        run: npx eslint .
+      - name: Validate commits with commitlint
+        run: npx commitlint --from ${{ inputs.commit-from }} --to ${{ inputs.commit-to }} --verbose
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    needs: lint
+    env:
+      CI: true
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install deps
+        run: npm ci
+      - name: Run unit tests
+        run: npm run test
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: lint
+    env:
+      CI: true
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm ci
+      - run: npx playwright install chromium --with-deps
+      - run: npm run e2e
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

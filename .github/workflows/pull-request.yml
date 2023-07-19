@@ -1,0 +1,11 @@
+name: pull-request
+on:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  lint-and-tests:
+    uses: ./.github/workflows/lint-and-test.yml
+    with:
+      commit-from: ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }}
+      commit-to: ${{ github.event.pull_request.head.sha }}

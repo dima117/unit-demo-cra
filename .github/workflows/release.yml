@@ -1,0 +1,194 @@
+name: Release
+on:
+  push:
+    branches:
+      - "releases/v[0-9]+"
+    tags:
+      - "v[0-9]+"
+
+jobs:
+  create-new-issue:
+    if: contains(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    outputs:
+      issueId: ${{ steps.create-issue.outputs.number }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - id: new-branch
+        run: |
+          id=$(echo "${{github.ref}}" | cut -d / -f3)
+          branch=releases/$id
+          
+          git checkout -b $branch
+          git push --set-upstream origin $branch
+          
+          echo "RELEASE=$id" >> $GITHUB_ENV
+          echo "RELEASE_BRANCH=$branch" >> $GITHUB_ENV
+          echo "RELEASE_AUTHOR=$(git for-each-ref --format="%(authorname) %(authoremail)" refs/tags/$id)" >> $GITHUB_ENV
+          echo "RELEASE_DATE=$(git for-each-ref --format="%(authordate)" refs/tags/$id)" >> $GITHUB_ENV
+          
+          LOG=$(git log $(git describe --tags --abbrev=0 --exclude=$id)..HEAD --oneline)
+          echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$LOG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      - uses: JasonEtco/create-an-issue@v2
+        with:
+          filename: .github/release-issue-template.md
+          update_existing: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: create-issue
+      - run: 'echo Created issue number ${{ steps.create-issue.outputs.number }}'
+      - run: 'echo Created ${{ steps.create-issue.outputs.url }}'
+
+  get-issue-id:
+    needs: create-new-issue
+    if: always()
+    runs-on: ubuntu-latest
+    outputs:
+      issueId: ${{ steps.get-issue-id.outputs.result }}
+    steps:
+      - id: get-version
+        run: |
+          echo $(version=$(echo "${{github.ref}}" | cut -d / -f4)) >> $GITHUB_OUTPUT
+
+      - uses: actions/github-script@v6
+        id: get-issue-id
+        with:
+          script: |
+            if ("${{needs.create-new-issue.outputs.issueId}}" !== "") {
+              return ${{needs.create-new-issue.outputs.issueId}}
+            }
+            
+            const {GITHUB_REPOSITORY} = process.env
+            const result = await github.rest.search.issuesAndPullRequests({
+              q: `is:issue is:open repo:${GITHUB_REPOSITORY} in:title "RELEASE ${{ steps.get-version.version }}"`,
+            })
+            
+            if (result.data?.items?.length === 1) {
+              return result.data.items[0].number;
+            }
+            
+            console.log(result)
+            throw new Error("Issue не найдена")
+
+
+  write-changelog-comment:
+    runs-on: ubuntu-latest
+    if: always() && contains(github.ref, 'refs/heads/')
+    needs: get-issue-id
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - id: get-changelog
+        run: |
+          LOG=$(git log ${{ github.event.before }}..${{ github.event.after }} --oneline)
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          echo "$LOG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const {CHANGELOG} = process.env
+            github.rest.issues.createComment({
+              issue_number: ${{ needs.get-issue-id.outputs.issueId }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Добавлены изменения в релиз:\n\n${CHANGELOG}`
+            })
+
+
+  lint-and-test:
+    needs: get-issue-id
+    if: always()
+    uses: ./.github/workflows/lint-and-test.yml
+    with:
+      commit-from: ${{ startsWith(github.ref, 'refs/heads/') && github.event.before || '$(git describe --tags --abbrev=0 --exclude=$(echo "${{github.ref}}" | cut -d / -f4))' }}
+      commit-to: ${{ startsWith(github.ref, 'refs/heads/') && github.event.after || github.ref }}
+
+  write-result-comment:
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - lint-and-test
+      - get-issue-id
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            let body = "";
+            if ("${{needs.lint-and-test.result}}" === "failure") {
+              body = "❌Этап линтинга и тестов не пройден. Подробнее: "
+            } else {
+              body = "✅Этап линтинга и тестов успешно пройден. Подробнее: "
+            }
+            
+            body += "\n\n${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            
+            github.rest.issues.createComment({
+              issue_number: ${{ needs.get-issue-id.outputs.issueId }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            })
+
+
+  build-and-deploy:
+    needs: lint-and-test
+    if: always() && success()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Install and Build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build
+
+  close-release-issue:
+    needs:
+      - build-and-deploy
+      - get-issue-id
+      - write-result-comment
+    if: always() && needs.build-and-deploy.result != 'skipped'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            let body = "";
+            if ("${{needs.build-and-deploy.result}}" === "failure") {
+              body = "❌Не удалось задеплоить проект на gh-pages"
+            } else {
+              body = "🚀Проект опубликован. Релиз завершен"
+            }
+            
+            await github.rest.issues.createComment({
+              issue_number: ${{ needs.get-issue-id.outputs.issueId }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            })
+            
+            if ("${{needs.build-and-deploy.result}}" === "success") {
+              await github.rest.issues.update({
+                issue_number: ${{ needs.get-issue-id.outputs.issueId }},
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: "closed",
+                state_reason: "completed"
+              })
+            }
