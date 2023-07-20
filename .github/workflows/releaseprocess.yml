@@ -1,0 +1,198 @@
+name: Release-Process
+
+on:
+  push:
+    tags:
+      - "v*"
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  create_issue:
+    name: Create issue
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [18.x]
+
+    runs-on: ${{ matrix.os }}
+
+    outputs:
+      unit_test_result: ${{ env.UNIT_TEST_RESULT }}
+      e2e_test_result: ${{ env.E2E_TEST_RESULT }}
+      release_title: ${{ env.RELEASE_VER }}
+
+    steps:
+      - name: Get the repo code
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: "Tests: unit"
+        id: unit_test
+        run: |
+          npm run test-unit-ci && echo "UNIT_TEST_RESULT=PASSED" >> $GITHUB_ENV || echo "UNIT_TEST_RESULT=FAILED" >> $GITHUB_ENV
+        continue-on-error: true
+
+      - name: "Tests: e2e"
+        id: e2e_test
+        run: |
+          npm run test-e2e-ci && echo "E2E_TEST_RESULT=PASSED" >> $GITHUB_ENV || echo "E2E_TEST_RESULT=FAILED" >> $GITHUB_ENV
+        continue-on-error: true
+
+      - name: Upload Artifacts (unit tests)
+        uses: actions/upload-artifact@v3
+        with:
+          name: Report (unit tests)
+          path: test-report.html
+          if-no-files-found: error
+
+      - name: Upload Artifacts (e2e tests)
+        uses: actions/upload-artifact@v3
+        with:
+          name: Report (e2e tests)
+          path: ./playwright-report
+          if-no-files-found: error
+
+      - name: Save release version
+        run: echo "RELEASE_VER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Find the last issue
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const fs = require('fs');
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+            })
+            let lastIssue;
+            if (issues[0]) {
+              lastIssue = issues[0].title.slice(8);
+            }
+            else {
+              lastIssue = '1.0.0';
+            }
+            fs.writeFileSync('env_vars.txt', `${lastIssue}`);
+
+      - name: Fetch all tags
+        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+
+      - name: List all tags
+        run: git tag
+
+      - name: Load environment vasdgasdriables
+        run: |
+          VERSION=$(cat env_vars.txt)
+          git rev-list --pretty=oneline $VERSION...HEAD > diff_result.txt || echo "no correct info" > diff_result.txt
+          echo "DIFF_RESULT<<EOF" >> $GITHUB_ENV
+          cat diff_result.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          if grep -q "no correct info" diff_result.txt; then
+            echo "PREV_VERSION=no correct info" >> $GITHUB_ENV
+          else
+            echo "PREV_VERSION=$VERSION" >> $GITHUB_ENV
+          fi
+
+      - name: Create Release Issue
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const title = `Release ${process.env.RELEASE_VER}`
+            let body = '';
+            body += `# Main info\n`
+            body += `Author: ${context.payload.sender.login}\n`
+            body += `Date: ${new Date().toLocaleString()}\n`
+            body += `Version: ${process.env.RELEASE_VER}\n\n`
+
+            body += `# Changes\n`
+            body += `Previous release: ${process.env.PREV_VERSION}\n`
+            body += `Changelog:\n`
+            body += `${process.env.DIFF_RESULT}\n\n`
+
+            body += `# Tests\n`
+            body += `Unit tests result: ${process.env.UNIT_TEST_RESULT}\n`
+            body += `E2E tests result: ${process.env.E2E_TEST_RESULT}\n`
+            body += `Test results: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${context.runId}\n\n`
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+            })
+            const existingIssue = issues.find(issue => issue.title === title)
+
+            if (!existingIssue) {
+              github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['RELEASE'],
+              })
+            }
+            else {
+              console.log("Updating issue");
+              github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: body,
+                state: 'open',
+              })
+            }
+
+  deploy:
+    name: Deploy
+    needs: create_issue
+    if: ${{ needs.create_issue.outputs.unit_test_result == 'PASSED' && needs.create_issue.outputs.e2e_test_result == 'PASSED' }}
+    uses: ./.github/workflows/static.yml
+
+  close-issue:
+    name: Close issue
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [18.x]
+    runs-on: ${{ matrix.os }}
+
+    needs: [deploy, create_issue]
+
+    steps:
+      - name: Close current issue
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const issueTitle = `Release ${{ needs.create_issue.outputs.release_title }}`;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            const releaseIssue = issues.find(issue => issue.title === issueTitle);
+            let updateBody = `${releaseIssue.body}Released into production succesfully\n\n`;
+            updateBody += `![ok](https://i.ibb.co/WBBn8Ds/8808b0ef0484cdbf5d5fb15dac5b2774.jpg)`;
+            github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: releaseIssue.number,
+              body: updateBody,
+              state: 'closed',
+            });

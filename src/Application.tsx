@@ -11,14 +11,14 @@ export const Application: FC = () => {
   return (
     <div>
       <nav>
-        <Link data-testid="link-home" to="/">
+        <Link data-testid="link-home" to="/unit-demo-cra">
           Home
         </Link>
-        <Link to="/about">About</Link>
+        <Link to="/unit-demo-cra/about">About</Link>
       </nav>
       <Routes>
-        <Route path="/about" element={about} />
-        <Route path="/" element={home} />
+        <Route path="/unit-demo-cra/about" element={about} />
+        <Route path="/unit-demo-cra" element={home} />
       </Routes>
     </div>
   );

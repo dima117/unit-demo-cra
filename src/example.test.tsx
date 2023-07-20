@@ -12,7 +12,7 @@ import { Application } from "./Application";
 it('по адресу /about должна открываться страница "о проекте"', () => {
   const store = initStore();
   const application = (
-    <MemoryRouter initialEntries={["/about"]} initialIndex={0}>
+    <MemoryRouter initialEntries={["/unit-demo-cra/about"]} initialIndex={0}>
       <Provider store={store}>
         <Application />
       </Provider>
@@ -27,20 +27,20 @@ it('по адресу /about должна открываться страниц�
 it("если добавить элемент, он появляется в списке", async () => {
   const store = initStore();
   const application = (
-    <BrowserRouter>
+    <MemoryRouter initialEntries={["/unit-demo-cra"]}>
       <Provider store={store}>
         <Application />
       </Provider>
-    </BrowserRouter>
+    </MemoryRouter>
   );
 
   const { getByTestId, getAllByTestId } = render(application);
 
-  await events.type(getByTestId("input-add"), "Сделать домашку");
+  await events.type(getByTestId("input-add"), "Доделать домашку");
 
   await events.click(getByTestId("button-add"));
 
   const items = getAllByTestId("list-item");
 
-  expect(items.map((el) => el.textContent)).toContain("Сделать домашку");
+  expect(items.map((el) => el.textContent)).toContain("Доделать домашку");
 });

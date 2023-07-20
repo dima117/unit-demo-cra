@@ -1,0 +1,27 @@
+name: Commitlint-Verification
+on: push
+
+jobs:
+  commit-lint-job:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [18.x]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Get the repo code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint commit
+        run: npx commitlint --from HEAD~1 --to HEAD --verbose
