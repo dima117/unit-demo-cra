@@ -96,7 +96,7 @@ jobs:
       - name: List all tags
         run: git tag
 
-      - name: Load environment variables
+      - name: Load environment vasdgasdriables
         run: |
           VERSION=$(cat env_vars.txt)
           git rev-list --pretty=oneline $VERSION...HEAD > diff_result.txt || echo "no correct info" > diff_result.txt
